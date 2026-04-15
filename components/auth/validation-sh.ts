@@ -7,12 +7,6 @@ export const registerSchema = z
     email: z.string().email('Email inválido'),
     password: z.string().min(8, 'Mínimo 8 caracteres'),
     confirmPassword: z.string(),
-    phone: z.string().min(7, 'Teléfono inválido'),
-    countrySelector: z.string().min(1, 'Selecciona un país'),
-    language: z.string(),
-    terms: z.literal(true, {
-      message: 'Debes aceptar los términos',
-    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Las contraseñas no coinciden',

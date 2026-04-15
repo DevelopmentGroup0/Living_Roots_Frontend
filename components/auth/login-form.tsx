@@ -4,11 +4,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-
 import { AuthLayout } from './auth-layout'
-import { SocialAuthButtons } from './social-auth-buttons'
 import { AuthField, AuthFieldConfig } from './auth-field'
 import { useForm } from 'react-hook-form'
 import { loginSchema, LoginValues } from './validation-sh'
@@ -54,9 +50,10 @@ function PasswordToggle({
   )
 }
 
-export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; onLoadingChange: (loading: boolean) => void }) {
+export function LoginForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
@@ -79,7 +76,7 @@ export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; 
   })
 
   const getFieldWithPasswordToggle = (
-    field: AuthFieldConfig
+    field: AuthFieldConfig,
   ): AuthFieldConfig => {
     if (field.id === 'password') {
       return { ...field, type: showPassword ? 'text' : 'password' }
@@ -90,7 +87,7 @@ export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; 
   const onSubmit = async (data: LoginValues, e?: React.BaseSyntheticEvent) => {
     if (e) e.preventDefault()
 
-    onLoadingChange(true)
+    setIsLoading(true)
 
     console.log('1. Intentando signIn con:', data.email)
 
@@ -114,12 +111,12 @@ export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; 
     } catch (error) {
       console.error('4. Error crítico en la llamada:', error)
     } finally {
-      onLoadingChange(false)
+      setIsLoading(false)
     }
   }
   return (
     <AuthLayout
-      title='Bienvenido al Set'
+      title='Bienvenido'
       subtitle='Inicia sesión para acceder a tu colección de películas y series'
       footerText='¿Nuevo en el estudio?'
       footerLinkText='Crea tu cuenta'
@@ -146,15 +143,6 @@ export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; 
 
         {/* Remember + Forgot */}
         <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2'>
-            <Checkbox id='remember' />
-            <Label
-              htmlFor='remember'
-              className='text-muted-foreground text-sm font-normal'
-            >
-              Recordar sesión
-            </Label>
-          </div>
           <Link
             href='#'
             className='text-primary hover:text-primary/80 text-sm underline-offset-4 transition-colors hover:underline'
@@ -172,15 +160,13 @@ export function LoginForm({ isLoading, onLoadingChange }: { isLoading: boolean; 
           {isLoading ? (
             <>
               Verificando credenciales...
-              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+              <Loader2 className='ml-2 h-4 w-4 animate-spin' />
             </>
           ) : (
-            'Entrar al Estudio'
+            'Entrar'
           )}
         </Button>
       </form>
-
-      <SocialAuthButtons />
       <div>
         {error === 'SessionExpired' && (
           <p className='text-amber-500'>

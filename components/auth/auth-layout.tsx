@@ -34,7 +34,7 @@ function BrandLogo() {
         <Film className='text-primary h-6 w-6' />
       </div>
       <span className='text-foreground text-2xl font-bold tracking-tight'>
-        CineStudio
+        Living Roots
       </span>
     </Link>
   )
