@@ -1,0 +1,41 @@
+import { Search, Bell, User } from 'lucide-react'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Avatar, AvatarFallback } from './ui/avatar'
+
+export function Navbar() {
+  return (
+    <nav className='h-16 bg-white border-b border-gray-200 flex items-center px-6 gap-6'>
+      <div className='flex-1 flex justify-center'>
+        <div className='w-full max-w-2xl relative'>
+          <Search className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none' />
+          <Input
+            type='text'
+            placeholder='Buscar plantas, sensores, datos...'
+            className='pl-12'
+          />
+        </div>
+      </div>
+
+      <div className='flex items-center gap-4'>
+        <Button variant='ghost' size='icon'>
+          <Bell className='w-5 h-5' />
+        </Button>
+
+        <div className='flex items-center gap-3 pl-4 border-l border-gray-200'>
+          <div className='text-right'>
+            <div className='text-sm font-medium text-gray-900'>
+              Account Settings
+            </div>
+            <div className='text-xs text-gray-500'>admin@plantas.com</div>
+          </div>
+          <Avatar>
+            <AvatarFallback className='bg-green-600 text-white'>
+              <User className='w-5 h-5' />
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+    </nav>
+  )
+}
