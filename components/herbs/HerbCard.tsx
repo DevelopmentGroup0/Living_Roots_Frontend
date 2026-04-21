@@ -52,13 +52,13 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
       </CardHeader>
 
       <CardContent>
-        <div className='flex flex-wrap gap-2'>
+        {/* <div className='flex flex-wrap gap-2'>
           {plant.usageMethod.split(',').map((tag, index) => (
             <Badge key={index} variant='default'>
               {tag}
             </Badge>
           ))}
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

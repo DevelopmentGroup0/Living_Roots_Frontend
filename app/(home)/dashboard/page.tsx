@@ -1,4 +1,5 @@
 // import { HerbForm } from "@/components/herbs/herb-form"
+import { HerbForm } from '@/components/herbs/herb-form'
 import { Leaf } from 'lucide-react'
 
 export default function Home() {
@@ -20,7 +21,9 @@ export default function Home() {
           </p>
         </header>
 
-        <div className='flex justify-center'>{/* <HerbForm /> */}</div>
+        <div className='flex justify-center'>
+          <HerbForm />
+        </div>
       </div>
     </main>
   )
