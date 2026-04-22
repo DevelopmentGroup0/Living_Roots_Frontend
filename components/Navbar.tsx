@@ -1,7 +1,7 @@
-import { Search, Bell, User } from 'lucide-react'
+import { Search, Bell } from 'lucide-react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Avatar, AvatarFallback } from './ui/avatar'
+import { UserAvatarButton } from './auth/user-button'
 
 export function Navbar() {
   return (
@@ -11,7 +11,7 @@ export function Navbar() {
           <Search className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none' />
           <Input
             type='text'
-            placeholder='Buscar plantas, sensores, datos...'
+            placeholder='Buscar plantas, síntomas, datos...'
             className='pl-12'
           />
         </div>
@@ -23,17 +23,7 @@ export function Navbar() {
         </Button>
 
         <div className='flex items-center gap-3 pl-4 border-l border-gray-200'>
-          <div className='text-right'>
-            <div className='text-sm font-medium text-gray-900'>
-              Account Settings
-            </div>
-            <div className='text-xs text-gray-500'>admin@plantas.com</div>
-          </div>
-          <Avatar>
-            <AvatarFallback className='bg-green-600 text-white'>
-              <User className='w-5 h-5' />
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatarButton />
         </div>
       </div>
     </nav>
