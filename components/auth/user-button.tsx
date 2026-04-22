@@ -45,7 +45,7 @@ export function UserAvatarButton() {
               {isLoading
                 ? 'Cargando...'
                 : session
-                  ? session.user?.name
+                  ? session.user?.role
                   : 'Mi Cuenta'}
             </span>
             <span className='text-muted-foreground text-[11px] tracking-wider uppercase'>

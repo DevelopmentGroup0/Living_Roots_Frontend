@@ -7,6 +7,12 @@ import { JWT } from 'next-auth/jwt'
 // Definimos las opciones fuera del handler para que sea más limpio (SOLID)
 const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`
 
+interface sessionInterface {
+  access_token: string
+  email: string
+  role: string
+}
+
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -44,7 +50,7 @@ export const authOptions = {
 
         // Si Render dice que todo ok, devolvemos el objeto user a NextAuth
         if (res.ok && user) {
-          const decoded = jwtDecode(user.access_token)
+          const decoded: sessionInterface = jwtDecode(user.access_token)
           return {
             ...user,
             email: decoded.email,
