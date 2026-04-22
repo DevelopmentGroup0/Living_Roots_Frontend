@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from 'next-auth'
+import { jwtDecode } from 'jwt-decode'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { JWT } from 'next-auth/jwt'
 
@@ -32,19 +33,24 @@ export const authOptions = {
             method: 'POST',
             body: JSON.stringify(payload),
             headers: { 'Content-Type': 'application/json' },
-          }
+          },
         )
 
-          console.log('Status del Backend en Render:', res.status)
+        console.log('Status del Backend en Render:', res.status)
 
-          const user = await res.json()
+        const user = await res.json()
 
-          console.log('Respuesta del Backend como:', user)
+        console.log('Respuesta del Backend como:', user)
 
-          // Si Render dice que todo ok, devolvemos el objeto user a NextAuth
-          if (res.ok && user) {
-            return user
+        // Si Render dice que todo ok, devolvemos el objeto user a NextAuth
+        if (res.ok && user) {
+          const decoded = jwtDecode(user.access_token)
+          return {
+            ...user,
+            email: decoded.email,
+            role: decoded.role,
           }
+        }
 
         return null
       },
@@ -57,12 +63,18 @@ export const authOptions = {
         // Asumiendo que tu backend devuelve el token en la propiedad 'token' o 'accessToken'
         // Aquí 'user' es el JSON de Render.
         // Accedemos a la propiedad con el nombre real del backend.
-        token.accessToken = (user as any).access_token
+        token.accessToken = user.access_token
+        token.role = user.role
+        token.email = user.email
       }
       return token
     },
     async session({ session, token }: { session: any; token: JWT }) {
       // Inyectar el token directamente en la raíz de la sesión
+      if (token && session.user) {
+        session.user.role = token.role
+        session.user.email = token.email
+      }
       return {
         ...session,
         accessToken: token.accessToken,

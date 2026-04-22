@@ -11,6 +11,9 @@ export const herbSchema = z.object({
   img: z
     .string()
     .url("Debe ser una URL válida"),
+  symptoms: z
+    .string()
+    .min(5, "Los síntomas deben tener al menos 5 caracteres"),
   // CORRECCIÓN AQUÍ: Cambiamos required_error por invalid_type_error
 });
 

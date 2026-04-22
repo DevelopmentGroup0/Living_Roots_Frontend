@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className='bg-background'>
       <div className='mx-auto max-w-4xl px-4 py-12'>
-        <header className='mb-10 text-center'>
+        {/* <header className='mb-10 text-center'>
           <div className='mb-4 flex items-center justify-center gap-3'>
             <div className='flex h-14 w-14 items-center justify-center rounded-full bg-primary/15'>
               <Leaf className='h-8 w-8 text-primary' />
@@ -19,11 +19,11 @@ export default function Home() {
             Registra y organiza tu colección de plantas medicinales para
             medicina natural y remedios caseros
           </p>
-        </header>
+        </header> */}
 
-        <div className='flex justify-center'>
+        {/* <div className='flex justify-center'>
+        </div> */}
           <HerbForm />
-        </div>
       </div>
     </main>
   )
