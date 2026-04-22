@@ -38,7 +38,7 @@ export function HerbForm() {
       name: '',
       description: '',
       img: '',
-      symptoms: '',
+      usageMethod: '',
     },
   })
 
@@ -116,18 +116,18 @@ export function HerbForm() {
 
           {/* Descripción */}
           <div className='space-y-2'>
-            <Label htmlFor='sintomas'>
+            <Label htmlFor='usageMethod'>
               Liste los síntomas separados con comas
             </Label>
             <Textarea
-              id='symptoms'
-              placeholder='symptoms...'
-              {...register('symptoms')}
-              className={`min-h-24 ${errors.symptoms ? 'border-destructive' : ''}`}
+              id='usageMethod'
+              placeholder='Síntomas...'
+              {...register('usageMethod')}
+              className={`min-h-24 ${errors.usageMethod ? 'border-destructive' : ''}`}
             />
-            {errors.symptoms && (
+            {errors.usageMethod && (
               <p className='text-sm text-destructive'>
-                {errors.symptoms.message}
+                {errors.usageMethod.message}
               </p>
             )}
           </div>

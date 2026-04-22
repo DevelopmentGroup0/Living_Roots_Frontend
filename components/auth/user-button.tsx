@@ -2,13 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import {
-  User,
-  LogIn,
-  LogOut,
-  UserCircle,
-  ChevronDown,
-} from 'lucide-react'
+import { User, LogIn, LogOut, UserCircle, ChevronDown } from 'lucide-react'
 
 export function UserAvatarButton() {
   const { data: session, status } = useSession()
@@ -68,7 +62,7 @@ export function UserAvatarButton() {
             <>
               <div className='border-border mb-1.5 border-b px-3 py-2.5'>
                 <p className='text-foreground truncate text-sm font-semibold'>
-                  {session.user?.name}
+                  {session.user?.email}
                 </p>
                 <p className='text-muted-foreground truncate text-xs italic'>
                   {session.user?.email}

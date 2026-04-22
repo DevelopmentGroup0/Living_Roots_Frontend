@@ -1,10 +1,6 @@
 export async function fetchHerbs() {
-  const url = process.env.NEXT_PUBLIC_BACKEND_URL
-  const res = await fetch(url + '/herbs', {
-    next: {
-      revalidate: 60, // Revalida cada 60 segundos
-    },
-  })
+
+  const res = await fetch("http://localhost:4000/herbs")
 
   if (!res.ok) {
     throw new Error(`HTTP error: ${res.status}`)
