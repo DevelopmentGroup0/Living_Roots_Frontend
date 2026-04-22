@@ -5,7 +5,6 @@ import Link from 'next/link'
 import {
   User,
   LogIn,
-  Settings,
   LogOut,
   UserCircle,
   ChevronDown,
@@ -17,7 +16,7 @@ export function UserAvatarButton() {
 
   // Funciones de acción
   const handleLogout = () => {
-    signOut({ callbackUrl: '/' })
+    signOut({ callbackUrl: '/auth/login' })
   }
 
   return (
@@ -56,7 +55,7 @@ export function UserAvatarButton() {
                   : 'Mi Cuenta'}
             </span>
             <span className='text-muted-foreground text-[11px] tracking-wider uppercase'>
-              {session ? 'Nombre de usuario' : ''}
+              {session ? `${session.user.name}` : ''}
             </span>
           </div>
           <ChevronDown className='text-muted-foreground group-hover:text-foreground h-4 w-4 transition-transform duration-200 group-hover:rotate-180' />
@@ -84,13 +83,13 @@ export function UserAvatarButton() {
                 <span>Mi Perfil</span>
               </Link>
 
-              <Link
+              {/* <Link
                 href='#/config'
                 className='hover:bg-accent flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors'
               >
                 <Settings className='text-muted-foreground h-4 w-4' />
                 <span>Configuración</span>
-              </Link>
+              </Link> */}
 
               <button
                 onClick={handleLogout}

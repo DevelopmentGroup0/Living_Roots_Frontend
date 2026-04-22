@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api-client'
 import { LoginCredentials, AuthResponse, RegisterData } from '@/interfaces/auth'
 import { signIn } from 'next-auth/react'
+import { Plant } from '@/components/herbs/interfaces'
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
@@ -15,8 +16,8 @@ export const authService = {
     return apiClient.post<AuthResponse>('/auth/register', data)
   },
 
-  orders: async (data: RegisterData): Promise<AuthResponse> => {
-    return apiClient.post<AuthResponse>('/orders', data)
+  herbs: async (data: Plant): Promise<AuthResponse> => {
+    return apiClient.post<AuthResponse>('/herbs', data)
   },
 
   // Ejemplo de obtención de perfil (usando GET)
