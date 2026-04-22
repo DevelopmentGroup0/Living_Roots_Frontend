@@ -1,9 +1,7 @@
 import { Main } from '@/components/Main'
-import { fetchHerbs } from '@/lib/db'
+import { HerbService } from '@/services/herbs-service'
 
-const allHerbs = await fetchHerbs()
-console.log(allHerbs);
-
-export default function Home() {
+export default async function Home() {
+  const allHerbs = await HerbService.getAll()
   return <Main herbs={allHerbs} />
 }
