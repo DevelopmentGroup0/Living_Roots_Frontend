@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { HerbCard } from './herbs/HerbCard'
-import { Plant } from './herbs/interfaces'
-import { Chat } from './chat/Chat'
+import { HerbCard } from '@/components/herbs/HerbCard'
+import { Plant } from '@/components/herbs/interfaces'
+import { Chat } from '@/components/chat/Chat'
 export function Main({ herbs }: { herbs: Plant[] }) {
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   return (
