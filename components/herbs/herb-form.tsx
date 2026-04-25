@@ -5,8 +5,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Leaf, Loader2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { apiClient } from '@/lib/api-client' // Ajusta la ruta
-// Importaciones de UI (Shadcn)
 import {
   Card,
   CardContent,
@@ -21,6 +19,7 @@ import { Label } from '@/components/ui/label'
 
 // Importamos el esquema y el tipo
 import { herbSchema, HerbValues } from './validation-sh'
+import { HerbService } from '@/services/herbs-service'
 
 export function HerbForm() {
   const [submitStatus, setSubmitStatus] = useState<
@@ -54,7 +53,7 @@ export function HerbForm() {
         console.log('Debes iniciar sesión para realizar el pedido')
         return
       }
-      await apiClient.post('/herbs/', data, session?.accessToken)
+      await HerbService.post(data, session?.accessToken)
 
       setSubmitStatus('success')
       reset()
