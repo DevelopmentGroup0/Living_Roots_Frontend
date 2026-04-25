@@ -16,7 +16,7 @@ export const authService = {
   },
 
   // Ejemplo de obtención de perfil (usando GET)
-  //   getProfile: async (): Promise<any> => {
-  //     return apiClient.get("/auth/profile");
-  //   }
+  // getProfile: async (): Promise<any> => {
+  //   return apiClient.get('/auth/profile')
+  // },
 }
