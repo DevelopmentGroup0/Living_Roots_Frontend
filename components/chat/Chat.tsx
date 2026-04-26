@@ -1,246 +1,232 @@
-'use client'
-
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { MessageCircle, X, Plus } from 'lucide-react'
-import { MessageSquare } from 'lucide-react'
-import { useChat, type UIMessage } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { MessageCircle, X, Plus, Wrench, ChevronDown, Mic } from 'lucide-react'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { Avatar, AvatarFallback } from '../../components/ui/avatar'
+import { Card } from '../../components/ui/card'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Conversation,
-  ConversationContent,
-  ConversationDownload,
-  ConversationEmptyState,
-  ConversationScrollButton,
-} from '@/components/ai-elements/conversation'
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from '@/components/ai-elements/message'
-import {
-  PromptInput,
-  type PromptInputMessage,
-  PromptInputTextarea,
-  PromptInputSubmit,
-} from '@/components/ai-elements/prompt-input'
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}
 
 interface ChatProps {
   isExpanded: boolean
   onExpandedChange: (expanded: boolean) => void
 }
 
-// ---------------------------------------------------------------------------
-// Animation variants
-// ---------------------------------------------------------------------------
-
-const MINI_VARIANT = {
-  width: '750px',
-  height: '70px',
-  bottom: '2rem',
-  right: '50%',
-  x: '50%',
-  borderRadius: '40px',
-} as const
-
-const SIDEBAR_VARIANT = {
-  width: '800px',
-  height: '100vh',
-  bottom: '0',
-  right: '0',
-  x: '0',
-  borderRadius: '0',
-} as const
-
-const TRANSITION = { duration: 0.3, ease: 'easeInOut' } as const
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
-  const miniInputRef = useRef<HTMLInputElement>(null)
-
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: 'http://localhost:4000/chat/generate',
-    }),
-  })
+  const handleInputFocus = () => {
+    onExpandedChange(true)
+  }
 
-  const isStreaming = status === 'streaming'
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isExpanded) {
+      onExpandedChange(true)
+    }
+  }
 
-  // -- Handlers --------------------------------------------------------------
+  const handleClose = () => {
+    onExpandedChange(false)
+  }
 
-  const handleOpen = () => onExpandedChange(true)
-  const handleClose = () => onExpandedChange(false)
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return
 
-  /** Shared submit logic used by both the mini-input and the PromptInput */
-  const handleSend = () => {
-    const text = input.trim()
-    if (!text || isStreaming) return
-    sendMessage({ text })
+    const userMessage: Message = { role: 'user', content: input }
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
-    if (!isExpanded) onExpandedChange(true)
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('http://localhost:4000/chat/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+      })
+
+      if (response.status === 429) {
+        throw new Error('Demasiadas solicitudes. Por favor, espera un minuto.')
+      }
+
+      if (!response.body) throw new Error('No se pudo establecer el stream.')
+
+      // Inicializamos el mensaje del asistente vacío
+      setMessages((prev) => [...prev, { role: 'assistant', content: '' }])
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let done = false
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read()
+        done = doneReading
+
+        const chunkValue = decoder.decode(value)
+
+        // El backend envía "data: {...}\n\n", debemos limpiar eso
+        const lines = chunkValue.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.replace('data: ', ''))
+              const content = data.content
+
+              // Actualizamos el último mensaje (el del asistente) con el nuevo fragmento
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1]
+                const otherMessages = prev.slice(0, -1)
+                return [
+                  ...otherMessages,
+                  { ...lastMessage, content: lastMessage.content + content },
+                ]
+              })
+            } catch (e) {
+              // Fragmento incompleto o JSON inválido (ignorar)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Error desconocido')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleMiniKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleSend()
+  // Variante Cerrado/Mini: Widget flotante pequeño en bottom center
+  const miniVariant = {
+    width: '750px',
+    height: '70px',
+    bottom: '2rem',
+    right: '50%',
+    x: '50%',
+    borderRadius: '40px',
   }
 
-  const handlePromptSubmit = (message: PromptInputMessage) => {
-    const text = message.text.trim()
-    if (!text || isStreaming) return
-    sendMessage({ text })
-    setInput('')
+  // Variante Abierto/Lateral: Panel lateral derecho de altura completa
+  const sidebarVariant = {
+    width: '800px',
+    height: '100vh',
+    bottom: '0',
+    right: '0',
+    x: '0',
+    borderRadius: '0',
   }
-
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
 
   return (
     <motion.div
       initial={false}
-      animate={isExpanded ? SIDEBAR_VARIANT : MINI_VARIANT}
-      transition={TRANSITION}
-      className="fixed bg-white shadow-2xl z-50 flex flex-col overflow-hidden"
-      style={{ border: '1px solid #e5e7eb' }}
+      animate={isExpanded ? sidebarVariant : miniVariant}
+      transition={{
+        duration: 0.3,
+        ease: 'easeInOut',
+      }}
+      className='fixed bg-white shadow-2xl z-50 flex flex-col overflow-hidden'
+      style={{
+        border: isExpanded ? '1px solid #e5e7eb' : '1px solid #d1d5db',
+      }}
     >
-      {/* ------------------------------------------------------------------ */}
-      {/* Header — visible only when expanded                                  */}
-      {/* ------------------------------------------------------------------ */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.header
-            key="header"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="h-14 bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0"
-          >
-            <div className="flex items-center gap-3">
-              <MessageCircle className="w-5 h-5 text-green-600" />
-              <span className="font-semibold text-gray-900">
-                Asistente de Plantas
-              </span>
-            </div>
-            <Button variant="ghost" size="icon" onClick={handleClose}>
-              <X className="w-5 h-5" />
-            </Button>
-          </motion.header>
-        )}
-      </AnimatePresence>
+      {/* Header - Solo visible en variante Abierto/Lateral */}
+      {isExpanded && (
+        <div className='h-14 bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0'>
+          <div className='flex items-center gap-3'>
+            <MessageCircle className='w-5 h-5 text-green-600' />
+            <span className='font-semibold text-gray-900'>
+              Asistente de Plantas
+            </span>
+          </div>
+          <Button variant='ghost' size='icon' onClick={handleClose}>
+            <X className='w-5 h-5' />
+          </Button>
+        </div>
+      )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Messages area — visible only when expanded                           */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Messages Area - Solo visible en variante Abierto/Lateral */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            key="messages"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col"
+            className='flex-1 overflow-y-auto p-4 bg-gray-50'
           >
-            <Conversation>
-              <ConversationContent>
-                {messages.length === 0 ? (
-                  <ConversationEmptyState
-                    icon={<MessageSquare className="size-12" />}
-                    title="Inicia una conversación"
-                    description="Escribe tu consulta sobre medicina natural o plantas"
-                  />
-                ) : (
-                  messages.map((message: UIMessage) => (
-                    <Message from={message.role} key={message.id}>
-                      <MessageContent>
-                        {message.parts.map((part, i) => {
-                          if (part.type !== 'text') return null
-                          return (
-                            <MessageResponse key={`${message.id}-${i}`}>
-                              {part.text}
-                            </MessageResponse>
-                          )
-                        })}
-                      </MessageContent>
-                    </Message>
-                  ))
-                )}
-              </ConversationContent>
-
-              <ConversationDownload messages={messages} />
-              <ConversationScrollButton />
-            </Conversation>
-
-            {/* PromptInput — full-featured textarea with submit button */}
-            <PromptInput
-              onSubmit={handlePromptSubmit}
-              className="mt-4 w-full max-w-2xl mx-auto relative"
-            >
-              <PromptInputTextarea
-                value={input}
-                placeholder="Escribe tu consulta..."
-                onChange={(e) => setInput(e.currentTarget.value)}
-                className="pr-12"
-              />
-              <PromptInputSubmit
-                status={isStreaming ? 'streaming' : 'ready'}
-                disabled={!input.trim()}
-                className="absolute bottom-1 right-1"
-              />
-            </PromptInput>
+            <div className='space-y-4'>
+              <div className='flex gap-3'>
+                <Avatar className='w-8 h-8 shrink-0'>
+                  <AvatarFallback className='bg-green-600 text-white'>
+                    <MessageCircle className='w-4 h-4' />
+                  </AvatarFallback>
+                </Avatar>
+                <Card className='bg-white rounded-lg rounded-tl-none p-3 shadow-sm max-w-[80%] border-0'>
+                  <p className='text-sm text-gray-800'>
+                    ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte con
+                    tus plantas hoy?
+                  </p>
+                </Card>
+              </div>
+              {messages.map((m, i) => (
+                <Card
+                  key={i}
+                  className={`p-2 rounded ${m.role === 'user' ? 'bg-blue-100 text-right' : 'bg-gray-100'}`}
+                >
+                  <p className='text-sm font-bold'>
+                    {m.role === 'user' ? 'Tú' : 'IA'}
+                  </p>
+                  <p>{m.content}</p>
+                </Card>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Mini input bar — visible only when collapsed                         */}
-      {/* ------------------------------------------------------------------ */}
-      <AnimatePresence>
-        {!isExpanded && (
-          <motion.div
-            key="mini-bar"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="px-5 py-3 flex items-center gap-2 bg-white"
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full shrink-0"
-              onClick={handleOpen}
-              aria-label="Abrir asistente"
-            >
-              <Plus className="w-5 h-5" />
-            </Button>
+      {/* Input Area */}
+      <div
+        className={`bg-white shrink-0 ${isExpanded ? 'p-4 border-t border-gray-200' : 'px-5 py-3'}`}
+      >
+        <div className='flex items-center gap-2'>
+          <Button variant='ghost' size='icon' className='rounded-full shrink-0'>
+            <Plus className='w-5 h-5' />
+          </Button>
 
+          <div className='flex-1 relative'>
             <Input
-              ref={miniInputRef}
-              type="text"
+              type='text'
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onFocus={handleOpen}
-              onKeyDown={handleMiniKeyDown}
-              placeholder="Escribe tu consulta sobre medicina natural..."
-              className="bg-gray-50 border-0 rounded-full focus-visible:ring-green-500"
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+              onFocus={handleInputFocus}
+              onClick={handleInputFocus}
+              onKeyPress={handleKeyPress}
+              placeholder='Escribe tu consulta sobre medicina natural...'
+              disabled={isLoading}
+              className='bg-gray-50 border-0 rounded-full focus-visible:ring-green-500'
             />
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+
+          {!isExpanded && (
+            <>
+              <Button
+                onClick={sendMessage}
+                disabled={isLoading}
+                variant='ghost'
+                size='icon'
+                className='rounded-full shrink-0 disabled:bg-gray-400'
+              >
+                <Mic className='w-5 h-5' />
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
     </motion.div>
   )
 }
