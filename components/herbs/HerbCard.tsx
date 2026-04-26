@@ -23,8 +23,8 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
-    <Card className='overflow-hidden hover:shadow-lg transition-shadow'>
-      <div className='relative h-48 bg-gray-100'>
+    <Card className='overflow-hidden hover:shadow-lg transition-shadow py-0'>
+      <div className='relative h-98 bg-gray-100'>
         <img
           src={plant.img}
           alt={plant.name}
@@ -34,7 +34,7 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
           variant='ghost'
           size='icon'
           onClick={() => setIsFavorite(!isFavorite)}
-          className='absolute top-3 right-3 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md'
+          className='absolute py-0 top-3 right-3 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md'
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
@@ -44,14 +44,14 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
         </Button>
       </div>
 
-      <CardHeader className='pb-3'>
+      <CardHeader>
         <CardTitle className='text-lg'>{plant.name}</CardTitle>
         <CardDescription className='line-clamp-2'>
           {plant.description}
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className='pb-3'>
         <div className='flex flex-wrap gap-2'>
           {plant.usageMethod.split(',').map((tag, index) => (
             <Badge key={index} variant='default'>
