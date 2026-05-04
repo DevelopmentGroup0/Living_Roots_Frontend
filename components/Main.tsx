@@ -19,7 +19,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           }`}
         >
           {herbs.map((h) => (
-            <HerbCard key={h.herb_Id} plant={h} />
+            <HerbCard key={h.name} plant={h} />
           ))}
         </div>
       </main>

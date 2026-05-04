@@ -1,7 +1,15 @@
 export interface Plant {
-  herb_Id: string
+  herb_id: string
   name: string
   description: string
   img: string
-  usageMethod: string
+  symptoms: Symptom[]
+}
+
+export interface Symptom {
+  symptom: {
+    name: string
+  }
+  prepare: string
+  apply: string
 }

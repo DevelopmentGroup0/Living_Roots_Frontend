@@ -10,16 +10,9 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Plant } from './interfaces'
 
-interface PlantCardProps {
-  herb_Id: string
-  name: string
-  description: string
-  img: string
-  usageMethod: string
-}
-
-export function HerbCard({ plant }: { plant: PlantCardProps }) {
+export function HerbCard({ plant }: { plant: Plant }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
@@ -53,9 +46,9 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
 
       <CardContent className='pb-3'>
         <div className='flex flex-wrap gap-2'>
-          {plant.usageMethod.split(',').map((tag, index) => (
+          {plant.symptoms.map((symptom, index) => (
             <Badge key={index} variant='default'>
-              {tag}
+              {symptom.symptom.name}
             </Badge>
           ))}
         </div>
