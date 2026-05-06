@@ -1,8 +1,7 @@
-// hooks/useSymptomSearch.ts
 import { useEffect, useState } from 'react'
 import { useDebounce } from './useDebounce'
 import { symptomService } from '@/services/symptom-service'
-import { Symptom } from '@/components/herbs/interfaces'
+import { Symptom } from '@/components/syptoms/interfaces'
 
 interface UseSymptomSearchReturn {
   results: Symptom[]

@@ -18,6 +18,9 @@ export const HerbService = {
 // Obtiene el token de NextAuth una sola vez y lo reutiliza en la llamada
 async function getToken(): Promise<string | undefined> {
   const session = await getSession()
+  if (!session?.accessToken) {
+    throw new Error('Sesión no encontrada. Por favor inicia sesión nuevamente.')
+  }
   return session?.accessToken as string | undefined
 }
 

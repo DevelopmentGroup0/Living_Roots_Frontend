@@ -23,7 +23,7 @@ import type {
 } from '@/schemas/herbs.schema'
 
 import { PlusCircle } from 'lucide-react'
-import { AddSymptomDialog } from './dialogs/AddSymptomDialog'
+import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
 import { CreateHerbDialog } from './CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
 
@@ -212,7 +212,6 @@ export function PlantTable({
           </TableBody>
         </Table>
       </div>
-
       <AddSymptomDialog
         plant={selectedPlant}
         open={addSymptomOpen}

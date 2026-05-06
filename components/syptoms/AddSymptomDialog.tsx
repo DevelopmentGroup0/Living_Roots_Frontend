@@ -21,13 +21,21 @@ import {
   addSymptomSchema,
   type AddSymptomFormValues,
 } from '@/schemas/symptom.schema'
-import { Plant, Symptom } from '../interfaces'
+import { Plant } from '../herbs/interfaces'
+import { Symptom } from './interfaces'
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupTextarea,
+} from '../ui/input-group'
 
 interface AddSymptomDialogProps {
   plant: Plant | null
@@ -90,7 +98,7 @@ export function AddSymptomDialog({
   const handleSelectSymptom = (symptom: Symptom) => {
     setSelectedExisting(symptom)
     setDropdownOpen(false)
-    form.setValue('name', symptom.symptom.name, { shouldValidate: true })
+    form.setValue('name', symptom.name, { shouldValidate: true })
     form.setValue('description', symptom.description ?? '')
   }
 
@@ -102,6 +110,8 @@ export function AddSymptomDialog({
 
   const handleSubmit = async (values: AddSymptomFormValues) => {
     if (!plant) return
+    console.log('🪁 Data que sale de Symptom dialog', values);
+    
     await onSubmit(plant.herb_id, values)
     form.reset(defaultValues)
     setSelectedExisting(null)
@@ -110,7 +120,7 @@ export function AddSymptomDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-xl'>
+      <DialogContent className='min-w-2xl'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2 text-green-800'>
             <FlaskConical className='w-5 h-5' />
@@ -175,13 +185,8 @@ export function AddSymptomDialog({
                                 onClick={() => handleSelectSymptom(symptom)}
                               >
                                 <p className='text-sm font-medium text-gray-900'>
-                                  {symptom.symptom.name}
+                                  {symptom.name}
                                 </p>
-                                {symptom.description && (
-                                  <p className='text-xs text-gray-500 mt-0.5 truncate'>
-                                    {symptom.description}
-                                  </p>
-                                )}
                               </button>
                             ))}
                           </>
@@ -198,97 +203,88 @@ export function AddSymptomDialog({
                       </div>
                     )}
                   </div>
+                  <FieldDescription className='text-xs'>
+                    {selectedExisting
+                      ? '✓ Síntoma existente seleccionado'
+                      : 'Escribe para buscar síntomas registrados'}
+                  </FieldDescription>
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name='parts_plant'
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>
+                    Parte de la planta <span className='text-red-500'>*</span>
+                  </FieldLabel>
+                  <Input placeholder='Ej: Raíz, Hojas, Tallo' {...field} />
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name='prepare'
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor='form-symptom-prepare'>
+                    Describe un paso a paso preparación{' '}
+                    <span className='text-red-500'>*</span>
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupTextarea
+                      {...field}
+                      id='form-create-plant-prepare'
+                      placeholder='Cortar en pedazos pequeños y poner a hervir'
+                      rows={6}
+                      className='min-h-24 resize-none'
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon align='block-end'>
+                      <InputGroupText className='tabular-nums'>
+                        {field.value.length}/100 characters
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name='apply'
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor='form-symptom-apply'>
+                    Modo de aplicación <span className='text-red-500'>*</span>
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupTextarea
+                      {...field}
+                      id='form-create-plant-apply'
+                      placeholder='Ej: Tomar en ayunas, 3 veces al día...'
+                      rows={6}
+                      className='min-h-24 resize-none'
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon align='block-end'>
+                      <InputGroupText className='tabular-nums'>
+                        {field.value?.length}/300 characters
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
           </FieldGroup>
-          {/* <FormField
-            control={form.control}
-            name='name'
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <div className='relative' ref={dropdownRef}></div>
-                <FormDescription className='text-xs'>
-                  {selectedExisting
-                    ? '✓ Síntoma existente seleccionado'
-                    : 'Escribe para buscar síntomas registrados'}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='description'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descripción del síntoma</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='Ej: Sensación de malestar estomacal'
-                    {...field}
-                    disabled={!!selectedExisting} // bloqueado si es síntoma existente
-                  />
-                </FormControl>
-                <FormDescription className='text-xs'>Opcional</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className='grid grid-cols-2 gap-4'>
-            <FormField
-              control={form.control}
-              name='parts_plant'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Parte de la planta <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ej: Raíz, Hojas, Tallo' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='prepare'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Preparación <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ej: Té de jengibre' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name='apply'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Modo de aplicación</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder='Ej: Tomar en ayunas, 3 veces al día...'
-                    rows={2}
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription className='text-xs'>Opcional</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
 
           <DialogFooter>
             <Button
