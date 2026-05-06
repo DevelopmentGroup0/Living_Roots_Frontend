@@ -1,12 +1,18 @@
+'use client'
 import { Plus, Search } from 'lucide-react'
-import { Plant } from '@/components/herbs/interfaces'
-import { HerbService } from '@/services/herbs-service'
+import { useHerbs } from '@/hooks/queries/useHerbs'
+import { useHerbMutations } from '@/hooks/mutations/useHerbMutations'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlantTable } from './PlantTable'
 
-export async function PlantManagement() {
-  const allHerbs = (await HerbService.getAll()) as Plant[]
+export function PlantManagement() {
+  const { data: herbs = [], isLoading, isError } = useHerbs()
+  const { create, update, remove, addSymptom } = useHerbMutations()
+
+  if (isLoading) return <p>Cargando plantas...</p>
+  if (isError) return <p>Error al cargar las plantas.</p>
+
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
@@ -30,7 +36,19 @@ export async function PlantManagement() {
         </div>
       </div>
 
-      <PlantTable herbs={allHerbs} />
+      <PlantTable
+        herbs={herbs}
+        onCreate={(data) => create.mutateAsync(data)}
+        onEdit={(id, data) => update.mutateAsync({ id, data })}
+        onDelete={(id) => remove.mutateAsync(id)}
+        onAddSymptom={(herbId, data) =>
+          addSymptom.mutateAsync({ herbId, data })
+        }
+        isCreating={create.isPending}
+        isEditing={update.isPending}
+        isDeleting={remove.isPending}
+        isAddingSymptom={addSymptom.isPending}
+      />
     </div>
   )
 }
