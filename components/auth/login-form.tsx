@@ -1,179 +1,126 @@
 'use client'
 
-import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+// ¡Importante! Asegúrate de que Mail y Lock estén en tu importación
+import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { AuthLayout } from './auth-layout'
-import { AuthField, AuthFieldConfig } from './auth-field'
 import { useForm } from 'react-hook-form'
-import { loginSchema, LoginValues } from './validation-sh'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signIn, signOut } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-
-const loginFields: AuthFieldConfig[] = [
-  {
-    id: 'email',
-    label: 'Correo electrónico',
-    type: 'email',
-    placeholder: 'director@cinestudio.com',
-    icon: <Mail className='h-4 w-4' />,
-    autoComplete: 'email',
-  },
-  {
-    id: 'password',
-    label: 'Contraseña',
-    type: 'password',
-    placeholder: 'Tu contraseña secreta',
-    icon: <Lock className='h-4 w-4' />,
-    autoComplete: 'current-password',
-  },
-]
-
-function PasswordToggle({
-  visible,
-  onToggle,
-}: {
-  visible: boolean
-  onToggle: () => void
-}) {
-  return (
-    <button
-      type='button'
-      onClick={onToggle}
-      className='text-muted-foreground hover:text-foreground transition-colors'
-      aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-    >
-      {visible ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-    </button>
-  )
-}
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { loginSchema, LoginValues } from './validation-sh'
 
 export function LoginForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const searchParams = useSearchParams()
-  const error = searchParams.get('error')
-
-  useEffect(() => {
-    // Si llegamos aquí por un error de sesión,
-    // forzamos un logout local para limpiar cookies viejas
-    if (error === 'SessionExpired') {
-      signOut({ redirect: false })
-    }
-  }, [error])
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginValues>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onChange',
   })
 
-  const getFieldWithPasswordToggle = (
-    field: AuthFieldConfig,
-  ): AuthFieldConfig => {
-    if (field.id === 'password') {
-      return { ...field, type: showPassword ? 'text' : 'password' }
-    }
-    return field
-  }
-
-  const onSubmit = async (data: LoginValues, e?: React.BaseSyntheticEvent) => {
-    if (e) e.preventDefault()
-
+  const onSubmit = async (data: LoginValues) => {
     setIsLoading(true)
-
-    console.log('1. Intentando signIn con:', data.email)
-
     try {
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
       })
-
-      console.log('2. Resultado de NextAuth:', result) // 👈 Debería verse aquí
-
-      if (result?.error) {
-        console.log('3. Error detectado:', result.error)
-        // toast.error("Credenciales incorrectas");
-      } else {
-        console.log('¡Éxito! Redirigiendo...')
-        router.push('/') // O la ruta de tu home
+      if (!result?.error) {
+        router.push('/')
         router.refresh()
       }
-    } catch (error) {
-      console.error('4. Error crítico en la llamada:', error)
     } finally {
       setIsLoading(false)
     }
   }
-  return (
-    <AuthLayout
-      title='Bienvenido'
-      subtitle='Inicia sesión para acceder a tu colección de películas y series'
-      footerText='¿Nuevo en el estudio?'
-      footerLinkText='Crea tu cuenta'
-      footerLinkHref='/auth/register'
-    >
-      <form className='flex flex-col gap-5' onSubmit={handleSubmit(onSubmit)}>
-        <AuthField
-          field={loginFields[0]}
-          {...register('email')}
-          error={errors.email?.message}
-        />
 
-        <div className='relative'>
-          <AuthField
-            field={getFieldWithPasswordToggle(loginFields[1])}
-            {...register('password')}
-            error={errors.password?.message}
-          />
-          <PasswordToggle
-            visible={showPassword}
-            onToggle={() => setShowPassword(!showPassword)}
-          />
+  return (
+    <div className="relative overflow-hidden bg-card-crema rounded-[32px] px-8 py-9 w-full max-w-[420px] shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]">
+      
+      {/* Textos de Bienvenida dentro de la tarjeta */}
+      <div className="text-center mb-8 relative z-10">
+        <h2 className="text-[32px] font-bold font-serif mb-2 text-[#0E3321]">
+          Bienvenido
+        </h2>
+        <p className="text-[15px] italic text-[#386A4C] leading-snug px-4">
+          Inicia sesión para acceder a tu herbario y catálogo botánico
+        </p>
+      </div>
+
+      <form className='flex flex-col gap-5 relative z-10' onSubmit={handleSubmit(onSubmit)}>
+        
+        {/* Email */}
+        <div>
+          <label className="block text-[15px] font-bold mb-[8px] text-[#0E3321]">
+            Correo electrónico
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0E3321]">
+              <Mail size={18} strokeWidth={2.5} />
+            </div>
+            <input 
+              type="email"
+              placeholder="andres.buittron@example.com" 
+              {...register('email')}
+              /* Input redondeado completo con color verde oliva */
+              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-4 py-[14px] text-[15px] text-[#0E3321] outline-none placeholder:text-[#0E3321]/60 focus:border-[#0E3321] transition-all"
+            />
+          </div>
+          {errors.email && <span className="text-red-600 text-[12px] mt-1 ml-4 block">{errors.email.message}</span>}
         </div>
 
-        {/* Remember + Forgot */}
-        <div className='flex items-center justify-between'>
-          <Link
-            href='#'
-            className='text-primary hover:text-primary/80 text-sm underline-offset-4 transition-colors hover:underline'
-          >
+        {/* Password */}
+        <div>
+          <label className="block text-[15px] font-bold mb-[8px] text-[#0E3321]">
+            Contraseña
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0E3321]">
+              <Lock size={18} strokeWidth={2.5} />
+            </div>
+            <input 
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••••••" 
+              {...register('password')}
+              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-12 py-[14px] text-[15px] text-[#0E3321] outline-none focus:border-[#0E3321] transition-all tracking-widest placeholder:tracking-widest"
+            />
+            <button 
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0E3321] hover:text-black transition-colors"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {errors.password && <span className="text-red-600 text-[12px] mt-1 ml-4 block">{errors.password.message}</span>}
+        </div>
+
+        {/* ¿Olvidaste tu contraseña? */}
+        <div className="mt-1">
+          <Link href='#' className='text-[#0E3321] text-[14px] font-medium hover:underline'>
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
 
-        {/* Submit */}
-        <Button
-          type='submit'
+        {/* Botón Entrar */}
+        <button 
+          type="submit" 
           disabled={isLoading}
-          className='bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-primary/25 mt-1 h-11 w-full font-semibold transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-75'
+          className="w-full bg-[#0F3521] hover:bg-[#092215] text-white rounded-full py-[15px] text-[16px] font-bold flex justify-center items-center gap-2 mt-2 transition-all disabled:opacity-70 shadow-md"
         >
-          {isLoading ? (
+          {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
             <>
-              Verificando credenciales...
-              <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-white">
+                <path d="M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z"/>
+              </svg>
+              Entrar
             </>
-          ) : (
-            'Entrar'
           )}
-        </Button>
+        </button>
       </form>
-      <div>
-        {error === 'SessionExpired' && (
-          <p className='text-amber-500'>
-            Tu sesión anterior expiró. Identifícate de nuevo.
-          </p>
-        )}
-      </div>
-    </AuthLayout>
+    </div>
   )
 }

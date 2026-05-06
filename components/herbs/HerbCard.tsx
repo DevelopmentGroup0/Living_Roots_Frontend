@@ -16,8 +16,8 @@ export function HerbCard({ plant }: { plant: Plant }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
-    <Card className='overflow-hidden hover:shadow-lg transition-shadow py-0'>
-      <div className='relative h-98 bg-gray-100'>
+    <Card className='overflow-hidden hover:shadow-xl transition-all duration-300 py-0 bg-lr-green-light border-lr-green-dark/30 rounded-3xl'>
+      <div className='relative h-80 bg-lr-green-dark/10'>
         <img
           src={plant.img}
           alt={plant.name}
@@ -27,24 +27,24 @@ export function HerbCard({ plant }: { plant: Plant }) {
           variant='ghost'
           size='icon'
           onClick={() => setIsFavorite(!isFavorite)}
-          className='absolute py-0 top-3 right-3 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md'
+          className='absolute py-0 top-3 right-3 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background shadow-md'
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
-              isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+              isFavorite ? 'fill-lr-terracotta text-lr-terracotta' : 'text-lr-green-dark'
             }`}
           />
         </Button>
       </div>
 
       <CardHeader>
-        <CardTitle className='text-lg'>{plant.name}</CardTitle>
-        <CardDescription className='line-clamp-2'>
+        <CardTitle className='text-2xl font-serif text-lr-green-dark'>{plant.name}</CardTitle>
+        <CardDescription className='line-clamp-2 text-lr-green-dark/80 font-medium'>
           {plant.description}
         </CardDescription>
       </CardHeader>
 
-      <CardContent className='pb-3'>
+      <CardContent className='pb-6'>
         <div className='flex flex-wrap gap-2'>
           {plant.symptoms.map((symptom, index) => (
             <Badge key={index} variant='default'>
