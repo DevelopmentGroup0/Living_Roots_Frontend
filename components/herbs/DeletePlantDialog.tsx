@@ -44,11 +44,9 @@ export function DeletePlantDialog({
             ¿Estás seguro?
           </AlertDialogTitle>
           <AlertDialogDescription className='space-y-2'>
-            <p>
               Estás a punto de eliminar permanentemente:{' '}
               <strong className='text-gray-900'>{plant?.name}</strong> (ID:{' '}
               {plant?.herb_id})
-            </p>
             <p className='text-red-600 font-medium'>
               Esta acción no se puede deshacer. Se eliminarán todos los datos
               asociados, incluyendo síntomas y preparaciones.
