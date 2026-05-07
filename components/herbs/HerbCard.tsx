@@ -10,16 +10,9 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Plant } from './interfaces'
 
-interface PlantCardProps {
-  herb_Id: string
-  name: string
-  description: string
-  img: string
-  usageMethod: string
-}
-
-export function HerbCard({ plant }: { plant: PlantCardProps }) {
+export function HerbCard({ plant }: { plant: Plant }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
@@ -38,28 +31,29 @@ export function HerbCard({ plant }: { plant: PlantCardProps }) {
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
-              isFavorite ? 'fill-lr-terracotta text-lr-terracotta' : 'text-lr-green-dark'
+              isFavorite
+                ? 'fill-lr-terracotta text-lr-terracotta'
+                : 'text-lr-green-dark'
             }`}
           />
         </Button>
       </div>
 
       <CardHeader>
-        <CardTitle className='text-2xl font-serif text-lr-green-dark'>{plant.name}</CardTitle>
+        <CardTitle className='text-2xl font-serif text-lr-green-dark'>
+          {plant.name}
+        </CardTitle>
         <CardDescription className='line-clamp-2 text-lr-green-dark/80 font-medium'>
           {plant.description}
         </CardDescription>
       </CardHeader>
 
       <CardContent className='pb-6'>
+        
         <div className='flex flex-wrap gap-2'>
-          {plant.usageMethod.split(',').map((tag, index) => (
-            <Badge 
-              key={index} 
-              variant='secondary'
-              className='bg-lr-terracotta text-lr-text-light hover:bg-lr-terracotta/80 border-none px-3 py-1'
-            >
-              {tag.trim()}
+          {plant.symptoms.map((symptom, index) => (
+            <Badge key={index} variant='default'>
+              {symptom.symptom.name}
             </Badge>
           ))}
         </div>

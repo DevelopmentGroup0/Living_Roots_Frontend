@@ -1,11 +1,10 @@
-import { HerbForm } from '@/components/herbs/herb-form'
-
-export default function Home() {
+import { PlantManagement } from '@/components/herbs/PlantManagement'
+export default function Dashboard() {
+  
   return (
-    // Aquí llamamos al fondo bonito que creaste en globals.css
-    <main className='ancestral-pattern-bg min-h-screen flex items-center justify-center'>
-      <div className='w-full px-4 py-12'>
-          <HerbForm />
+    <main className='flex-1 overflow-auto p-6 transition-all duration-300'>
+      <div className='max-w-7xl mx-auto'>
+        <PlantManagement />
       </div>
     </main>
   )
