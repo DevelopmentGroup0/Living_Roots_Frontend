@@ -31,20 +31,25 @@ export function HerbCard({ plant }: { plant: Plant }) {
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
-              isFavorite ? 'fill-lr-terracotta text-lr-terracotta' : 'text-lr-green-dark'
+              isFavorite
+                ? 'fill-lr-terracotta text-lr-terracotta'
+                : 'text-lr-green-dark'
             }`}
           />
         </Button>
       </div>
 
       <CardHeader>
-        <CardTitle className='text-2xl font-serif text-lr-green-dark'>{plant.name}</CardTitle>
+        <CardTitle className='text-2xl font-serif text-lr-green-dark'>
+          {plant.name}
+        </CardTitle>
         <CardDescription className='line-clamp-2 text-lr-green-dark/80 font-medium'>
           {plant.description}
         </CardDescription>
       </CardHeader>
 
       <CardContent className='pb-6'>
+        
         <div className='flex flex-wrap gap-2'>
           {plant.symptoms.map((symptom, index) => (
             <Badge key={index} variant='default'>
