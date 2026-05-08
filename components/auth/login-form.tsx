@@ -38,7 +38,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="relative overflow-hidden bg-card-crema rounded-[32px] px-8 py-9 w-full max-w-[420px] shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]">
+    <div className="relative overflow-hidden bg-card-crema rounded-4xl px-8 py-9 w-full max-w-105 shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]">
       
       {/* Textos de Bienvenida dentro de la tarjeta */}
       <div className="text-center mb-8 relative z-10">
@@ -54,7 +54,7 @@ export function LoginForm() {
         
         {/* Email */}
         <div>
-          <label className="block text-[15px] font-bold mb-[8px] text-[#0E3321]">
+          <label className="block text-[15px] font-bold mb-2 text-[#0E3321]">
             Correo electrónico
           </label>
           <div className="relative">
@@ -66,7 +66,7 @@ export function LoginForm() {
               placeholder="andres.buittron@example.com" 
               {...register('email')}
               /* Input redondeado completo con color verde oliva */
-              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-4 py-[14px] text-[15px] text-[#0E3321] outline-none placeholder:text-[#0E3321]/60 focus:border-[#0E3321] transition-all"
+              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-4 py-3.5 text-[15px] text-[#0E3321] outline-none placeholder:text-[#0E3321]/60 focus:border-[#0E3321] transition-all"
             />
           </div>
           {errors.email && <span className="text-red-600 text-[12px] mt-1 ml-4 block">{errors.email.message}</span>}
@@ -74,7 +74,7 @@ export function LoginForm() {
 
         {/* Password */}
         <div>
-          <label className="block text-[15px] font-bold mb-[8px] text-[#0E3321]">
+          <label className="block text-[15px] font-bold mb-2 text-[#0E3321]">
             Contraseña
           </label>
           <div className="relative">
@@ -85,7 +85,7 @@ export function LoginForm() {
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••••••" 
               {...register('password')}
-              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-12 py-[14px] text-[15px] text-[#0E3321] outline-none focus:border-[#0E3321] transition-all tracking-widest placeholder:tracking-widest"
+              className="w-full bg-[#BDD0AC] border border-[#A6BC93] rounded-full pl-12 pr-12 py-3.5 text-[15px] text-[#0E3321] outline-none focus:border-[#0E3321] transition-all tracking-widest placeholder:tracking-widest"
             />
             <button 
               type="button"
@@ -109,11 +109,11 @@ export function LoginForm() {
         <button 
           type="submit" 
           disabled={isLoading}
-          className="w-full bg-[#0F3521] hover:bg-[#092215] text-white rounded-full py-[15px] text-[16px] font-bold flex justify-center items-center gap-2 mt-2 transition-all disabled:opacity-70 shadow-md"
+          className="w-full bg-[#0F3521] hover:bg-[#092215] text-white rounded-full py-3.75 text-[16px] font-bold flex justify-center items-center gap-2 mt-2 transition-all disabled:opacity-70 shadow-md"
         >
           {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
             <>
-              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-white">
+              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 fill-white">
                 <path d="M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z"/>
               </svg>
               Entrar

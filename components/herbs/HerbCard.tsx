@@ -16,7 +16,7 @@ export function HerbCard({ plant }: { plant: Plant }) {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
-    <Card className='overflow-hidden hover:shadow-xl transition-all duration-300 py-0 bg-lr-green-light border-lr-green-dark/30 rounded-3xl'>
+    <Card className='bg-card-crema overflow-hidden hover:shadow-xl transition-all duration-300 py-0 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)]'>
       <div className='relative h-80 bg-lr-green-dark/10'>
         <img
           src={plant.img}
@@ -49,7 +49,6 @@ export function HerbCard({ plant }: { plant: Plant }) {
       </CardHeader>
 
       <CardContent className='pb-6'>
-        
         <div className='flex flex-wrap gap-2'>
           {plant.symptoms.map((symptom, index) => (
             <Badge key={index} variant='default'>

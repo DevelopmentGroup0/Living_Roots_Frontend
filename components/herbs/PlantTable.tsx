@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit, Trash2, FlaskConical, Leaf } from 'lucide-react'
+import { Edit, Trash2, FlaskConical, CirclePlus } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -79,12 +79,12 @@ export function PlantTable({
 
   return (
     <>
-      <div className='bg-white rounded-xl border border-gray-200 overflow-hidden'>
+      <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
         <Button
           onClick={() => setCreateOpen(true)}
-          className='bg-green-600 hover:bg-green-700'
+          className='bg-green-600 hover:bg-green-700 gap-2 absolute right-0 -mt-10 mr-6'
         >
-          <Leaf className='h-4 w-4 mr-2' />
+          <CirclePlus className='h-4 w-4' />
           Nueva Planta
         </Button>
         <Table>
