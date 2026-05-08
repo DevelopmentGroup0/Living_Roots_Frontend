@@ -1,8 +1,7 @@
 'use client'
-import { Plus, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useHerbs } from '@/hooks/queries/useHerbs'
 import { useHerbMutations } from '@/hooks/mutations/useHerbMutations'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlantTable } from './PlantTable'
 
@@ -19,10 +18,6 @@ export function PlantManagement() {
         <h1 className='text-3xl font-semibold text-gray-900'>
           Gestión de Plantas Medicinales
         </h1>
-        <Button className='gap-2'>
-          <Plus className='w-4 h-4' />
-          Añadir Planta
-        </Button>
       </div>
 
       <div className='w-full max-w-sm'>
