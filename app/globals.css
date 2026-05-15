@@ -1,27 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   /* 🌿 LIVING ROOTS - COLORES BASE */
-  --background: #EAF2EC; /* <-- Verde pastel suave para el fondo */
-  --foreground: #1A3324; /* Verde pino oscuro para el texto general */
+  --background: #eaf2ec; /* <-- Verde pastel suave para el fondo */
+  --foreground: #1a3324; /* Verde pino oscuro para el texto general */
 
   /* 🌿 COLORES PERSONALIZADOS PARA TARJETAS */
-  --lr-green-light: #9CB39C; /* Verde salvia (Tarjeta clara) */
-  --lr-green-dark: #2C4C3B;  /* Verde bosque (Tarjeta oscura) */
-  --lr-terracotta: #A65E53;  /* Ladrillo/Terracota (Etiquetas) */
-  --lr-text-light: #F4F0E6;  /* Texto claro para contraste */
+  --lr-green-light: #9cb39c; /* Verde salvia (Tarjeta clara) */
+  --lr-green-dark: #2c4c3b; /* Verde bosque (Tarjeta oscura) */
+  --lr-terracotta: #a65e53; /* Ladrillo/Terracota (Etiquetas) */
+  --lr-text-light: #f4f0e6; /* Texto claro para contraste */
 
   /* Variables originales de Shadcn (se mantienen intactas) */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.577 0.245 27.325);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: lab(70.5521% -66.5147 45.8072);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -90,7 +90,7 @@
   /* 🌿 Inyectamos las nuevas fuentes y colores a Tailwind */
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
-  
+
   --color-lr-green-light: var(--lr-green-light);
   --color-lr-green-dark: var(--lr-green-dark);
   --color-lr-terracotta: var(--lr-terracotta);
@@ -142,7 +142,9 @@
     /* Aplicamos fuente y fondo a toda la app por defecto */
     @apply bg-background text-foreground font-sans;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     @apply font-serif; /* Títulos con la letra elegante Playfair Display */
   }
 }
@@ -153,31 +155,31 @@
 
 /* 1. Fondo de la pantalla (Puntitos sobre verde pastel) */
 .fondo-puntos {
-  background-color: var(--background); 
-  background-image: radial-gradient(#9CB39C 2px, transparent 2px);
+  background-color: var(--background);
+  background-image: radial-gradient(#9cb39c 2px, transparent 2px);
   background-size: 24px 24px;
 }
 
 /* 2. Fondo de la tarjeta (Papel con rombos y espirales) */
 .tarjeta-ancestral {
-  background-color: #EFE9DB; /* Color pergamino/papel clarito */
+  background-color: #efe9db; /* Color pergamino/papel clarito */
   background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDAgTDYwIDMwIEwzMCA2MCBMMCAzMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiM3QTk0N0EiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjMiLz48cGF0aCBkPSJNMzAgMTAgTDUwIDMwIEwzMCA1MCBMMTAgMzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0E5NDdBIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMiIvPjxwYXRoIGQ9Ik0zMCAyNSBBIDUgNSAwIDEgMSAyNSAzMCBBIDEwIDEwIDAgMSAwIDM1IDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNBNjVFNTMiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4=');
   background-size: 60px 60px;
 }
 @layer utilities {
   /* Fondo verde menta súper pálido para toda la pantalla */
   .bg-living-roots {
-    background-color: #E6EFE8; 
+    background-color: #e6efe8;
   }
-  
+
   /* Fondo crema/beige de la tarjeta con un patrón de rombos más sutil */
   .bg-card-crema {
-    background-color: #F2EFE8;
+    background-color: #f2efe8;
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%23C2A895' stroke-width='0.5' stroke-opacity='0.4'/%3E%3Cpath d='M30 15L45 30L30 45L15 30Z' fill='none' stroke='%23C2A895' stroke-width='0.5' stroke-opacity='0.2'/%3E%3C/svg%3E");
   }
 }
 .fondo-ancestral-completo {
-  background-color: #EFE9DB; 
+  background-color: #efe9db;
   /* Mismo patrón, pero con líneas más finas y transparentes */
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='%237A947A' stroke-width='1' opacity='0.15'/%3E%3Cpath d='M30 10 L50 30 L30 50 L10 30 Z' fill='none' stroke='%237A947A' stroke-width='0.5' opacity='0.1'/%3E%3Cpath d='M30 25 A 5 5 0 1 1 25 30 A 10 10 0 1 0 35 40' fill='none' stroke='%23A65E53' stroke-width='1' opacity='0.15'/%3E%3C/svg%3E");
   /* Tamaño mucho más grande para que no se vea apretado */
