@@ -26,6 +26,7 @@ import { PlusCircle } from 'lucide-react'
 import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
 import { CreateHerbDialog } from './CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
+import { ExpandableDescription } from '../ui/table-cell-dinamic-h'
 
 // PlantTable.tsx
 interface PlantTableProps {
@@ -77,6 +78,8 @@ export function PlantTable({
     )
   }
 
+  const [isExpanded, setIsExpanded] = useState(false)
+
   return (
     <>
       <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
@@ -116,8 +119,8 @@ export function PlantTable({
                 <TableCell className='font-medium text-gray-900'>
                   {plant.name}
                 </TableCell>
-                <TableCell className='text-gray-600 text-sm'>
-                  {plant.description}
+                <TableCell className='text-gray-600 text-sm align-top max-w-58'>
+                  <ExpandableDescription description={plant.description} />
                 </TableCell>
                 <TableCell>
                   <div className='flex flex-wrap gap-1.5'>
