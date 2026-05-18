@@ -61,16 +61,15 @@ export function CreateHerbDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='min-w-4xl max-h-[90vh]'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2 text-green-800'>
-              <Leaf className='w-5 h-5' />
-              Registrar Planta Medicinal
-            </DialogTitle>
-            <DialogDescription>
-              Completa los datos básicos. Los síntomas se agregan desde la
-              tabla.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle className='flex items-center gap-2 text-green-800'>
+            <Leaf className='w-5 h-5' />
+            Registrar Planta Medicinal
+          </DialogTitle>
+          <DialogDescription>
+            Completa los datos básicos. Los síntomas se agregan desde la tabla.
+          </DialogDescription>
+        </DialogHeader>
 
         <ScrollArea className='max-h-[70vh] p-4 '>
           <form
