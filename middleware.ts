@@ -36,10 +36,8 @@ export default withAuth(
   },
 )
 
-/**
- * Configuración del Matcher: Define qué rutas activarán este middleware.
- * Protegemos explícitamente el dashboard y cualquier subruta del mismo.
- */
+// Configuración del Matcher: Define qué rutas activarán este middleware.
+// Protegemos explícitamente el dashboard y cualquier subruta del mismo.
 export const config = {
   matcher: ['/dashboard/:path*', '/auth/register'],
 }
