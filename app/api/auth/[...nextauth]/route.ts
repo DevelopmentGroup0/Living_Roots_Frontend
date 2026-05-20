@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import { jwtDecode } from 'jwt-decode'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { JWT } from 'next-auth/jwt'
+import { Role } from '@/components/auth/interfaces/interfaces'
 
 // Definimos las opciones fuera del handler para que sea más limpio (SOLID)
-const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`
 
 interface sessionInterface {
   access_token: string
   email: string
-  role: string
+  role: Role
+  sub: string
 }
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -29,9 +30,7 @@ export const authOptions = {
           password: credentials?.password,
         }
 
-        console.log('Url', url)
-
-        console.log('Datos enviados desde el front:', payload)
+        console.log('Payload enviado desde el front:', payload)
         // Llamada a tu backend en RENDER
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
@@ -42,8 +41,6 @@ export const authOptions = {
           },
         )
 
-        console.log('Status del Backend en Render:', res.status)
-
         const user = await res.json()
 
         console.log('Respuesta del Backend como:', user)
@@ -53,8 +50,9 @@ export const authOptions = {
           const decoded: sessionInterface = jwtDecode(user.access_token)
           return {
             ...user,
+            sub: decoded.sub,
             email: decoded.email,
-            role: decoded.role,
+            role: decoded.role as Role,
           }
         }
 
@@ -70,6 +68,7 @@ export const authOptions = {
         // Aquí 'user' es el JSON de Render.
         // Accedemos a la propiedad con el nombre real del backend.
         token.accessToken = user.access_token
+        token.sub = user.sub
         token.role = user.role
         token.email = user.email
       }
@@ -78,6 +77,7 @@ export const authOptions = {
     async session({ session, token }: { session: any; token: JWT }) {
       // Inyectar el token directamente en la raíz de la sesión
       if (token && session.user) {
+        session.user.sub = token.sub
         session.user.role = token.role
         session.user.email = token.email
       }
