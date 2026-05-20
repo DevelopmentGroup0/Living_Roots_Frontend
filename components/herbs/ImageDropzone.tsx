@@ -1,5 +1,6 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { ImageIcon, X, UploadCloud } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -16,29 +17,72 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
   const [preview, setPreview] = useState<string | null>(value || null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Configuramos la mutación para subir la imagen al backend
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('image', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Error uploading image')
+      }
+
+      return response.json()
+    },
+
+    // Cuando la subida es exitosa, actualizamos el estado con la URL devuelta por el API
+    onSuccess: (data) => {
+      onChange(data.url.secure_url)
+    },
+
+    onError: (error) => {
+      console.error(error)
+    },
+  })
+
+  // Función para procesar el archivo seleccionado o arrastrado
+  const processFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return
+
+    // Preview local
+    const reader = new FileReader()
+
+    reader.onload = (ev) => {
+      const result = ev.target?.result as string
+      setPreview(result)
+    }
+
+    reader.readAsDataURL(file)
+
+    // Upload al backend
+    uploadMutation.mutate(file)
+  }
+
+  // Manejadores de eventos para drag & drop y cambio de URL
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
 
     const file = e.dataTransfer.files[0]
-    if (!file || !file.type.startsWith('image/')) return
 
-    // Genera preview local — el upload real lo maneja el caller/mutation
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const result = ev.target?.result as string
-      setPreview(result)
-      onChange(result) // base64 temporal; el API puede subir y devolver URL
-    }
-    reader.readAsDataURL(file)
+    if (!file) return
+
+    processFile(file)
   }
 
+  // Permitir ingresar una URL directamente
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value
     onChange(url)
     setPreview(url)
   }
 
+  // Limpiar la imagen seleccionada
   const handleClear = () => {
     setPreview(null)
     onChange('')
@@ -107,15 +151,12 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
           onChange={(e) => {
             const file = e.target.files?.[0]
             if (!file) return
-            const reader = new FileReader()
-            reader.onload = (ev) => {
-              const result = ev.target?.result as string
-              setPreview(result)
-              onChange(result)
-            }
-            reader.readAsDataURL(file)
+            processFile(file)
           }}
         />
+        {uploadMutation.isPending && (
+          <p className='text-sm text-gray-500'>Subiendo imagen...</p>
+        )}
       </div>
 
       {/* URL input como alternativa */}
@@ -123,7 +164,7 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
         <ImageIcon className='h-4 w-4 text-gray-400 shrink-0' />
         <Input
           placeholder='https://ejemplo.com/imagen.jpg'
-          defaultValue={value.startsWith('http') ? value : ''}
+          value={value.startsWith('http') ? value : ''}
           onChange={handleUrlChange}
           className={error ? 'border-red-300' : ''}
         />

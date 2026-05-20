@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useChat } from '@ai-sdk/react'
 import { motion, AnimatePresence } from 'motion/react'
 import { MessageCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -43,14 +42,23 @@ const sidebarVariant = {
   borderRadius: '0',
 }
 
+import { useChatSession } from '@/hooks/useChatSession'
+import { useSession } from 'next-auth/react'
+
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
+  const { data: session } = useSession()
+
+  console.log('estado de la session', session)
+  // const userId = session?.user?.sub
+  const { messages, sendMessage, status, error, persistAndClear, chats } =
+    useChatSession({
+      userId: 'abc',
+    })
   const [input, setInput] = useState('')
-
-  const { messages, sendMessage, status, error } = useChat()
-
   console.log('status:', status)
 
   console.log('📨 Messages:', messages)
+  console.log('🗂️ Chats de zustand:', chats)
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
@@ -77,6 +85,13 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
           >
             <X className='w-5 h-5' />
           </Button>
+          <button
+            onClick={async () => {
+              await persistAndClear()
+            }}
+          >
+            Guardar chat
+          </button>
         </div>
       )}
 
@@ -100,18 +115,28 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
                   messages.map((message) => (
                     <Message key={message.id} from={message.role}>
                       <MessageContent>
-                        {message.role === 'assistant' ? (
-                          <MessageResponse>
-                            {message.parts
-                              ?.filter((p) => p.type === 'text')
-                              .map((p) => p.text)
-                              .join('')}
-                          </MessageResponse>
-                        ) : (
-                          message.parts
-                            ?.filter((p) => p.type === 'text')
-                            .map((p) => p.text)
-                        )}
+                        {message.parts.map((part, index) => {
+                          if (part.type === 'text') {
+                            return message.role === 'assistant' ? (
+                              <MessageResponse key={index}>
+                                {part.text}
+                              </MessageResponse>
+                            ) : (
+                              <p key={index}>{part.text}</p>
+                            )
+                          }
+                          if (part.type === 'reasoning') {
+                            return (
+                              <div
+                                key={index}
+                                className='text-xs text-gray-400 italic'
+                              >
+                                {part.text}
+                              </div>
+                            )
+                          }
+                          return null
+                        })}
                       </MessageContent>
                     </Message>
                   ))
@@ -132,14 +157,15 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
         <PromptInput
           onSubmit={(message, event) => {
             event.preventDefault()
-            console.log(messages, 'Salieron mensajes')
 
-            if (message.text) {
-              sendMessage({ text: message.text })
-              setInput('')
-            }
+            if (!message.text.trim()) return
+
+            sendMessage({
+              text: message.text,
+            })
+
+            setInput('')
           }}
-          className='max-w-3xl mx-auto flex gap-2 items-end'
         >
           <PromptInputTextarea
             value={input}
