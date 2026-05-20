@@ -16,3 +16,8 @@ export const RBAC_POLICIES: Record<Role, Permission[]> = {
 export function hasPermission(role: Role, permission: Permission): boolean {
   return RBAC_POLICIES[role]?.includes(permission) ?? false
 }
+
+export const ROUTE_PERMISSIONS: Record<string, Permission> = {
+  '/dashboard': 'view:dashboard',
+  '/auth/register': 'view:register-users',
+};
