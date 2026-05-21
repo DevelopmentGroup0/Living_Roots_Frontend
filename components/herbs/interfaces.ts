@@ -3,14 +3,17 @@ export interface Plant {
   name: string
   description: string
   img: string
+  important?: string
+  cultivator?: string
   symptoms: Symptom[]
 }
 
 export interface Symptom {
-  symptom_id?: string
+  symptomId?: string
   symptom: {
     name: string
   }
+  partsplant: string
   description: string
   prepare: string
   apply: string

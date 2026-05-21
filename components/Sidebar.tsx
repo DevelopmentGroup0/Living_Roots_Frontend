@@ -18,19 +18,19 @@ const navigationItems: NavItem[] = [
   {
     href: '/dashboard',
     icon: LeafLogo,
-    permission: 'view:dashboard', // Requiere este permiso
+    permission: 'view:dashboard',
     label: 'Dashboard',
   },
   {
     href: '/auth/register',
     icon: UserRoundPlus,
-    permission: 'view:register-users', // Requiere este permiso
+    permission: 'view:register-users',
     label: 'Registrar Usuario',
   },
   {
     href: '/',
     icon: Home,
-    permission: 'view:home', // Público o para todos
+    permission: 'view:home',
     label: 'Inicio',
   },
 ]
