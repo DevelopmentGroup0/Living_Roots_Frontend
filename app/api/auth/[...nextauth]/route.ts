@@ -60,6 +60,13 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
+  // Tiempo de vida de la sesión, ajustar según lo necesario
+  session: {
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60, // 24 horas en segundos (86400)
+  },
+
   callbacks: {
     // 1. Persiste el token de Render en el JWT de NextAuth
     async jwt({ token, user }: { token: JWT; user?: any }) {

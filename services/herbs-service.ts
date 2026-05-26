@@ -9,10 +9,6 @@ export const HerbService = {
     const endpoint = query ? `/herbs?search=${query}` : '/herbs'
     return apiClient.get(endpoint)
   },
-
-  getById: async (id: string) => {
-    return apiClient.get(`/herbs/${id}`)
-  },
 }
 
 // Obtiene el token de NextAuth una sola vez y lo reutiliza en la llamada
@@ -30,8 +26,14 @@ export const herbService = {
     return apiClient.get<Plant[]>('/herbs', token)
   },
 
+  async getById(id: string): Promise<Plant> {
+    const token = await getToken()
+    return apiClient.get<Plant>(`/herbs/${id}`, token)
+  },
+
   async create(data: CreateHerbFormValues): Promise<Plant> {
     const token = await getToken()
+    console.log('Creating herb with data:', data, 'and token:', token)
     return apiClient.post<Plant>('/herbs', data, token)
   },
 

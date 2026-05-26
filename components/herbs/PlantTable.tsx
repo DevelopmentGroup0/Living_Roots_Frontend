@@ -27,6 +27,7 @@ import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
 import { CreateHerbDialog } from './CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import { ExpandableDescription } from '../ui/table-cell-dinamic-h'
+import { HerbIdCell } from './HerbIdCell'
 
 // PlantTable.tsx
 interface PlantTableProps {
@@ -78,8 +79,6 @@ export function PlantTable({
     )
   }
 
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
     <>
       <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
@@ -114,7 +113,7 @@ export function PlantTable({
             {herbs.map((plant) => (
               <TableRow key={plant.herb_id}>
                 <TableCell className='font-mono text-sm'>
-                  {plant.herb_id}
+                  <HerbIdCell id={plant.herb_id} />
                 </TableCell>
                 <TableCell className='font-medium text-gray-900'>
                   {plant.name}
@@ -123,7 +122,7 @@ export function PlantTable({
                   <ExpandableDescription description={plant.description} />
                 </TableCell>
                 <TableCell>
-                  <div className='flex flex-wrap gap-1.5'>
+                  <div className='flex flex-wrap gap-1.5 items-center'>
                     {plant.symptoms.map((symptom, index) => {
                       const isSelected =
                         selectedSymptom?.plantId === plant.herb_id &&
@@ -146,6 +145,15 @@ export function PlantTable({
                         </Badge>
                       )
                     })}
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='h-4 w-4'
+                    onClick={() => openAddSymptom(plant)}
+                    title='Agregar síntoma'
+                  >
+                    <PlusCircle className='h-4 w-4 text-green-600' />
+                  </Button>
                   </div>
                 </TableCell>
                 {selectedSymptom && (
@@ -182,15 +190,6 @@ export function PlantTable({
                   </TableCell>
                 )}
                 <TableCell className='text-right'>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-8 w-8'
-                    onClick={() => openAddSymptom(plant)}
-                    title='Agregar síntoma'
-                  >
-                    <PlusCircle className='h-4 w-4 text-green-600' />
-                  </Button>
                   <div className='flex justify-end gap-2'>
                     <Button
                       variant='ghost'
