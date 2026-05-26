@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -421,8 +422,8 @@ export const PromptInputActionAddAttachments = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    (e: Event) => {
-      e.preventDefault();
+    (e: any) => {
+      e.preventDefault?.();
       attachments.openFileDialog();
     },
     [attachments]
@@ -434,6 +435,10 @@ export const PromptInputActionAddAttachments = ({
     </DropdownMenuItem>
   );
 };
+
+type DropdownMenuItemOnSelectEvent = Parameters<
+  NonNullable<ComponentProps<typeof DropdownMenuItem>["onSelect"]>
+>[0];
 
 export type PromptInputActionAddScreenshotProps = ComponentProps<
   typeof DropdownMenuItem
@@ -449,26 +454,28 @@ export const PromptInputActionAddScreenshot = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    async (event: Event) => {
+    (event: DropdownMenuItemOnSelectEvent) => {
       onSelect?.(event);
       if (event.defaultPrevented) {
         return;
       }
 
-      try {
-        const screenshot = await captureScreenshot();
-        if (screenshot) {
-          attachments.add([screenshot]);
+      void (async () => {
+        try {
+          const screenshot = await captureScreenshot();
+          if (screenshot) {
+            attachments.add([screenshot]);
+          }
+        } catch (error) {
+          if (
+            error instanceof DOMException &&
+            (error.name === "NotAllowedError" || error.name === "AbortError")
+          ) {
+            return;
+          }
+          throw error;
         }
-      } catch (error) {
-        if (
-          error instanceof DOMException &&
-          (error.name === "NotAllowedError" || error.name === "AbortError")
-        ) {
-          return;
-        }
-        throw error;
-      }
+      })();
     },
     [onSelect, attachments]
   );
@@ -1209,6 +1216,10 @@ export type PromptInputSubmitProps = ComponentProps<typeof InputGroupButton> & {
   onStop?: () => void;
 };
 
+type PromptInputSubmitClickEvent = Parameters<
+  NonNullable<PromptInputSubmitProps["onClick"]>
+>[0];
+
 export const PromptInputSubmit = ({
   className,
   variant = "default",
@@ -1232,7 +1243,7 @@ export const PromptInputSubmit = ({
   }
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: PromptInputSubmitClickEvent) => {
       if (isGenerating && onStop) {
         e.preventDefault();
         onStop();
@@ -1311,14 +1322,17 @@ export const PromptInputSelectValue = ({
   <SelectValue className={cn(className)} {...props} />
 );
 
-export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard>;
+export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard> & {
+  openDelay?: number;
+  closeDelay?: number;
+};
 
 export const PromptInputHoverCard = ({
   openDelay = 0,
   closeDelay = 0,
   ...props
 }: PromptInputHoverCardProps) => (
-  <HoverCard closeDelay={closeDelay} openDelay={openDelay} {...props} />
+  <HoverCard {...(props as ComponentProps<typeof HoverCard>)} />
 );
 
 export type PromptInputHoverCardTriggerProps = ComponentProps<
