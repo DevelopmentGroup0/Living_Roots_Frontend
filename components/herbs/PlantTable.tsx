@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { EditPlantDialog } from './EditPlantDialog'
-import { DeletePlantDialog } from './DeletePlantDialog'
+import { EditPlantDialog } from './dialogs/EditPlantDialog'
+import { DeletePlantDialog } from './dialogs/DeletePlantDialog'
 import { usePlantDialogs } from '@/hooks/usePlantDialogs'
 import { Plant } from './interfaces'
 // import type { Plant } from '@/types/plant'
@@ -24,10 +24,10 @@ import type {
 
 import { PlusCircle } from 'lucide-react'
 import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
-import { CreateHerbDialog } from './CreateHerbDialog'
+import { CreateHerbDialog } from './dialogs/CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import { ExpandableDescription } from '../ui/table-cell-dinamic-h'
-import { HerbIdCell } from './HerbIdCell'
+import { HerbIdCell } from '../ui/HerbIdCell'
 
 // PlantTable.tsx
 interface PlantTableProps {
@@ -145,15 +145,15 @@ export function PlantTable({
                         </Badge>
                       )
                     })}
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-4 w-4'
-                    onClick={() => openAddSymptom(plant)}
-                    title='Agregar síntoma'
-                  >
-                    <PlusCircle className='h-4 w-4 text-green-600' />
-                  </Button>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='h-4 w-4 cursor-pointer'
+                      onClick={() => openAddSymptom(plant)}
+                      title='Agregar síntoma'
+                    >
+                      <PlusCircle className='h-4 w-4 text-green-600' />
+                    </Button>
                   </div>
                 </TableCell>
                 {selectedSymptom && (

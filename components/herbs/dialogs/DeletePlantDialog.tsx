@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Plant } from './interfaces'
+import { Plant } from '../interfaces'
 
 // S: Solo maneja confirmación de borrado
 interface DeletePlantDialogProps {
@@ -41,24 +41,26 @@ export function DeletePlantDialog({
         <AlertDialogHeader>
           <AlertDialogTitle className='flex items-center gap-2 text-red-600'>
             <AlertTriangle className='w-5 h-5' />
-            ¿Estás seguro?
+            <strong className='text-red-600 text-xl'>¿Estás seguro?</strong>
           </AlertDialogTitle>
-          <AlertDialogDescription className='space-y-2'>
-              Estás a punto de eliminar permanentemente:{' '}
-              <strong className='text-gray-900'>{plant?.name}</strong> (ID:{' '}
-              {plant?.herb_id})
-            <p className='text-red-600 font-medium'>
-              Esta acción no se puede deshacer. Se eliminarán todos los datos
-              asociados, incluyendo síntomas y preparaciones.
-            </p>
+          <AlertDialogDescription className='space-y-2 font-medium'>
+            Estás a punto de{' '}
+            <strong className='text-red-600'>eliminar permanentemente: </strong>
+            <strong className='text-gray-900'>{plant?.name}</strong> (ID:{' '}
+            <strong className='text-gray-900'>{plant?.herb_id}</strong>) <br />
+            <br />
+            Esta acción no se puede deshacer. Se eliminarán todos los datos
+            asociados, incluyendo preparaciones y tratamientos.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel className='cursor-pointer'>
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
-            className='bg-red-600 hover:bg-red-700'
+            className={`bg-red-600 hover:bg-red-700 cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isLoading ? 'Eliminando...' : 'Sí, Eliminar'}
           </AlertDialogAction>

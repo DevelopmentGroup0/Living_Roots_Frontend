@@ -17,13 +17,14 @@ export const ExpandableDescription = ({
       >
         {description}
       </div>
-
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className='text-blue-500 hover:underline text-xs mt-1 block'
-      >
-        {isExpanded ? 'Ver menos' : 'Ver más'}
-      </button>
+      {description.length > 60 && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className='text-blue-500 hover:underline text-xs mt-1 block'
+        >
+          {isExpanded ? 'Ver menos' : 'Ver más'}
+        </button>
+      )}
     </div>
   )
 }
