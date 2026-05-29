@@ -48,7 +48,7 @@ export function HerbIdCell({ id }: { id: string }) {
           className='h-6 w-6'
           onClick={(e) => e.stopPropagation()}
         >
-          <Link href={`/herbs/${id}`} target='_blank' rel='noopener noreferrer'>
+          <Link href={`/herb/${id}`} target='_blank' rel='noopener noreferrer'>
             <ExternalLink className='h-3 w-3' />
           </Link>
         </Button>
