@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { HerbCard } from '@/components/herbs/HerbCard'
 import { Chat } from '@/components/chat/Chat'
@@ -13,6 +13,7 @@ import {
 import { Plant } from './herbs/interfaces'
 
 export function Main({ herbs }: { herbs: Plant[] }) {
+  const router = useRouter()
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   const [activeTab, setActiveTab] = useState<
     'catalogo' | 'jigra' | 'comentarios'
@@ -112,9 +113,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
             </div>
           ) : activeTab === 'jigra' ? (
             /* MI JIGRA */
-            <div className='max-w-6xl mx-auto'>
-
-            </div>
+            <div className='max-w-6xl mx-auto'></div>
           ) : (
             /* MENSAJES */
             <div className='max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-stone-200 shadow-sm animate-in fade-in'>
@@ -179,6 +178,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           <button
             onClick={() => {
               setActiveTab('jigra')
+              router.push('/jigra')
             }}
             className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'jigra' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
           >

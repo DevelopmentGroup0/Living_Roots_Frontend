@@ -1,33 +1,22 @@
 import type { Plant } from '@/components/herbs/interfaces'
+import { apiClient } from '@/lib/api-client'
 
 export interface IFavoriteService {
-  getFavorites(): Promise<Plant[]>
-  addFavorite(plantId: string): Promise<void>
-  removeFavorite(plantId: string): Promise<void>
+  getFavorites(token: string): Promise<Plant[]>
+  addFavorite(plantId: string, token: string): Promise<void>
+  removeFavorite(plantId: string, token: string): Promise<void>
 }
 
 export const favoriteApiService: IFavoriteService = {
-  async getFavorites() {
-    const res = await fetch('/api/favorites')
-    if (!res.ok) throw new Error('Error al obtener favoritos')
-    return res.json()
+  async getFavorites(token: string): Promise<Plant[]> {
+    return apiClient.get<Plant[]>('/favorites', token)
   },
 
-  async addFavorite(plantId) {
-    const res = await fetch('/api/favorites', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plantId, action: 'ADD' }),
-    })
-    if (!res.ok) throw new Error('Error al agregar a favoritos')
+  async addFavorite(plantId: string, token: string): Promise<void> {
+    return apiClient.post('/favorites', { plantId, action: 'ADD' }, token)
   },
 
-  async removeFavorite(plantId) {
-    const res = await fetch('/api/favorites', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plantId, action: 'REMOVE' }),
-    })
-    if (!res.ok) throw new Error('Error al eliminar de favoritos')
+  async removeFavorite(plantId: string, token: string): Promise<void> {
+    return apiClient.post('/favorites', { plantId, action: 'REMOVE' }, token)
   },
 }

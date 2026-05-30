@@ -1,19 +1,27 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react' // Cambiamos a useSession (Hook de cliente)
 import { favoriteApiService } from '@/services/favorite-service'
-import { Plant } from '@/components/herbs/interfaces'
-import { useEffect } from 'react'
+import type { Plant } from '@/components/herbs/interfaces'
 
 export function useFavorites() {
+  const { data: session, status } = useSession()
+  const token = session?.accessToken as string | undefined
+
   const queryClient = useQueryClient()
   const queryKey = ['favorites']
 
   // 1. Query para leer favoritos
-  const { data: favorites = [], isLoading } = useQuery({
+  const {
+    data: favorites = [],
+    isLoading,
+    isFetching,
+  } = useQuery<Plant[]>({
     queryKey,
-    queryFn: favoriteApiService.getFavorites,
+    queryFn: () => favoriteApiService.getFavorites(token!),
+    enabled: !!token, // Solo corre si hay token
   })
 
-  // 2. Mutación dinámica para agregar o quitar
+  // 2. Mutación
   const toggleFavoriteMutation = useMutation({
     mutationFn: async ({
       plant,
@@ -22,13 +30,14 @@ export function useFavorites() {
       plant: Plant
       isFavorite: boolean
     }) => {
+      if (!token) throw new Error('No autenticado')
+
       if (isFavorite) {
-        return favoriteApiService.removeFavorite(plant.herb_id)
+        return favoriteApiService.removeFavorite(plant.herb_id, token)
       } else {
-        return favoriteApiService.addFavorite(plant.herb_id)
+        return favoriteApiService.addFavorite(plant.herb_id, token)
       }
     },
-    // Mutación optimista
     onMutate: async ({ plant, isFavorite }) => {
       await queryClient.cancelQueries({ queryKey })
       const previousFavorites = queryClient.getQueryData<Plant[]>(queryKey)
@@ -42,31 +51,26 @@ export function useFavorites() {
 
       return { previousFavorites }
     },
-    // Si hay error en el servidor, revertimos los cambios en la UI
     onError: (err, variables, context) => {
       if (context?.previousFavorites) {
         queryClient.setQueryData(queryKey, context.previousFavorites)
       }
     },
-    // Al terminar (con éxito o error), refreca los datos reales en segundo plano
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey })
     },
   })
 
-  useEffect(() => {
-    console.log('Datos actuales en caché:', favorites)
-  }, [favorites])
-
-  const toggleFavorite = (plant: Plant) => {
-    const isFavorite = favorites.some((p) => p.herb_id === plant.herb_id)
-    toggleFavoriteMutation.mutate({ plant, isFavorite })
-  }
-
   return {
+    // Si la sesión aún está cargando, la UI puede mostrar su respectivo loading
     favorites,
-    isLoading,
-    toggleFavorite,
+    isLoading:
+      (status === 'authenticated' && isLoading) || status === 'loading',
+    isUnauthenticated: status === 'unauthenticated',
+    toggleFavorite: (plant: Plant) => {
+      const isFavorite = favorites.some((p) => p.herb_id === plant.herb_id)
+      toggleFavoriteMutation.mutate({ plant, isFavorite })
+    },
     isFavorite: (plantId: string) =>
       favorites.some((p) => p.herb_id === plantId),
   }

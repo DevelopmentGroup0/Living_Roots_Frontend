@@ -5,7 +5,7 @@ import { HerbCard } from '@/components/herbs/HerbCard'
 
 export function FavoriteList() {
   const { favorites, isLoading } = useFavorites()
-
+  console.log('Favoritos:', favorites)
   if (isLoading) return <div>Cargando plantas...</div>
   if (favorites.length === 0) return <div>No tienes favoritos aún.</div>
 
