@@ -113,37 +113,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           ) : activeTab === 'jigra' ? (
             /* MI JIGRA */
             <div className='max-w-6xl mx-auto'>
-              {/* {(herbs || []).filter((p) => favoritos.includes(p.herb_id))
-                .length > 0 ? (
-                <div className='grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
-                  {(herbs || [])
-                    .filter((p) => favoritos.includes(p.herb_id))
-                    .map((h, idx) => (
-                      <div
-                        key={h.herb_id}
-                        onClick={() => setPlantaDetalle(h)}
-                        className='cursor-pointer hover:scale-[1.02] transition-all relative'
-                      >
-                        <HerbCard plant={h} />
-                        <Heart
-                          size={20}
-                          className='absolute top-4 right-4 fill-red-500 text-red-500'
-                        />
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                <div className='text-center p-12 bg-white/40 rounded-3xl border border-dashed border-stone-300'>
-                  <ShoppingBag
-                    className='mx-auto mb-4 text-stone-400'
-                    size={48}
-                  />
-                  <p className='text-stone-500 font-serif italic'>
-                    Tu Jigra de saberes está vacía. Guarda plantas con el
-                    corazón.
-                  </p>
-                </div>
-              )} */}
+
             </div>
           ) : (
             /* MENSAJES */
@@ -220,7 +190,6 @@ export function Main({ herbs }: { herbs: Plant[] }) {
         </nav>
       </div>
 
-      {/* ================= 🟢 MODAL DEL CHATBOT SUPERPUESTO (No empuja el catálogo) ================= */}
       {isChatExpanded && (
         <div className='fixed z-40 flex items-center justify-center p-4animate-in fade-in duration-300'>
           {/* Ventana de Conversación del Chat */}
