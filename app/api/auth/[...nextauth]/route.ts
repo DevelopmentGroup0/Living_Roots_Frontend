@@ -12,6 +12,7 @@ interface sessionInterface {
   email: string
   role: Role
   sub: string
+  exp: number
 }
 
 export const authOptions: NextAuthOptions = {
@@ -53,6 +54,7 @@ export const authOptions: NextAuthOptions = {
             sub: decoded.sub,
             email: decoded.email,
             role: decoded.role as Role,
+            accessTokenExpires: decoded.exp * 1000,
           }
         }
 
@@ -60,12 +62,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
-  // Tiempo de vida de la sesión, ajustar según lo necesario
-  session: {
-    strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 horas en segundos (86400)
-  },
 
   callbacks: {
     // 1. Persiste el token de Render en el JWT de NextAuth
@@ -78,9 +74,19 @@ export const authOptions: NextAuthOptions = {
         token.sub = user.sub
         token.role = user.role
         token.email = user.email
+        token.accessTokenExpires = user.exp * 1000
+        return token
       }
+      if (
+        typeof token.accessTokenExpires === 'number' &&
+        Date.now() > token.accessTokenExpires
+      ) {
+        return {}
+      }
+
       return token
     },
+
     async session({ session, token }: { session: any; token: JWT }) {
       // Inyectar el token directamente en la raíz de la sesión
       if (token && session.user) {

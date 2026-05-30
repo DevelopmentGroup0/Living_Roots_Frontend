@@ -40,6 +40,11 @@ export function getPermissionForPath(pathname: string): Permission | undefined {
   const routeKey = Object.keys(ROUTE_PERMISSIONS).find(
     (key) => pathname.startsWith(key) && key !== '/',
   )
-
+  console.log(
+    'Checking permissions for path:',
+    pathname,
+    'matched route:',
+    routeKey,
+  )
   return routeKey ? ROUTE_PERMISSIONS[routeKey] : undefined
 }

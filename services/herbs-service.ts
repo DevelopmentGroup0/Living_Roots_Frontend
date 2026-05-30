@@ -5,13 +5,17 @@ import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import type { Plant } from '@/components/herbs/interfaces'
 
 export const HerbService = {
-  getAll: async (query?: string) => {
+  getAll: async (token: string, query?: string) => {
     const endpoint = query ? `/herbs?search=${query}` : '/herbs'
-    return apiClient.get(endpoint)
+    return apiClient.get(endpoint, token)
+  },
+
+  getById: async (id: string, token: string) => {
+    return apiClient.get<Plant>(`/herbs/${id}`, token)
   },
 }
 
-// Obtiene el token de NextAuth una sola vez y lo reutiliza en la llamada
+// Obtiene el token de NextAuth una sola vez y lo reutiliza en la llamada (Client side)
 async function getToken(): Promise<string | undefined> {
   const session = await getSession()
   if (!session?.accessToken) {
@@ -28,6 +32,7 @@ export const herbService = {
 
   async getById(id: string): Promise<Plant> {
     const token = await getToken()
+    console.log('Getting herb by ID:', id, 'and token:', token)
     return apiClient.get<Plant>(`/herbs/${id}`, token)
   },
 

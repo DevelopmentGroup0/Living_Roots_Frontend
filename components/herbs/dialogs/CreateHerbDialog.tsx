@@ -2,7 +2,6 @@
 
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Leaf } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -14,17 +13,18 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { ImageDropzone } from './ImageDropzone'
+import { ImageDropzone } from '../ImageDropzone'
 import { CreateHerbFormValues, createHerbSchema } from '@/schemas/herbs.schema'
-import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '../../ui/field'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
   InputGroupTextarea,
-} from '../ui/input-group'
-import { Plant } from './interfaces'
-import { ScrollArea } from '../ui/scroll-area'
+} from '../../ui/input-group'
+import { Plant } from '../interfaces'
+import { ScrollArea } from '../../ui/scroll-area'
+import LeafLogo from '@/components/Logo'
 
 interface CreateHerbDialogProps {
   open: boolean
@@ -62,8 +62,8 @@ export function CreateHerbDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='min-w-4xl max-h-[90vh]'>
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2 text-green-800'>
-            <Leaf className='w-5 h-5' />
+          <DialogTitle className='flex items-center gap-2 text-green-800 text-xl font-bold'>
+            <LeafLogo className='w-5 h-5' />
             Registrar Planta Medicinal
           </DialogTitle>
           <DialogDescription>
@@ -118,7 +118,7 @@ export function CreateHerbDialog({
                       />
                       <InputGroupAddon align='block-end'>
                         <InputGroupText className='tabular-nums'>
-                          {field.value.length}/100 characters
+                          {field.value.length}/300 characters
                         </InputGroupText>
                       </InputGroupAddon>
                     </InputGroup>
@@ -191,7 +191,7 @@ export function CreateHerbDialog({
                         />
                         <InputGroupAddon align='block-end'>
                           <InputGroupText className='tabular-nums'>
-                            {field.value?.length}/100 characters
+                            {field.value?.length}/300 characters
                           </InputGroupText>
                         </InputGroupAddon>
                       </InputGroup>
@@ -218,7 +218,7 @@ export function CreateHerbDialog({
               <Button
                 type='submit'
                 disabled={isLoading}
-                className='bg-green-600 hover:bg-green-700'
+                className={`bg-green-600 hover:bg-green-700 cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isLoading ? 'Guardando...' : 'Registrar Planta'}
               </Button>
