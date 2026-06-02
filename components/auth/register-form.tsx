@@ -2,8 +2,6 @@
 
 import { Mail, Lock, User, Loader2 } from 'lucide-react'
 import { useState, useMemo } from 'react'
-import { signIn } from 'next-auth/react'
-// import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AuthField, AuthFieldConfig } from './auth-field'
 import { AuthLayout } from './auth-layout'
@@ -126,23 +124,11 @@ export function RegisterForm() {
         JSON.stringify(payload, null, 2),
       )
       await authService.register(payload)
-      // toast.success("Cuenta creada con éxito. Iniciando sesión...");
 
-      // 2. Login automático tras registro exitoso
-      // Esto hace que NextAuth guarde la cookie y el token de Render
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        router.push('/auth/login') // Si falla el auto-login, al menos ya está registrado
-      } else {
-        console.log('¡Éxito! Redirigiendo...')
-        router.push('/') // O la ruta de tu home
-        router.refresh()
-      }
+      console.log('¡Éxito! Redirigiendo...')
+      router.push('/') // O la ruta de tu home
+      router.refresh()
+      // }
     } catch (error) {
       // El error ya viene formateado desde nuestro apiClient
       console.log(error)
