@@ -11,6 +11,7 @@ import {
   MessageCircle,
 } from 'lucide-react'
 import { Plant } from './herbs/interfaces'
+import ContactForm from './emails/Contact-Form'
 
 export function Main({ herbs }: { herbs: Plant[] }) {
   const router = useRouter()
@@ -117,24 +118,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           ) : (
             /* MENSAJES */
             <div className='max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-stone-200 shadow-sm animate-in fade-in'>
-              <h3 className='text-2xl font-serif font-bold text-slate-800 mb-6 flex items-center gap-2'>
-                <MessageCircle className='text-amber-700' /> Saberes Compartidos
-              </h3>
-              <form onSubmit={manejarEnvioComentario} className='mb-8'>
-                <textarea
-                  value={nuevoComentario}
-                  onChange={(e) => setNuevoComentario(e.target.value)}
-                  placeholder='¿Qué sabes sobre esta planta?'
-                  className='w-full p-5 border border-stone-200 rounded-3xl bg-white/80 focus:ring-2 focus:ring-emerald-800 outline-none text-sm'
-                  rows={3}
-                />
-                <button
-                  type='submit'
-                  className='mt-3 bg-emerald-800 text-white text-xs font-bold px-6 py-3 rounded-full hover:bg-emerald-700 transition-all shadow-md'
-                >
-                  Enviar al Tul
-                </button>
-              </form>
+              <ContactForm />
             </div>
           )}
         </main>
