@@ -11,7 +11,7 @@ import {
   MessageCircle,
 } from 'lucide-react'
 import { Plant } from './herbs/interfaces'
-import ContactForm from './emails/Contact-Form'
+import { FeedbackForm } from './emails/Contact-Form'
 
 export function Main({ herbs }: { herbs: Plant[] }) {
   const router = useRouter()
@@ -118,7 +118,7 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           ) : (
             /* MENSAJES */
             <div className='max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-stone-200 shadow-sm animate-in fade-in'>
-              <ContactForm />
+              <FeedbackForm />
             </div>
           )}
         </main>
