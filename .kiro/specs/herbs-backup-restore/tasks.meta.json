@@ -1,0 +1,282 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Implementar el método `exportDatabase()` en `herbs-backup-restore.service.ts`": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724257877
+      },
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724280143
+      }
+    ],
+    "2.1 Modificar `herbs-backup-restore.controller.ts` para añadir guards y el endpoint de exportación": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724262950
+      },
+      {
+        "executionId": "8a69e5d7-db90-4d09-af71-c4fb9590abed",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781725399206
+      },
+      {
+        "executionId": "8bc18248-97ff-4dc1-8b3a-2f39cb0a5cbb",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726315837
+      },
+      {
+        "executionId": "8c6813ef-7698-4eaa-a65c-e5dc91dc140a",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726502287
+      }
+    ],
+    "3.1 Modificar `herbs-backup-restore.module.ts` para añadir `AuthGuard`, `RolesGuard` y `Reflector` a providers": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724263509
+      },
+      {
+        "executionId": "8c6813ef-7698-4eaa-a65c-e5dc91dc140a",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726512105
+      },
+      {
+        "executionId": "304f5a9b-e2bf-4bfa-a686-fd84fc6b0c19",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781729133437
+      },
+      {
+        "executionId": "304f5a9b-e2bf-4bfa-a686-fd84fc6b0c19",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781729320308
+      }
+    ],
+    "4.1 Crear `herbs-backup-restore.service.spec.ts` con las 7 pruebas unitarias": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724264500
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726870921
+      }
+    ],
+    "5.1 Crear `herbs-backup-restore.controller.spec.ts` con los 5 casos de guards": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724264868
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726881410
+      }
+    ],
+    "6. Checkpoint — Backend completo": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724265301
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726906083
+      }
+    ],
+    "7.1 Modificar `lib/api-client.ts` para añadir los dos nuevos métodos": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724265634
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726928376
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727643093
+      }
+    ],
+    "8.1 Crear el archivo `services/backup-service.ts` con las interfaces y las dos funciones de servicio": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724266933
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727665860
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727677420
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728227594
+      }
+    ],
+    "9.1 Crear el hook con las dos mutations de export e import": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724267256
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727666440
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728235357
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728293952
+      }
+    ],
+    "10.1 Crear el componente UI con las secciones de exportación y restauración": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724267566
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727667048
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728300094
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728870509
+      }
+    ],
+    "11.1 Modificar `components/herbs/PlantManagement.tsx` para añadir el panel al final del JSX": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724267981
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727668382
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728877719
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728965373
+      }
+    ],
+    "12. Checkpoint final — Verificación completa": [
+      {
+        "executionId": "60749bab-37ba-46d6-9daa-8c92c25678bd",
+        "chatSessionId": "sess_90130a91-2bd9-40dc-93a2-f97f4ed44626",
+        "timestamp": 1781724268355
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727668972
+      },
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728972579
+      }
+    ],
+    "2. Proteger endpoints y añadir `GET /herbs/backup` en el controlador": [
+      {
+        "executionId": "8c6813ef-7698-4eaa-a65c-e5dc91dc140a",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726503579
+      }
+    ],
+    "4. Crear suite de pruebas unitarias y de propiedad para el servicio": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726878027
+      }
+    ],
+    "5. Crear suite de pruebas de guards para el controlador": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781726885331
+      }
+    ],
+    "7. Añadir `getBlob()` y `postForm()` a `apiClient`": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781727643963
+      }
+    ],
+    "8. Crear `services/backup-service.ts`": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728230199
+      }
+    ],
+    "9. Crear `hooks/mutations/useBackupMutations.ts`": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728294504
+      }
+    ],
+    "10. Crear `components/herbs/BackupRestorePanel.tsx`": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728871055
+      }
+    ],
+    "11. Integrar `BackupRestorePanel` en `PlantManagement`": [
+      {
+        "executionId": "a399455c-414e-4468-858a-5ef8312cf128",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781728967431
+      }
+    ],
+    "3. Actualizar `HerbsBackupRestoreModule` con los providers de guards": [
+      {
+        "executionId": "304f5a9b-e2bf-4bfa-a686-fd84fc6b0c19",
+        "chatSessionId": "sess_d032dca8-c17f-4ef0-a472-ac36d2c037da",
+        "timestamp": 1781729321891
+      }
+    ]
+  }
+}
