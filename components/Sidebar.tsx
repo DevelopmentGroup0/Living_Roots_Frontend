@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Home, UserRoundPlus } from 'lucide-react'
+import { Home, UserRoundPlus, BookOpen } from 'lucide-react'
 import { hasPermission, Permission, Role } from './auth/helpers/has-permission'
 import LeafLogo from './Logo'
 import { Button } from './ui/button'
@@ -20,6 +20,12 @@ const navigationItems: NavItem[] = [
     icon: LeafLogo,
     permission: 'view:dashboard',
     label: 'Dashboard',
+  },
+  {
+    href: '/stories',
+    icon: BookOpen,
+    permission: 'view:home',
+    label: 'Relatos',
   },
   {
     href: '/auth/register',
