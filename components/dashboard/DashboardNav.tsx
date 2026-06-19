@@ -1,4 +1,10 @@
+/**
+ * DashboardNav Component
+ * Navegación secundaria dentro del dashboard
+ * Permite cambiar entre diferentes secciones (Plantas, Relatos, etc.)
+ */
 
+'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

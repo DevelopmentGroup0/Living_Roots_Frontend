@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import type { Story } from './interfaces'
+import type { Story } from '../interfaces'
 
 interface DeleteStoryDialogProps {
   story: Story | null
@@ -45,11 +45,11 @@ export function DeleteStoryDialog({
           <AlertDialogDescription className='space-y-2 font-medium'>
             Estás a punto de{' '}
             <strong className='text-red-600'>eliminar permanentemente: </strong>
-            <strong className='text-gray-900'>"{story?.title}"</strong> (ID:{' '}
+            <strong className='text-gray-900'>{story?.title}</strong> (ID:{' '}
             <strong className='text-gray-900'>{story?.story_id}</strong>) <br />
             <br />
-            Esta acción no se puede deshacer. Se eliminará el relato y todos
-            sus datos asociados.
+            Esta acción no se puede deshacer. Se eliminará el relato y todos sus
+            datos asociados.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

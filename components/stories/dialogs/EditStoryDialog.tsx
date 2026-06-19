@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -35,7 +36,7 @@ import {
   categoriesLabels,
 } from '@/schemas/story.schema'
 import { useSearchTags } from '@/hooks/queries/useStories'
-import type { Story } from './interfaces'
+import type { Story } from '../interfaces'
 
 interface EditStoryDialogProps {
   story: Story | null
@@ -70,6 +71,7 @@ export function EditStoryDialog({
   const { data: tagSuggestions = [] } = useSearchTags(tagInput)
 
   const tags = form.watch('tags') || []
+console.log(story);
 
   // Sincroniza campos del formulario con el relato seleccionado
   useEffect(() => {
@@ -78,7 +80,7 @@ export function EditStoryDialog({
         title: story.title,
         body: story.body,
         category: story.category,
-        tags: story.tags.map((t) => t.name),
+        tags: story.tags.map((t) => t.tag.name),
         coverImage: story.coverImage || '',
       })
     }

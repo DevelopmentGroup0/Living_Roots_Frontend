@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { Eye } from 'lucide-react'
@@ -10,8 +11,12 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
-import { categoriesLabels, statusLabels, statusColors } from '@/schemas/story.schema'
-import type { Story } from './interfaces'
+import {
+  categoriesLabels,
+  statusLabels,
+  statusColors,
+} from '@/schemas/story.schema'
+import type { Story } from '../interfaces'
 
 interface ViewStoryDialogProps {
   story: Story | null
@@ -25,7 +30,7 @@ export function ViewStoryDialog({
   onOpenChange,
 }: ViewStoryDialogProps) {
   if (!story) return null
-
+console.log(story)
   const publishDate = story.publishedAt
     ? new Date(story.publishedAt).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -46,8 +51,8 @@ export function ViewStoryDialog({
             <Eye className='w-5 h-5' />
             {story.title}
           </DialogTitle>
-          <DialogDescription>
-            <div className='flex items-center gap-2 mt-2 flex-wrap'>
+          <div className='flex items-center gap-2 mt-2 flex-wrap'>
+            <DialogDescription>
               <Badge className={statusColors[story.status]}>
                 {statusLabels[story.status]}
               </Badge>
@@ -58,12 +63,10 @@ export function ViewStoryDialog({
                 </span>
               )}
               {publishDate && (
-                <span className='text-xs text-gray-600'>
-                  📅 {publishDate}
-                </span>
+                <span className='text-xs text-gray-600'>📅 {publishDate}</span>
               )}
-            </div>
-          </DialogDescription>
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
         <ScrollArea className='max-h-[60vh] p-4 border rounded-lg'>
@@ -89,9 +92,7 @@ export function ViewStoryDialog({
                   </p>
                 </div>
                 <div>
-                  <span className='font-semibold text-gray-700'>
-                    Creado:
-                  </span>
+                  <span className='font-semibold text-gray-700'>Creado:</span>
                   <p className='text-gray-600'>
                     {new Date(story.createdAt).toLocaleDateString('es-ES')}
                   </p>
@@ -114,8 +115,8 @@ export function ViewStoryDialog({
                 </h4>
                 <div className='flex flex-wrap gap-2'>
                   {story.tags.map((tag) => (
-                    <Badge key={tag.tag_id} variant='secondary'>
-                      {tag.name}
+                    <Badge key={tag.tag.name} variant='secondary'>
+                      {tag.tag.name}
                     </Badge>
                   ))}
                 </div>
@@ -125,7 +126,10 @@ export function ViewStoryDialog({
             {/* Footer con timestamps */}
             <div className='text-xs text-gray-500 border-t pt-2 mt-4'>
               <p>ID: {story.story_id}</p>
-              <p>Último actualizado: {new Date(story.updatedAt).toLocaleString('es-ES')}</p>
+              <p>
+                Último actualizado:{' '}
+                {new Date(story.updatedAt).toLocaleString('es-ES')}
+              </p>
             </div>
           </div>
         </ScrollArea>

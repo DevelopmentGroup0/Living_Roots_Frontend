@@ -64,9 +64,7 @@ export function StoryCard({
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
                     <MoreHorizontal className='h-4 w-4' />
-                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
                   {onView && (
@@ -123,8 +121,8 @@ export function StoryCard({
       {story.tags && story.tags.length > 0 && (
         <div className='flex flex-wrap gap-1'>
           {story.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag.tag_id} variant='secondary' className='text-xs'>
-              #{tag.name}
+            <Badge key={tag.tagId} variant='secondary' className='text-xs'>
+              #{tag.tag.name}
             </Badge>
           ))}
           {story.tags.length > 3 && (

@@ -49,8 +49,12 @@ export interface StoryAuthor {
  * Tag asociado a Story
  */
 export interface StoryTag {
-  tag_id: string
-  name: string
+  storyId: string
+  tagId: string
+  tag: {
+    tag_id: string
+    name: string
+  }
 }
 
 /**
@@ -69,8 +73,7 @@ export interface CreateStoryFormValues {
  * Form Data para editar Story
  * Igual a Create pero parcial (PartialType)
  */
-export interface UpdateStoryFormValues
-  extends Partial<CreateStoryFormValues> {}
+export type UpdateStoryFormValues = Partial<CreateStoryFormValues>
 
 /**
  * Query Parameters para listar stories
