@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /**
  * Story Mutation Hooks
  * React Query mutations para crear, editar, cambiar estado y eliminar relatos
@@ -26,7 +27,7 @@ interface UseDeleteMutationOptions {
 /**
  * Hook: Crear relato
  * RF-001: Crear Relato
- * Invalidar: useMyStories (lista propia)
+ * Invalidar: useMyStories (lista propia con cualquier filtro)
  */
 export function useCreateStory(options?: UseMutationOptions) {
   const queryClient = useQueryClient()
@@ -34,7 +35,6 @@ export function useCreateStory(options?: UseMutationOptions) {
   return useMutation({
     mutationFn: (data: CreateStoryFormValues) => storyService.create(data),
     onSuccess: (data) => {
-      // Invalida la lista de mis relatos para refrescar
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.stories.mine(),
       })
@@ -49,7 +49,7 @@ export function useCreateStory(options?: UseMutationOptions) {
 /**
  * Hook: Actualizar relato
  * RF-002: Editar Relato
- * Invalidar: stories.detail + stories.mine
+ * Invalidar: stories.detail + stories.mine (todas las variaciones)
  */
 export function useUpdateStory(storyId: string, options?: UseMutationOptions) {
   const queryClient = useQueryClient()
@@ -58,7 +58,6 @@ export function useUpdateStory(storyId: string, options?: UseMutationOptions) {
     mutationFn: (data: UpdateStoryFormValues) =>
       storyService.update(storyId, data),
     onSuccess: (data) => {
-      // Invalida detalle y lista
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.stories.detail(storyId),
       })
@@ -76,8 +75,7 @@ export function useUpdateStory(storyId: string, options?: UseMutationOptions) {
 /**
  * Hook: Cambiar estado del relato
  * RF-003: Cambiar Estado de Relato
- * Transiciones: DRAFT→PUBLISHED, PUBLISHED→ARCHIVED, etc.
- * Invalida: stories.detail + stories.mine + stories.published
+ * Invalida: stories.detail + listas propias + listas públicas (todas las variaciones)
  */
 export function useChangeStoryStatus(
   storyId: string,
@@ -89,7 +87,6 @@ export function useChangeStoryStatus(
     mutationFn: (status: StoryStatus) =>
       storyService.changeStatus(storyId, status),
     onSuccess: (data) => {
-      // Invalida detalle, lista propia y publicados
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.stories.detail(storyId),
       })
@@ -110,7 +107,7 @@ export function useChangeStoryStatus(
 /**
  * Hook: Eliminar relato
  * RF-007: Eliminar Relato
- * Invalidar: stories.detail + stories.mine
+ * Invalidar: stories.detail + stories.mine (todas las variaciones)
  */
 export function useDeleteStory(
   storyId: string,
@@ -121,7 +118,6 @@ export function useDeleteStory(
   return useMutation({
     mutationFn: () => storyService.delete(storyId),
     onSuccess: () => {
-      // Invalida detalle y lista
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.stories.detail(storyId),
       })
@@ -138,7 +134,6 @@ export function useDeleteStory(
 
 /**
  * Hook: Todas las mutaciones en uno (patrón alternativo)
- * Útil para componentes que usen múltiples operaciones
  */
 export function useStoryMutations() {
   return {

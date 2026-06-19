@@ -71,7 +71,6 @@ export function EditStoryDialog({
   const { data: tagSuggestions = [] } = useSearchTags(tagInput)
 
   const tags = form.watch('tags') || []
-console.log(story);
 
   // Sincroniza campos del formulario con el relato seleccionado
   useEffect(() => {
@@ -80,7 +79,7 @@ console.log(story);
         title: story.title,
         body: story.body,
         category: story.category,
-        tags: story.tags.map((t) => t.tag.name),
+        tags: (story.tags ?? []).map((t) => t.tag.name),
         coverImage: story.coverImage || '',
       })
     }

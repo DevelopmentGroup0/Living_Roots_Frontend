@@ -3,7 +3,7 @@
  * React Query hooks para consultas de relatos
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { storyService } from '@/services/story-service'
 import { QUERY_KEYS } from '@/constants/query-keys'
 import type {
