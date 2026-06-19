@@ -16,6 +16,7 @@ import {
   statusColors,
 } from '@/schemas/story.schema'
 import type { Story } from './interfaces'
+import { PublishStatusButton } from './PublishStatusButton'
 
 interface StoryCardProps {
   story: Story
@@ -64,7 +65,7 @@ export function StoryCard({
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                    <MoreHorizontal className='h-4 w-4' />
+                  <MoreHorizontal className='h-4 w-4' />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
                   {onView && (
@@ -145,6 +146,13 @@ export function StoryCard({
           Leer Completo
         </Button>
       )}
+      <PublishStatusButton
+        storyId={story.story_id}
+        currentStatus={story.status}
+        onSuccessAction={(updatedStory) => {
+          console.log(`Estado cambiado a ${updatedStory.status}`)
+        }}
+      />
     </div>
   )
 }

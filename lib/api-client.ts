@@ -75,6 +75,8 @@ export const apiClient = {
     apiRequest<T>(url, { method: 'GET' }, token),
   post: <T>(url: string, body: unknown, token?: string) =>
     apiRequest<T>(url, { method: 'POST', body: JSON.stringify(body) }, token),
+  put: <T>(url: string, body: unknown, token?: string) =>
+    apiRequest<T>(url, { method: 'PUT', body: JSON.stringify(body) }, token),
   patch: <T>(url: string, body: unknown, token?: string) =>
     apiRequest<T>(url, { method: 'PATCH', body: JSON.stringify(body) }, token),
   delete: <T>(url: string, token?: string) =>

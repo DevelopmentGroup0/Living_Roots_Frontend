@@ -8,28 +8,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Leaf, BookOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface DashboardNavItem {
   href: string
   label: string
-  icon: React.ComponentType<{ className?: string }>
-  description?: string
 }
 
 const dashboardItems: DashboardNavItem[] = [
   {
     href: '/dashboard',
     label: 'Plantas',
-    icon: Leaf,
-    description: 'Gestiona plantas medicinales',
   },
   {
     href: '/dashboard/stories',
     label: 'Relatos',
-    icon: BookOpen,
-    description: 'Crea y publica tus relatos culturales',
   },
 ]
 
@@ -37,25 +29,34 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <div className='flex gap-2 mb-6 border-b border-gray-200 pb-4'>
-      {dashboardItems.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(item.href)
-        const Icon = item.icon
+    <div className="w-full border-b border-slate-200 mb-6">
+      {/* Cambiamos a 'grid' y definimos que tenga tantas columnas como elementos.
+        'grid-cols-2' hace que cada pestaña ocupe exactamente el 50% del ancho.
+      */}
+      <div className="grid grid-cols-2 w-full text-center">
+        {dashboardItems.map((item) => {
+          const isActive = pathname === item.href
 
-        return (
-          <Link key={item.href} href={item.href}>
-            <Button
-              variant={isActive ? 'default' : 'outline'}
-              className={`gap-2 ${
-                isActive ? 'bg-amber-600 hover:bg-amber-700' : ''
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`relative pb-3 text-sm font-medium transition-colors duration-200 -mb-px block w-full ${
+                isActive
+                  ? 'text-amber-700 font-semibold'
+                  : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <Icon className='w-4 h-4' />
               {item.label}
-            </Button>
-          </Link>
-        )
-      })}
+              
+              {/* Indicador de pestaña activa */}
+              {isActive && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.75 bg-amber-700 rounded-t-sm" />
+              )}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   )
 }

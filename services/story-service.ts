@@ -106,7 +106,7 @@ export const storyService = {
    */
   async update(storyId: string, data: UpdateStoryFormValues): Promise<Story> {
     const token = await getToken()
-    return apiClient.patch<Story>(`/stories/${storyId}`, data, token)
+    return apiClient.put<Story>(`/stories/${storyId}`, data, token)
   },
 
   /**

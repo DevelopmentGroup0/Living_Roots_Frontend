@@ -30,7 +30,7 @@ export function ViewStoryDialog({
   onOpenChange,
 }: ViewStoryDialogProps) {
   if (!story) return null
-console.log(story)
+  console.log(story)
   const publishDate = story.publishedAt
     ? new Date(story.publishedAt).toLocaleDateString('es-ES', {
         year: 'numeric',
