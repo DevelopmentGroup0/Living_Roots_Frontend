@@ -2,7 +2,7 @@ import { getSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api-client'
 import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
-import type { Plant } from '@/components/herbs/interfaces'
+import type { MedicinalHerb, Plant } from '@/components/herbs/interfaces'
 
 export const HerbService = {
   getAll: async (token: string, query?: string) => {
@@ -11,7 +11,7 @@ export const HerbService = {
   },
 
   getById: async (id: string, token: string) => {
-    return apiClient.get<Plant>(`/herbs/${id}`, token)
+    return apiClient.get<MedicinalHerb>(`/herbs/${id}`, token)
   },
 }
 

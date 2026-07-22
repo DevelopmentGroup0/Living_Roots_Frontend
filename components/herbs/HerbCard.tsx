@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
+import { useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import {
   Card,
@@ -15,11 +16,20 @@ import { useFavorites } from '@/hooks/useFavorites'
 
 export function HerbCard({ plant }: { plant: Plant }) {
   const { toggleFavorite, isFavorite } = useFavorites()
-
   const favorite = isFavorite(plant.herb_id)
+  
+  const router = useRouter()
+
+  const handleCardClick = () => {
+    // Aquí podrías, por ejemplo, pre-cargar datos en el caché de React Query si lo necesitaras
+    router.push(`/herb/${plant.herb_id}`)
+  }
 
   return (
-    <Card className='bg-card-crema overflow-hidden hover:shadow-xl transition-all duration-300 py-0 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)]'>
+    <Card
+      className='bg-card-crema overflow-hidden hover:shadow-xl transition-all duration-300 py-0 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)]'
+      onClick={handleCardClick}
+    >
       <div className='relative h-80 bg-lr-green-dark/10'>
         <img
           src={plant.img}
@@ -35,9 +45,7 @@ export function HerbCard({ plant }: { plant: Plant }) {
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
-              favorite
-                ? 'fill-red-500 text-red-500'
-                : 'text-lr-green-dark'
+              favorite ? 'fill-red-500 text-red-500' : 'text-lr-green-dark'
             }`}
           />
         </Button>

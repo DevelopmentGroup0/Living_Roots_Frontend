@@ -9,6 +9,7 @@ import { PublishedStoriesList } from './PublishedStoriesList'
  * Componente para visualizar relatos publicados (público)
  * Sin capacidad de edición, solo lectura
  */
+
 export function PublishedStoriesViewer() {
   const dialogs = useStoryDialogs()
 

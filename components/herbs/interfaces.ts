@@ -18,3 +18,27 @@ export interface Symptom {
   prepare: string
   apply: string
 }
+
+// Tipado para la vista de detalles de la planta, con información más completa
+export interface SymptomDetail {
+  herbId: string
+  symptomId: string
+  partsplant: string
+  prepare: string
+  apply: string
+  symptom: {
+    symptom_id: string
+    name: string
+    description: string | null
+  }
+}
+
+export interface MedicinalHerb {
+  herb_id: string
+  name: string
+  description: string
+  img: string
+  cultivator: string | null
+  important: string | null
+  symptoms: SymptomDetail[]
+}

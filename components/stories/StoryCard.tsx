@@ -17,6 +17,7 @@ import {
 } from '@/schemas/story.schema'
 import type { Story } from './interfaces'
 import { PublishStatusButton } from './PublishStatusButton'
+import { HasPermission } from '../auth/HasPermission'
 
 interface StoryCardProps {
   story: Story
@@ -146,13 +147,15 @@ export function StoryCard({
           Leer Completo
         </Button>
       )}
-      <PublishStatusButton
-        storyId={story.story_id}
-        currentStatus={story.status}
-        onSuccessAction={(updatedStory) => {
-          console.log(`Estado cambiado a ${updatedStory.status}`)
-        }}
-      />
+      <HasPermission>
+        <PublishStatusButton
+          storyId={story.story_id}
+          currentStatus={story.status}
+          onSuccessAction={(updatedStory) => {
+            console.log(`Estado cambiado a ${updatedStory.status}`)
+          }}
+        />
+      </HasPermission>
     </div>
   )
 }
