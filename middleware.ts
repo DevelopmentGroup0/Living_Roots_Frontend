@@ -7,6 +7,8 @@ import {
   Role,
 } from '@/components/auth/helpers/has-permission'
 
+// Rutas públicas que NO requieren autenticación
+// (Solo login, todo lo demás requiere token)
 const PUBLIC_ROUTES = ['/auth/login']
 
 export default withAuth(
@@ -14,7 +16,7 @@ export default withAuth(
     const token = req.nextauth.token
     const currentPath = req.nextUrl.pathname
 
-    // Permitir rutas públicas
+    // Permitir rutas públicas (sin autenticación requerida)
     if (PUBLIC_ROUTES.includes(currentPath)) {
       return NextResponse.next()
     }
@@ -24,7 +26,7 @@ export default withAuth(
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
 
-    // Validar permisos RBAC
+    // Validar permisos RBAC para rutas protegidas
     const requiredPermission = getPermissionForPath(currentPath)
 
     if (requiredPermission) {

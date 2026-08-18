@@ -7,6 +7,8 @@ export type Permission =
   | 'view:register-users'
   | 'view:home'
   | 'view:details-herbs'
+  | 'view:stories-public'
+  | 'manage:stories'
 
 // 3. Centralizar la matriz de accesos (Roles -> Permisos)
 export const RBAC_POLICIES: Record<Role, Permission[]> = {
@@ -15,8 +17,10 @@ export const RBAC_POLICIES: Record<Role, Permission[]> = {
     'view:register-users',
     'view:home',
     'view:details-herbs',
+    'view:stories-public',
+    'manage:stories',
   ],
-  client: ['view:home', 'view:details-herbs'],
+  client: ['view:home', 'view:details-herbs', 'view:stories-public'],
 }
 
 // Función auxiliar para verificar si un rol tiene un permiso específico.
@@ -26,8 +30,10 @@ export function hasPermission(role: Role, permission: Permission): boolean {
 
 export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   '/dashboard': 'view:dashboard',
+  '/dashboard/stories': 'manage:stories',
   '/auth/register': 'view:register-users',
   '/herb': 'view:details-herbs',
+  '/stories': 'view:stories-public',
 }
 
 // En tu archivo de helpers (donde definiste hasPermission)

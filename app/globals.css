@@ -149,6 +149,16 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Ocultar en Chrome, Safari y Opera */
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* Ocultar en IE y Edge */
+    scrollbar-width: none;  /* Ocultar en Firefox */
+  }
+}
+
 /* =========================================
    🌿 FONDOS EXACTOS AL DISEÑO (PUNTOS Y PERGAMINO)
    ========================================= */

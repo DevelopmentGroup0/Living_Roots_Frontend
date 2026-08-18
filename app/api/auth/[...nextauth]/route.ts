@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.password) return null
         // Extraer solo lo que el Backend de Render necesita
         const payload = {
           email: credentials?.email,

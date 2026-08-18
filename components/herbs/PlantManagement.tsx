@@ -4,6 +4,7 @@ import { useHerbs } from '@/hooks/queries/useHerbs'
 import { useHerbMutations } from '@/hooks/mutations/useHerbMutations'
 import { Input } from '@/components/ui/input'
 import { PlantTable } from './PlantTable'
+import { BackupRestorePanel } from './BackupRestorePanel'
 
 export function PlantManagement() {
   const { data: herbs = [], isLoading, isError } = useHerbs()
@@ -44,6 +45,8 @@ export function PlantManagement() {
         isDeleting={remove.isPending}
         isAddingSymptom={addSymptom.isPending}
       />
+
+      <BackupRestorePanel />
     </div>
   )
 }
