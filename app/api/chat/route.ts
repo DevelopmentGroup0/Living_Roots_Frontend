@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const response = await fetch(`${BACKEND_URL}/chat/generate`, {
+  const response = await fetch(`${BACKEND_URL}/rag/ask`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
