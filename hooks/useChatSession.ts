@@ -60,7 +60,8 @@ export function useChatSession(options: UseChatSessionOptions) {
     messages: selectedMessages,
 
     transport: new DefaultChatTransport({
-      api: 'http://localhost:4000/chat/generate',
+      // api: 'http://localhost:4000/chat/generate',
+      api: 'http://localhost:4000/rag/ask',
     }),
 
     onFinish: () => {
