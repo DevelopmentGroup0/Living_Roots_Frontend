@@ -19,46 +19,30 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
+      // Ya no recibe email/password: el wizard de 2FA (login + verify-2fa)
+      // ya resolvió el intercambio completo con el backend antes de llegar
+      // acá, así que solo entra el access_token ya emitido para decodificar.
       credentials: {
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        accessToken: { label: 'Access Token', type: 'text' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
-        // Extraer solo lo que el Backend de Render necesita
-        const payload = {
-          email: credentials?.email,
-          password: credentials?.password,
-        }
+        if (!credentials?.accessToken) return null
 
-        console.log('Payload enviado desde el front:', payload)
-        // Llamada a tu backend en RENDER
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
-          {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: { 'Content-Type': 'application/json' },
-          },
-        )
+        try {
+          const decoded: sessionInterface = jwtDecode(credentials.accessToken)
 
-        const user = await res.json()
-
-        console.log('Respuesta del Backend como:', user)
-
-        // Si Render dice que todo ok, devolvemos el objeto user a NextAuth
-        if (res.ok && user) {
-          const decoded: sessionInterface = jwtDecode(user.access_token)
           return {
-            ...user,
+            id: decoded.sub,
+            accessToken: credentials.accessToken,
             sub: decoded.sub,
             email: decoded.email,
             role: decoded.role as Role,
             accessTokenExpires: decoded.exp * 1000,
           }
+        } catch {
+          // Token inválido o expirado
+          return null
         }
-
-        return null
       },
     }),
   ],
@@ -67,14 +51,11 @@ export const authOptions: NextAuthOptions = {
     // 1. Persiste el token de Render en el JWT de NextAuth
     async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
-        // Asumiendo que tu backend devuelve el token en la propiedad 'token' o 'accessToken'
-        // Aquí 'user' es el JSON de Render.
-        // Accedemos a la propiedad con el nombre real del backend.
-        token.accessToken = user.access_token
+        token.accessToken = user.accessToken
         token.sub = user.sub
         token.role = user.role
         token.email = user.email
-        token.accessTokenExpires = user.exp * 1000
+        token.accessTokenExpires = user.accessTokenExpires
         return token
       }
       if (
