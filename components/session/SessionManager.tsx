@@ -15,8 +15,12 @@ export default function SessionManager({
   const [showWarning, setShowWarning] = useState(false)
 
   // Referencias para limpiar los temporizadores
-  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  )
+  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  )
 
   // Tiempos configurables (mientras las pruebas: 1 minuto + 1 minuto)
   const INACTIVITY_LIMIT = 1 * 60 * 1000 // tiempo de inactividad antes de mostrar el aviso
@@ -24,6 +28,12 @@ export default function SessionManager({
 
   // 1. Controlar la expiración del token enviada desde los callbacks
   useEffect(() => {
+    if (
+      session?.error === 'RefreshAccessTokenError' ||
+      session?.error === 'TokenExpiredError'
+    ) {
+      signOut({ callbackUrl: '/login' })
+    }
     if (session?.error === 'TokenExpiredError') {
       signOut({ callbackUrl: '/login' }) // Limpia cookies y redirige
     }

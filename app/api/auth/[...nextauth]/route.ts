@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import { jwtDecode } from 'jwt-decode'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { Role } from '@/components/auth/interfaces/interfaces'
+import { refreshAccessToken } from '@/lib/auth/refresh-access-token'
 
 // Definimos las opciones fuera del handler para que sea más limpio (SOLID)
 
@@ -46,42 +47,40 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    // 1. Persiste el token de Render en el JWT de NextAuth
     async jwt({ token, user }) {
-      const now = Math.floor(Date.now() / 1000)
-
-      // 1. Comprobar si el token base de NextAuth expiró (exp está en segundos)
-      if (token.exp && now > (token.exp as number)) {
-        return { ...token, error: 'TokenExpiredError' }
-      }
-
-      // 2. Si es el momento del login, 'user' estará disponible
+      // 1. Primer inicio de sesión
       if (user) {
-        const { accessToken, id, role, accessTokenExpires } = user
-
-        // Retornamos un nuevo objeto combinando el token existente y los datos del usuario
         return {
           ...token,
-          accessToken,
-          sub: id,
-          role,
-          accessTokenExpires,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          role: user.role,
+          sub: user.id,
+          accessTokenExpires: user.accessTokenExpires,
         }
       }
-      return token
+      // 2. El token aún no ha expirado
+      if (token.accessTokenExpires && Date.now() < token.accessTokenExpires) {
+        return token
+      }
+
+      // 3. El token expiró, intentamos refrescarlo en segundo plano
+      return await refreshAccessToken(token)
     },
 
     async session({ session, token }) {
-      // Inyectar el token directamente en la raíz de la sesión
-      if (token && session.user) {
+      // Si hubo un error al refrescar, lo pasamos al cliente
+      if (token.error) {
+        session.error = token.error as string
+      }
+
+      if (session.user) {
         session.user.id = token.sub as string
         session.user.role = token.role
-        session.user.email = token.email
+        session.accessToken = token.accessToken
       }
-      return {
-        ...session,
-        accessToken: token.accessToken,
-      }
+
+      return session
     },
   },
   pages: {
