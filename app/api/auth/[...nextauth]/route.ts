@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import { jwtDecode } from 'jwt-decode'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { JWT } from 'next-auth/jwt'
 import { Role } from '@/components/auth/interfaces/interfaces'
 
 // Definimos las opciones fuera del handler para que sea más limpio (SOLID)
@@ -37,7 +35,7 @@ export const authOptions: NextAuthOptions = {
             sub: decoded.sub,
             email: decoded.email,
             role: decoded.role as Role,
-            accessTokenExpires: decoded.exp * 1000,
+            accessTokenExpires: decoded.exp,
           }
         } catch {
           // Token inválido o expirado
@@ -49,29 +47,34 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     // 1. Persiste el token de Render en el JWT de NextAuth
-    async jwt({ token, user }: { token: JWT; user?: any }) {
-      if (user) {
-        token.accessToken = user.accessToken
-        token.sub = user.sub
-        token.role = user.role
-        token.email = user.email
-        token.accessTokenExpires = user.accessTokenExpires
-        return token
-      }
-      if (
-        typeof token.accessTokenExpires === 'number' &&
-        Date.now() > token.accessTokenExpires
-      ) {
-        return {}
+    async jwt({ token, user }) {
+      const now = Math.floor(Date.now() / 1000)
+
+      // 1. Comprobar si el token base de NextAuth expiró (exp está en segundos)
+      if (token.exp && now > (token.exp as number)) {
+        return { ...token, error: 'TokenExpiredError' }
       }
 
+      // 2. Si es el momento del login, 'user' estará disponible
+      if (user) {
+        const { accessToken, id, role, accessTokenExpires } = user
+
+        // Retornamos un nuevo objeto combinando el token existente y los datos del usuario
+        return {
+          ...token,
+          accessToken,
+          sub: id,
+          role,
+          accessTokenExpires,
+        }
+      }
       return token
     },
 
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }) {
       // Inyectar el token directamente en la raíz de la sesión
       if (token && session.user) {
-        session.user.sub = token.sub
+        session.user.id = token.sub as string
         session.user.role = token.role
         session.user.email = token.email
       }
