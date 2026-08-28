@@ -13,9 +13,9 @@ export async function refreshAccessToken(token: JWT) {
 
     const refreshedTokens = await response.json()
 
-    // if (!response.ok) {
-    //   throw refreshedTokens
-    // }
+    if (!response.ok) {
+      throw refreshedTokens
+    }
 
     return {
       ...token,

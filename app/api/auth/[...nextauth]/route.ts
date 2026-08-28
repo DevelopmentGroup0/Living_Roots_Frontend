@@ -29,7 +29,8 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const decoded: sessionInterface = jwtDecode(credentials.accessToken)
-
+          console.log('AccessToken de credenciales', credentials.accessToken)
+          console.log('AccessToken de decoded', decoded.access_token)
           return {
             id: decoded.sub,
             accessToken: credentials.accessToken,

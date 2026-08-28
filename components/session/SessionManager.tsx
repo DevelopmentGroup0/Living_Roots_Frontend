@@ -2,8 +2,6 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-// Ajusta la ruta si SessionTimeoutModal vive en otra carpeta
-// (p. ej. '@/components/session/SessionTimeoutModal').
 import { SessionTimeoutModal } from './SessionTimeoutModal'
 
 export default function SessionManager({
@@ -12,88 +10,114 @@ export default function SessionManager({
   children: React.ReactNode
 }) {
   const { data: session, status } = useSession()
+
   const [showWarning, setShowWarning] = useState(false)
 
-  // Referencias para limpiar los temporizadores
-  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  )
-  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  )
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Tiempos configurables (mientras las pruebas: 1 minuto + 1 minuto)
-  const INACTIVITY_LIMIT = 1 * 60 * 1000 // tiempo de inactividad antes de mostrar el aviso
-  const LOGOUT_COUNTDOWN = 1 * 60 * 1000 // cuenta regresiva del aviso antes de cerrar sesión
+  const INACTIVITY_LIMIT = 10 * 60 * 1000
+  const LOGOUT_COUNTDOWN = 5 * 60 * 1000
 
-  // 1. Controlar la expiración del token enviada desde los callbacks
+  // Limpia todos los temporizadores.
+  const clearTimers = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current)
+      inactivityTimerRef.current = null
+    }
+
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current)
+      warningTimerRef.current = null
+    }
+  }, [])
+
+  // Inicia el temporizador de inactividad.
+  const startInactivityTimer = useCallback(() => {
+    if (status !== 'authenticated') return
+
+    // Limpiamos solamente el timer de inactividad.
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current)
+    }
+
+    inactivityTimerRef.current = setTimeout(() => {
+      console.log('⚠️ Inactividad detectada')
+      setShowWarning(true)
+      console.log('⏱️ Iniciando countdown de logout')
+      warningTimerRef.current = setTimeout(() => {
+        console.log('🚪 Cerrando sesión por inactividad')
+        signOut({
+          callbackUrl: '/login',
+        })
+      }, LOGOUT_COUNTDOWN)
+    }, INACTIVITY_LIMIT)
+  }, [INACTIVITY_LIMIT, LOGOUT_COUNTDOWN, status])
+
+  // Eventos de actividad del usuario.
+  useEffect(() => {
+    if (status !== 'authenticated') return
+    const events = ['mousemove', 'keydown', 'click', 'scroll']
+    const handleActivity = () => {
+      // Si el warning está visible, la actividad no reinicia el timer.
+      if (showWarning) return
+
+      startInactivityTimer()
+    }
+
+    events.forEach((event) => {
+      window.addEventListener(event, handleActivity)
+    })
+
+    // Iniciar timer al autenticarse.
+    startInactivityTimer()
+
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, handleActivity)
+      })
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current)
+      }
+    }
+  }, [status, showWarning, startInactivityTimer])
+
+  // Continuar sesión.
+  const handleContinueSession = useCallback(() => {
+    console.log('▶️ Continuando sesión')
+
+    // Cancelamos el countdown de logout.
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current)
+      warningTimerRef.current = null
+    }
+
+    setShowWarning(false)
+
+    // Volvemos a iniciar el timer de inactividad.
+    startInactivityTimer()
+  }, [startInactivityTimer])
+
+  // Logout manual.
+  const handleManualLogout = useCallback(() => {
+    clearTimers()
+
+    signOut({
+      callbackUrl: '/login',
+    })
+  }, [clearTimers])
+
+  // Errores del refresh del token.
   useEffect(() => {
     if (
       session?.error === 'RefreshAccessTokenError' ||
       session?.error === 'TokenExpiredError'
     ) {
-      signOut({ callbackUrl: '/login' })
-    }
-    if (session?.error === 'TokenExpiredError') {
-      signOut({ callbackUrl: '/login' }) // Limpia cookies y redirige
+      signOut({
+        callbackUrl: '/login',
+      })
     }
   }, [session])
-
-  const clearTimers = useCallback(() => {
-    clearTimeout(inactivityTimerRef.current)
-    clearTimeout(warningTimerRef.current)
-  }, [])
-
-  // 2. Controlar la inactividad del usuario
-  const resetTimers = useCallback(() => {
-    // Mientras se muestra el aviso, ningún evento de actividad lo reinicia:
-    // el usuario debe decidir explícitamente "Continuar" o "Cerrar sesión".
-    if (showWarning || status !== 'authenticated') return
-
-    clearTimers()
-
-    inactivityTimerRef.current = setTimeout(() => {
-      setShowWarning(true)
-
-      // Si no hace nada tras mostrar el aviso, cerramos la sesión
-      warningTimerRef.current = setTimeout(() => {
-        signOut({ callbackUrl: '/login' })
-      }, LOGOUT_COUNTDOWN)
-    }, INACTIVITY_LIMIT)
-  }, [showWarning, status, clearTimers])
-
-  // Escuchar eventos de interacción del usuario. Este efecto también se
-  // reencarga de reiniciar los contadores cuando showWarning vuelve a false
-  // (resetTimers cambia de identidad y el efecto se vuelve a ejecutar).
-  useEffect(() => {
-    const events = ['mousemove', 'keydown', 'click', 'scroll']
-
-    events.forEach((event) => {
-      window.addEventListener(event, resetTimers)
-    })
-
-    // Iniciar contadores la primera vez (y cada vez que resetTimers cambia)
-    resetTimers()
-
-    return () => {
-      events.forEach((event) => {
-        window.removeEventListener(event, resetTimers)
-      })
-      clearTimers()
-    }
-  }, [resetTimers, clearTimers])
-
-  // Botón "Continuar sesión": cancela el cierre pendiente y oculta el aviso
-  const handleContinueSession = useCallback(() => {
-    clearTimers()
-    setShowWarning(false)
-  }, [clearTimers])
-
-  // Botón "Cerrar sesión": cierre inmediato, sin esperar la cuenta regresiva
-  const handleManualLogout = useCallback(() => {
-    clearTimers()
-    signOut({ callbackUrl: '/login' })
-  }, [clearTimers])
 
   return (
     <>
@@ -104,7 +128,6 @@ export default function SessionManager({
         onLogout={handleManualLogout}
       />
 
-      {/* Renderizamos el resto de la aplicación */}
       {children}
     </>
   )
