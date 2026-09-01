@@ -12,7 +12,6 @@ interface PageProps {
 export default async function Home({ searchParams }: PageProps) {
   const { query } = await searchParams
   const session = await getServerSession(authOptions)
-  console.log(session?.error)
   const allHerbs = (await HerbService.getAll(
     session?.accessToken as string,
     query || '',

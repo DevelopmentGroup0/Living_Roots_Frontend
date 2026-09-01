@@ -28,9 +28,8 @@ export function LoginForm() {
 
   const wizard = useLoginWizard({
     onSuccess: async (accessToken) => {
-      // ⚠️ Asume que el CredentialsProvider de tu authOptions puede recibir
-      // `accessToken` (en vez de email/password) y validarlo contra
-      // GET /auth/profile para construir la sesión. Ver nota de integración.
+      // CredentialsProvider de authOptions (backend) puede recibir
+      // `accessToken` y validarlo contra GET /auth/profile para construir la sesión.
       const result = await signIn('credentials', {
         accessToken,
         redirect: false,
@@ -47,7 +46,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className='relative overflow-hidden bg-card-crema rounded-4xl px-8 py-9 w-full max-w-105 shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]'>
+    <div className='relative overflow-hidden bg-card-crema rounded-4xl px-8 py-9 w-full max-w-105 min-w-105 shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]'>
       {wizard.step === 'credentials' && (
         <>
           <div className='text-center mb-8 relative z-10'>
