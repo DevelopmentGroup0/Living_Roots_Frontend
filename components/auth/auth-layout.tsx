@@ -29,13 +29,17 @@ function FilmStripDecoration({ side }: { side: 'left' | 'right' }) {
 
 function BrandLogo() {
   return (
-    <Link href='/' className='mb-8 flex items-center justify-center gap-3'>
-      <div className='bg-primary/20 ring-primary/30 flex h-11 w-11 items-center justify-center rounded-lg ring-1'>
-        <Film className='text-primary h-6 w-6' />
+    <Link href='/'>
+      <div className='flex items-center justify-center gap-3 mb-6'>
+        <div className='bg-[#D3E2CC] w-11.25 h-11.25 rounded-full flex justify-center items-center shadow-sm'>
+          <svg viewBox='0 0 24 24' className='w-6 h-6 fill-[#0E3321]'>
+            <path d='M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z' />
+          </svg>
+        </div>
+        <h1 className='text-[26px] font-semibold text-[#0E3321] m-0'>
+          Living Roots
+        </h1>
       </div>
-      <span className='text-foreground text-2xl font-bold tracking-tight'>
-        Living Roots
-      </span>
     </Link>
   )
 }
@@ -60,7 +64,7 @@ export function AuthLayout({
   footerLinkHref,
 }: AuthLayoutProps) {
   return (
-    <main className='bg-background relative flex h-screen w-3xl items-center justify-center px-4 py-12'>
+    <main className='bg-background relative flex h-screen w-3xl items-center justify-center px-4 py-12 bg-card-crema shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-[#0E3321]'>
       <BackgroundDecoration />
       <FilmStripDecoration side='left' />
       <FilmStripDecoration side='right' />
@@ -91,13 +95,6 @@ export function AuthLayout({
             {footerLinkText}
           </Link>
         </p>
-
-        {/* Bottom decorative line */}
-        <div className='mt-8 flex items-center justify-center gap-2'>
-          <div className='bg-border h-px w-8' />
-          <Film className='text-muted-foreground/40 h-3 w-3' />
-          <div className='bg-border h-px w-8' />
-        </div>
       </div>
     </main>
   )

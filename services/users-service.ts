@@ -19,6 +19,13 @@ export interface User {
   updateAt: string
 }
 
+export interface UpdateUserPayload {
+  name?: string
+  lastName?: string
+  email?: string
+  phone?: string
+}
+
 export interface UpdateUserRolePayload {
   role: UserRole
 }
@@ -45,7 +52,6 @@ export interface PaginatedUsersResponse {
   meta: PaginationMeta
 }
 
-// Obtiene el token de NextAuth una sola vez y lo reutiliza en la llamada.
 async function getToken(): Promise<string> {
   const session = await getSession()
 
@@ -87,7 +93,6 @@ function buildUsersQuery(filters: UsersFilters): string {
 export const userService = {
   async getAll(filters: UsersFilters = {}): Promise<PaginatedUsersResponse> {
     const token = await getToken()
-
     const query = buildUsersQuery(filters)
 
     return apiClient.get<PaginatedUsersResponse>(`/users${query}`, token)
@@ -99,9 +104,21 @@ export const userService = {
     return apiClient.get<User>(`/users/${id}`, token)
   },
 
+  async update(id: string, data: UpdateUserPayload): Promise<User> {
+    const token = await getToken()
+
+    return apiClient.patch<User>(`/users/${id}`, data, token)
+  },
+
   async updateRole(id: string, data: UpdateUserRolePayload): Promise<User> {
     const token = await getToken()
 
     return apiClient.patch<User>(`/users/${id}/role`, data, token)
+  },
+
+  async delete(id: string): Promise<void> {
+    const token = await getToken()
+
+    return apiClient.delete<void>(`/users/${id}`, token)
   },
 }

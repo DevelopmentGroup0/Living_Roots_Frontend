@@ -1,35 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import { useUsers as useUsersQuery, useUpdateUserRole } from '@/hooks/useUsers'
+import {
+  useDeleteUser,
+  useUpdateUser,
+  useUpdateUserRole,
+  useUsersQuery,
+} from '@/hooks/useUsers'
 
-import type {
-  UserRole,
-  UserSortField,
-  SortDirection,
-} from '@/services/users-service'
+import type { UserSortField, SortDirection } from '@/services/users-service'
 
 const PAGE_SIZE = 10
 
 export function useUsersManagement() {
   const [page, setPage] = useState(1)
-
   const [searchInput, setSearchInput] = useState('')
-
   const [search, setSearch] = useState('')
-
   const [sortBy, setSortBy] = useState<UserSortField>('createdAt')
-
   const [sortDir, setSortDir] = useState<SortDirection>('desc')
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const timer = setTimeout(() => {
       setPage(1)
       setSearch(searchInput.trim())
     }, 300)
 
-    return () => clearTimeout(timeout)
+    return () => clearTimeout(timer)
   }, [searchInput])
 
   const filters = {
@@ -41,50 +38,38 @@ export function useUsersManagement() {
   }
 
   const query = useUsersQuery(filters)
-
-  const updateRole = useUpdateUserRole()
+  const updateUserMutation = useUpdateUser()
+  const updateRoleMutation = useUpdateUserRole()
+  const deleteUserMutation = useDeleteUser()
 
   const toggleSort = (column: UserSortField) => {
     if (sortBy === column) {
       setSortDir((current) => (current === 'asc' ? 'desc' : 'asc'))
-
-      setPage(1)
-      return
+    } else {
+      setSortBy(column)
+      setSortDir('asc')
     }
-
-    setSortBy(column)
-    setSortDir('asc')
     setPage(1)
   }
-
-  const handleRoleChange = (userId: string, role: UserRole) =>
-    updateRole.mutateAsync({
-      userId,
-      role,
-    })
 
   return {
     users: query.data?.data ?? [],
     meta: query.data?.meta,
-
     page,
     setPage,
-
-    PAGE_SIZE,
-
     searchInput,
     setSearchInput,
-
     sortBy,
     sortDir,
     toggleSort,
-
-    handleRoleChange,
-
+    updateUser: updateUserMutation.mutateAsync,
+    updateRole: updateRoleMutation.mutateAsync,
+    deleteUser: deleteUserMutation.mutateAsync,
+    isUpdatingUser: updateUserMutation.isPending,
+    isDeleting: deleteUserMutation.isPending,
+    updateRoleMutation,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     error: query.error,
-
-    updateRole,
   }
 }

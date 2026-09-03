@@ -40,7 +40,7 @@ function buildPersonalFields(
       id: 'email',
       label: 'Correo electrónico',
       type: 'email',
-      placeholder: 'director@cinestudio.com',
+      placeholder: 'comunitario@gmail.com',
       icon: <Mail className='h-4 w-4' />,
       autoComplete: 'email',
     },
