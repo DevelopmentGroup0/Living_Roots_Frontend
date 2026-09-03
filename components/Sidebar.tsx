@@ -28,10 +28,10 @@ const navigationItems: NavItem[] = [
     label: 'Relatos',
   },
   {
-    href: '/auth/register',
+    href: '/users',
     icon: UserRoundPlus,
     permission: 'view:register-users',
-    label: 'Registrar Usuario',
+    label: 'Gestión de usuarios',
   },
   {
     href: '/',
