@@ -52,7 +52,7 @@ export const editPlantSchema = z.object({
     .or(z.literal('')),
 })
 
-const MAX_FILE_SIZE = 3 * 1024 * 1024 // 5MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024 // 3MB
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 export const imageFileSchema = z
@@ -61,7 +61,7 @@ export const imageFileSchema = z
     message: 'Debes seleccionar un archivo válido.',
   })
   .refine((file) => file?.size <= MAX_FILE_SIZE, {
-    message: 'El tamaño máximo de la imagen es 5MB.',
+    message: 'El tamaño máximo de la imagen es 3MB.',
   })
   .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file?.type), {
     message: 'Solo se aceptan formatos de imagen permitidos (.jpg, .jpeg, .png, .webp).',
