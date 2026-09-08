@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import { ImageIcon, X, UploadCloud } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { imageFileSchema } from '@/schemas/herbs.schema';
 
 interface ImageDropzoneProps {
   value: string
@@ -16,6 +17,7 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [preview, setPreview] = useState<string | null>(value || null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [internalError, setInternalError] = useState<string | null>(null)
 
   // Configuramos la mutación para subir la imagen al backend
   const uploadMutation = useMutation({
@@ -47,6 +49,14 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
 
   // Función para procesar el archivo seleccionado o arrastrado
   const processFile = (file: File) => {
+    setInternalError(null)
+    const result = imageFileSchema.safeParse(file)
+    if (!result.success) {
+      // Muestra el error de Zod en la UI local del componente
+      const errorMessage = result.error.issues.map((issue) => issue.message).join(', ')
+      setInternalError(errorMessage)
+      return
+    }
     if (!file.type.startsWith('image/')) return
 
     // Preview local
@@ -171,6 +181,7 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
       </div>
 
       {error && <p className='text-sm text-red-500'>{error}</p>}
+      {internalError && <p className='text-sm text-red-500'>{internalError}</p>}
     </div>
   )
 }

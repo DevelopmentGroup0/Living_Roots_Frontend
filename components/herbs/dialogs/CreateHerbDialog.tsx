@@ -142,6 +142,9 @@ export function CreateHerbDialog({
                       onChange={field.onChange}
                       error={fieldState.error?.message}
                     />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />
