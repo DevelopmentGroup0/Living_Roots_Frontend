@@ -10,7 +10,7 @@ export function PlantImage({ src, alt }: { src?: string | null; alt: string }) {
   )
 
   return (
-    <div className='relative aspect-square w-full overflow-hidden rounded-lg bg-[#E8EFE6]'>
+    <>
       {status === 'loading' && (
         <div className='absolute inset-0 animate-pulse bg-[#DCE5D8]' />
       )}
@@ -23,12 +23,13 @@ export function PlantImage({ src, alt }: { src?: string | null; alt: string }) {
         />
       ) : (
         <img
-          src={src || '/plant-placeholder.svg'}
+          src={src as string}
           alt={alt}
-          className={`object-cover transition-opacity duration-300 ${status === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
-          
+          className={`object-cover transition-opacity duration-300 ${status === 'loaded' ? 'w-full h-full object-cover' : 'opacity-0'}`}
+          onLoad={() => setStatus('loaded')}
+          onError={() => setStatus('error')}
         />
       )}
-    </div>
+    </>
   )
 }

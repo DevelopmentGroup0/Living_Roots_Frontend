@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
 import { useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
@@ -22,7 +21,7 @@ export function HerbCard({ plant }: { plant: Plant }) {
   const router = useRouter()
 
   const handleCardClick = () => {
-    // Aquí podrías, por ejemplo, pre-cargar datos en el caché de React Query si lo necesitaras
+    // Aquí se puede pre-cargar datos en el caché de React Query si lo necesitara
     router.push(`/herb/${plant.herb_id}`)
   }
 
@@ -32,11 +31,6 @@ export function HerbCard({ plant }: { plant: Plant }) {
       onClick={handleCardClick}
     >
       <div className='relative h-80 bg-lr-green-dark/10'>
-        {/* <img
-          src={plant.img}
-          alt={plant.name}
-          className='w-full h-full object-cover'
-        /> */}
         <PlantImage src={plant.img} alt={plant.name} />
 
         <Button

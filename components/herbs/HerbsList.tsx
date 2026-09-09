@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { herbService } from '@/services/herbs-service'
@@ -24,6 +25,8 @@ export function HerbsList({
   initialSymptomId?: string
 }) {
   const router = useRouter()
+  const { data: session, status } = useSession()
+  const token = session?.accessToken as string | undefined
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   const [activeTab, setActiveTab] = useState<
     'catalogo' | 'jigra' | 'comentarios'
@@ -43,7 +46,7 @@ export function HerbsList({
           limit: 12,
           search: query,
           symptomId,
-        }),
+        }, token),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
@@ -86,16 +89,25 @@ export function HerbsList({
             marginRight: isChatExpanded ? '800px' : '0',
           }}
         >
-          {herbs.map((h) => (
-            <HerbCard key={h.name} plant={h} />
-          ))}
           {activeTab === 'catalogo' ? (
             /* LISTA DEL CATÁLOGO */
             <div
               className={`grid gap-6 max-w-7xl mx-auto transition-all duration-300 ${
                 isChatExpanded ? 'grid-cols-1' : 'grid-cols-2'
               }`}
-            ></div>
+            >
+              {herbs.map((h) => (
+                <HerbCard key={h.name} plant={h} />
+              ))}
+              {isFetchingNextPage &&
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={`skeleton-${i}`} className='animate-pulse'>
+                    <div className='aspect-square rounded-lg bg-[#DCE5D8]' />
+                    <div className='mt-2 h-4 w-2/3 rounded bg-[#DCE5D8]' />
+                  </div>
+                ))}
+              <div ref={sentinelRef} className='h-1' />
+            </div>
           ) : activeTab === 'jigra' ? (
             /* MI JIGRA */
             <div className='max-w-6xl mx-auto'></div>
@@ -106,14 +118,6 @@ export function HerbsList({
             </div>
           )}
         </main>
-
-        {isFetchingNextPage &&
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={`skeleton-${i}`} className='animate-pulse'>
-              <div className='aspect-square rounded-lg bg-[#DCE5D8]' />
-              <div className='mt-2 h-4 w-2/3 rounded bg-[#DCE5D8]' />
-            </div>
-          ))}
 
         <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm left-1/2 -translate-x-1/2'>
           <button
@@ -170,7 +174,6 @@ export function HerbsList({
           <Chat isExpanded={true} onExpandedChange={setIsChatExpanded} />
         </div>
       )}
-      <div ref={sentinelRef} className='h-1' />
     </>
   )
 }

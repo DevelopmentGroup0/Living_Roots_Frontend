@@ -7,7 +7,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { herbService } from '@/services/herbs-service'
 import { HerbsList } from '@/components/herbs/HerbsList'
-import { div } from 'motion/react-client'
 
 interface PageProps {
   searchParams: Promise<{ query?: string; symptomId?: string }>
@@ -36,10 +35,9 @@ export default async function Home({ searchParams }: PageProps) {
   return (
     <div className='min-h-screen flex flex-col transition-all duration-500 overflow-x-hidden relative'>
       <div className='flex-1 flex flex-col min-h-screen pb-32'>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <HerbsList initialQuery={query} initialSymptomId={symptomId} />
-      </HydrationBoundary>
-
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <HerbsList initialQuery={query} initialSymptomId={symptomId} />
+        </HydrationBoundary>
       </div>
     </div>
   )
