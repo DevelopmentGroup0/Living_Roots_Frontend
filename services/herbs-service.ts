@@ -4,6 +4,24 @@ import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import type { MedicinalHerb, Plant } from '@/components/herbs/interfaces'
 
+export interface ListHerbsParams {
+  page?: number
+  limit?: number
+  search?: string
+  symptomId?: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  meta: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNextPage: boolean
+  }
+}
+
 export const HerbService = {
   getAll: async (token: string, query?: string) => {
     const endpoint = query ? `/herbs?search=${query}` : '/herbs'
@@ -25,9 +43,17 @@ async function getToken(): Promise<string | undefined> {
 }
 
 export const herbService = {
-  async getAll(): Promise<Plant[]> {
-    const token = await getToken()
-    return apiClient.get<Plant[]>('/herbs', token)
+  async getAll(
+    params: ListHerbsParams = {},
+    token?: string,
+  ): Promise<PaginatedResponse<Plant>> {
+    const sp = new URLSearchParams()
+    if (params.page) sp.set('page', String(params.page))
+    if (params.limit) sp.set('limit', String(params.limit))
+    if (params.search) sp.set('search', params.search)
+    if (params.symptomId) sp.set('symptomId', params.symptomId)
+    // const token = await getToken()
+    return apiClient.get(`/herbs?${sp}`, token)
   },
 
   async getById(id: string): Promise<Plant> {

@@ -1,21 +1,46 @@
-import { Main } from '@/components/Main'
-import { Plant } from '@/components/herbs/interfaces'
-import { HerbService } from '@/services/herbs-service'
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { herbService } from '@/services/herbs-service'
+import { HerbsList } from '@/components/herbs/HerbsList'
+import { div } from 'motion/react-client'
 
 interface PageProps {
-  // En Next.js 15+ searchParams es una Promise
-  searchParams: Promise<{ query?: string }>
+  searchParams: Promise<{ query?: string; symptomId?: string }>
 }
 
 export default async function Home({ searchParams }: PageProps) {
-  const { query } = await searchParams
+  const { query = '', symptomId } = await searchParams
   const session = await getServerSession(authOptions)
-  const allHerbs = (await HerbService.getAll(
-    session?.accessToken as string,
-    query || '',
-  )) as Plant[]
+  const queryClient = new QueryClient()
 
-  return <Main herbs={allHerbs} />
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ['herbs', query, symptomId],
+    queryFn: () =>
+      herbService.getAll(
+        {
+          page: 1,
+          limit: 12,
+          search: query,
+          symptomId,
+        },
+        session?.accessToken,
+      ),
+    initialPageParam: 1,
+  })
+
+  return (
+    <div className='min-h-screen flex flex-col transition-all duration-500 overflow-x-hidden relative'>
+      <div className='flex-1 flex flex-col min-h-screen pb-32'>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <HerbsList initialQuery={query} initialSymptomId={symptomId} />
+      </HydrationBoundary>
+
+      </div>
+    </div>
+  )
 }

@@ -1,34 +1,84 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { HerbCard } from '@/components/herbs/HerbCard'
-import { Chat } from '@/components/chat/Chat'
+
+import { useEffect, useRef, useState } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { herbService } from '@/services/herbs-service'
+// import { SymptomCombobox } from '@/components/syptoms/SymptomCombobox'
+import { HerbCard } from './HerbCard'
+import { FeedbackForm } from '../emails/Contact-Form'
 import {
   Leaf,
-  ScanEye,
-  MessageSquare,
-  ShoppingBag,
   MessageCircle,
+  MessageSquare,
+  ScanEye,
+  ShoppingBag,
 } from 'lucide-react'
-import { Plant } from './herbs/interfaces'
-import { FeedbackForm } from './emails/Contact-Form'
+import { Chat } from '../chat/Chat'
 
-export function Main({ herbs }: { herbs: Plant[] }) {
+export function HerbsList({
+  initialQuery,
+  initialSymptomId,
+}: {
+  initialQuery: string
+  initialSymptomId?: string
+}) {
   const router = useRouter()
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   const [activeTab, setActiveTab] = useState<
     'catalogo' | 'jigra' | 'comentarios'
   >('catalogo')
+  const searchParams = useSearchParams()
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const query = searchParams.get('query') ?? initialQuery
+  const symptomId = searchParams.get('symptomId') ?? initialSymptomId
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ['herbs', query, symptomId],
+      queryFn: ({ pageParam }) =>
+        herbService.getAll({
+          page: pageParam,
+          limit: 12,
+          search: query,
+          symptomId,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+    })
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) =>
+        entry.isIntersecting &&
+        hasNextPage &&
+        !isFetchingNextPage &&
+        fetchNextPage(),
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
+
+  const herbs = data?.pages.flatMap((page) => page.data) ?? []
+  console.log('Data inicial', herbs)
+  //   const handleSymptomChange = (newSymptomId?: string) => {
+  //     const params = new URLSearchParams(searchParams.toString())
+  //     newSymptomId
+  //       ? params.set('symptomId', newSymptomId)
+  //       : params.delete('symptomId')
+  //     router.push(`?${params.toString()}`)
+  //   }
+  //   <div className='mb-6 flex justify-end'>
+  //     <SymptomCombobox value={symptomId} onChange={handleSymptomChange} />
+  //   </div>
 
   return (
-    <div
-      className='min-h-screen flex flex-col transition-all duration-500 overflow-x-hidden relative'
-      style={{
-        backgroundColor: '#F4EFE4',
-        backgroundRepeat: 'repeat',
-      }}
-    >
-      {/* CONTENIDO PRINCIPAL SIEMPRE VISIBLE */}
+    <>
       <div className='flex-1 flex flex-col min-h-screen pb-32'>
         <main
           className='flex-1 overflow-auto p-4 md:p-6 '
@@ -36,15 +86,16 @@ export function Main({ herbs }: { herbs: Plant[] }) {
             marginRight: isChatExpanded ? '800px' : '0',
           }}
         >
+          {herbs.map((h) => (
+            <HerbCard key={h.name} plant={h} />
+          ))}
           {activeTab === 'catalogo' ? (
             /* LISTA DEL CATÁLOGO */
             <div
               className={`grid gap-6 max-w-7xl mx-auto transition-all duration-300 ${
                 isChatExpanded ? 'grid-cols-1' : 'grid-cols-2'
               }`}
-            >
-              
-            </div>
+            ></div>
           ) : activeTab === 'jigra' ? (
             /* MI JIGRA */
             <div className='max-w-6xl mx-auto'></div>
@@ -56,7 +107,14 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           )}
         </main>
 
-        {/* MENÚ INFERIOR */}
+        {isFetchingNextPage &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={`skeleton-${i}`} className='animate-pulse'>
+              <div className='aspect-square rounded-lg bg-[#DCE5D8]' />
+              <div className='mt-2 h-4 w-2/3 rounded bg-[#DCE5D8]' />
+            </div>
+          ))}
+
         <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm left-1/2 -translate-x-1/2'>
           <button
             onClick={() => {
@@ -106,13 +164,13 @@ export function Main({ herbs }: { herbs: Plant[] }) {
           </button>
         </nav>
       </div>
-
       {isChatExpanded && (
         <div className='fixed z-40 flex items-center justify-center p-4animate-in fade-in duration-300'>
           {/* Ventana de Conversación del Chat */}
           <Chat isExpanded={true} onExpandedChange={setIsChatExpanded} />
         </div>
       )}
-    </div>
+      <div ref={sentinelRef} className='h-1' />
+    </>
   )
 }

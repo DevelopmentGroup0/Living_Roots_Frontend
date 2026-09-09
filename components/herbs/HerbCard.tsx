@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plant } from './interfaces'
 import { useFavorites } from '@/hooks/useFavorites'
+import { PlantImage } from './PlantImage';
 
 export function HerbCard({ plant }: { plant: Plant }) {
   const { toggleFavorite, isFavorite } = useFavorites()
@@ -31,11 +32,12 @@ export function HerbCard({ plant }: { plant: Plant }) {
       onClick={handleCardClick}
     >
       <div className='relative h-80 bg-lr-green-dark/10'>
-        <img
+        {/* <img
           src={plant.img}
           alt={plant.name}
           className='w-full h-full object-cover'
-        />
+        /> */}
+        <PlantImage src={plant.img} alt={plant.name} />
 
         <Button
           variant='ghost'

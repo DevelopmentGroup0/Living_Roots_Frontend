@@ -1,4 +1,5 @@
 import { Symptom } from '@/components/syptoms/interfaces'
+import { apiClient } from '@/lib/api-client'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
@@ -10,5 +11,9 @@ export const symptomService = {
     )
     if (!res.ok) return []
     return res.json()
+  },
+
+  async getAll(): Promise<Symptom[]> {
+    return apiClient.get<Symptom[]>(`${BASE_URL}/symptoms`)
   },
 }
