@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { useHerbs } from '@/hooks/queries/useHerbs'
 import { useHerbMutations } from '@/hooks/mutations/useHerbMutations'
@@ -6,11 +7,28 @@ import { Input } from '@/components/ui/input'
 import { PlantTable } from './PlantTable'
 import { BackupRestorePanel } from './BackupRestorePanel'
 
+const LIMIT = 10
+
 export function PlantManagement() {
-  const { data: herbs = [], isLoading, isError } = useHerbs()
+  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearch(searchInput)
+      setPage(1)
+    }, 400)
+    return () => clearTimeout(timeout)
+  }, [searchInput])
+
+  const { data, isLoading, isError } = useHerbs({ page, limit: LIMIT, search })
   const { create, update, remove, addSymptom } = useHerbMutations()
 
-  if (isLoading) return <p>Cargando plantas...</p>
+  const herbs = data?.data ?? []
+  const meta = data?.meta
+
+  if (isLoading && !data) return <p>Cargando plantas...</p>
   if (isError) return <p>Error al cargar las plantas.</p>
 
   return (
@@ -28,6 +46,8 @@ export function PlantManagement() {
             type='text'
             placeholder='Buscar plantas...'
             className='pl-10'
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
       </div>
@@ -44,6 +64,15 @@ export function PlantManagement() {
         isEditing={update.isPending}
         isDeleting={remove.isPending}
         isAddingSymptom={addSymptom.isPending}
+        pagination={
+          meta && {
+            page: meta.page,
+            totalPages: meta.totalPages,
+            total: meta.total,
+            limit: meta.limit,
+            onPageChange: setPage,
+          }
+        }
       />
 
       <BackupRestorePanel />

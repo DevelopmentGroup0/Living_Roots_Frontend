@@ -17,6 +17,11 @@ import { DeletePlantDialog } from './dialogs/DeletePlantDialog'
 import { usePlantDialogs } from '@/hooks/usePlantDialogs'
 import { Plant } from './interfaces'
 // import type { Plant } from '@/types/plant'
+import {
+  PaginationControls,
+  PaginationControlsProps,
+} from './PaginationControls'
+
 import type {
   CreateHerbFormValues,
   EditPlantFormInput,
@@ -32,14 +37,15 @@ import { HerbIdCell } from '../ui/HerbIdCell'
 // PlantTable.tsx
 interface PlantTableProps {
   herbs: Plant[]
-  onCreate: (data: CreateHerbFormValues) => Promise<Plant> // ← era Promise<void>
+  onCreate: (data: CreateHerbFormValues) => Promise<Plant>
   onEdit: (id: string, data: EditPlantFormInput) => Promise<Plant>
-  onDelete: (id: string) => Promise<void> // delete sí retorna void
+  onDelete: (id: string) => Promise<void>
   onAddSymptom: (herbId: string, data: AddSymptomFormValues) => Promise<void>
   isCreating?: boolean
   isEditing?: boolean
   isDeleting?: boolean
   isAddingSymptom?: boolean
+  pagination?: PaginationControlsProps
 }
 
 type SelectedSymptom = { plantId: string; symptomIndex: number } | null
@@ -54,6 +60,7 @@ export function PlantTable({
   isCreating = false,
   isEditing = false,
   isDeleting = false,
+  pagination,
 }: PlantTableProps) {
   const [selectedSymptom, setSelectedSymptom] = useState<SelectedSymptom>(null)
   const {
@@ -213,6 +220,7 @@ export function PlantTable({
             ))}
           </TableBody>
         </Table>
+        {pagination && <PaginationControls {...pagination} />}
       </div>
       <AddSymptomDialog
         plant={selectedPlant}
