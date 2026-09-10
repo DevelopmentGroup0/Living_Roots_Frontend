@@ -1,5 +1,4 @@
 import { Symptom } from '@/components/syptoms/interfaces'
-import { apiClient } from '@/lib/api-client'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
@@ -14,6 +13,11 @@ export const symptomService = {
   },
 
   async getAll(): Promise<Symptom[]> {
-    return apiClient.get<Symptom[]>(`${BASE_URL}/symptoms`)
+    console.log('Fetching all symptoms from API...', {
+      baseUrl: `${BASE_URL}/symptoms`,
+    })
+    const res = await fetch(`${BASE_URL}/symptoms`)
+    if (!res.ok) return []
+    return res.json()
   },
 }

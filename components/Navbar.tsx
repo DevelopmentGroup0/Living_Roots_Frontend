@@ -1,5 +1,6 @@
 import { UserAvatarButton } from './auth/user-button'
 import { SearchBar } from './search/SearchBar'
+import { SearchSymptom } from './search/SearchSymptom'
 
 export function Navbar() {
   return (
@@ -9,6 +10,9 @@ export function Navbar() {
       </h2>
       <div className='flex-1 flex justify-center'>
         <SearchBar />
+      </div>
+      <div className='flex justify-center'>
+        <SearchSymptom />
       </div>
 
       <div className='flex items-center gap-4'>

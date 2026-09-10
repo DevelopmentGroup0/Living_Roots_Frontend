@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { herbService } from '@/services/herbs-service'
-// import { SymptomCombobox } from '@/components/syptoms/SymptomCombobox'
 import { HerbCard } from './HerbCard'
 import { FeedbackForm } from '../emails/Contact-Form'
 import {
@@ -25,7 +24,7 @@ export function HerbsList({
   initialSymptomId?: string
 }) {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const token = session?.accessToken as string | undefined
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   const [activeTab, setActiveTab] = useState<
@@ -41,12 +40,15 @@ export function HerbsList({
     useInfiniteQuery({
       queryKey: ['herbs', query, symptomId],
       queryFn: ({ pageParam }) =>
-        herbService.getAll({
-          page: pageParam,
-          limit: 12,
-          search: query,
-          symptomId,
-        }, token),
+        herbService.getAll(
+          {
+            page: pageParam,
+            limit: 12,
+            search: query,
+            symptomId,
+          },
+          token,
+        ),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
         lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
@@ -68,21 +70,11 @@ export function HerbsList({
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   const herbs = data?.pages.flatMap((page) => page.data) ?? []
-  console.log('Data inicial', herbs)
-  //   const handleSymptomChange = (newSymptomId?: string) => {
-  //     const params = new URLSearchParams(searchParams.toString())
-  //     newSymptomId
-  //       ? params.set('symptomId', newSymptomId)
-  //       : params.delete('symptomId')
-  //     router.push(`?${params.toString()}`)
-  //   }
-  //   <div className='mb-6 flex justify-end'>
-  //     <SymptomCombobox value={symptomId} onChange={handleSymptomChange} />
-  //   </div>
-
+ 
   return (
     <>
       <div className='flex-1 flex flex-col min-h-screen pb-32'>
+        
         <main
           className='flex-1 overflow-auto p-4 md:p-6 '
           style={{

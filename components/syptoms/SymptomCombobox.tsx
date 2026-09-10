@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -32,11 +31,12 @@ export function SymptomCombobox({
     queryKey: ['symptoms'],
     queryFn: symptomService.getAll,
   })
+
   const selected = symptoms.find((s) => s.symptom_id === value)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger className='w-60 flex justify-center items-center'>
         {selected ? selected.name : 'Filtrar por síntoma...'}
         <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
       </PopoverTrigger>
