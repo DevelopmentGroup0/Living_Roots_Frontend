@@ -8,7 +8,6 @@ import { herbService } from '@/services/herbs-service'
 import { HerbCard } from './HerbCard'
 import { FeedbackForm } from '../emails/Contact-Form'
 import {
-  Leaf,
   MessageCircle,
   MessageSquare,
   ScanEye,
@@ -70,11 +69,10 @@ export function HerbsList({
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   const herbs = data?.pages.flatMap((page) => page.data) ?? []
- 
+
   return (
     <>
       <div className='flex-1 flex flex-col min-h-screen pb-32'>
-        
         <main
           className='flex-1 overflow-auto p-4 md:p-6 '
           style={{
@@ -118,7 +116,9 @@ export function HerbsList({
             }}
             className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'catalogo' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
           >
-            <Leaf size={20} />
+            <svg viewBox='0 0 24 24' className={`w-6 h-6 fill-current`}>
+              <path d='M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z' />
+            </svg>
             <span className='text-[9px] font-bold uppercase tracking-tighter'>
               Catálogo
             </span>
@@ -129,7 +129,7 @@ export function HerbsList({
             }}
             className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'comentarios' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
           >
-            <MessageCircle size={20} />
+            <MessageCircle size={26} />
             <span className='text-[9px] font-bold uppercase tracking-tighter'>
               Mensajes
             </span>
@@ -141,9 +141,9 @@ export function HerbsList({
             onClick={() => setIsChatExpanded(!isChatExpanded)}
             className={`flex flex-col items-center gap-1 transition-all ${isChatExpanded ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
           >
-            <MessageSquare size={20} />
+            <MessageSquare size={26} />
             <span className='text-[9px] font-bold uppercase tracking-tighter'>
-              The Wala
+              Wala IA
             </span>
           </button>
           <button
@@ -153,7 +153,7 @@ export function HerbsList({
             }}
             className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'jigra' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
           >
-            <ShoppingBag size={20} />
+            <ShoppingBag size={26} />
             <span className='text-[9px] font-bold uppercase tracking-tighter'>
               Mi Jigra
             </span>

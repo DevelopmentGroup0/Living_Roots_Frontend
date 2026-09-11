@@ -13,10 +13,7 @@ export const symptomService = {
   },
 
   async getAll(): Promise<Symptom[]> {
-    console.log('Fetching all symptoms from API...', {
-      baseUrl: `${BASE_URL}/symptoms`,
-    })
-    const res = await fetch(`${BASE_URL}/symptoms`)
+    const res = await fetch(`${BASE_URL}/symptoms/all`)
     if (!res.ok) return []
     return res.json()
   },
