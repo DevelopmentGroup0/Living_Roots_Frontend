@@ -4,6 +4,12 @@ import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import type { MedicinalHerb, Plant } from '@/components/herbs/interfaces'
 
+export interface UpdateTreatmentPayload {
+  partsplant?: string
+  prepare?: string
+  apply?: string
+}
+
 export interface ListHerbsParams {
   page?: number
   limit?: number
@@ -84,5 +90,26 @@ export const herbService = {
   async addSymptom(herbId: string, data: AddSymptomFormValues): Promise<void> {
     const token = await getToken()
     return apiClient.post<void>(`/herbs/${herbId}/symptoms`, data, token)
+  },
+
+  async updateTreatment(
+    herbId: string,
+    symptomId: string,
+    data: UpdateTreatmentPayload,
+  ) {
+    const token = await getToken()
+    return apiClient.patch<void>(
+      `/herbs/${herbId}/symptoms/${symptomId}`,
+      data,
+      token,
+    )
+  },
+
+  async removeTreatment(herbId: string, symptomId: string) {
+    const token = await getToken()
+    return apiClient.delete<void>(
+      `/herbs/${herbId}/symptoms/${symptomId}`,
+      token,
+    )
   },
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit, Trash2, FlaskConical, CirclePlus } from 'lucide-react'
+import { Edit, Trash2, X, PlusCircle, CirclePlus } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -14,37 +14,44 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { EditPlantDialog } from './dialogs/EditPlantDialog'
 import { DeletePlantDialog } from './dialogs/DeletePlantDialog'
-import { usePlantDialogs } from '@/hooks/usePlantDialogs'
-import { Plant } from './interfaces'
-// import type { Plant } from '@/types/plant'
 import {
-  PaginationControls,
-  PaginationControlsProps,
-} from './PaginationControls'
-
+  EditSymptomDialog,
+  EditTreatmentFormValues,
+} from './dialogs/EditSymptomDialog'
+import { usePlantDialogs } from '@/hooks/usePlantDialogs'
+import { Plant, HerbTreatment } from './interfaces'
 import type {
   CreateHerbFormValues,
   EditPlantFormInput,
 } from '@/schemas/herbs.schema'
-
-import { PlusCircle } from 'lucide-react'
+import {
+  PaginationControls,
+  PaginationControlsProps,
+} from './PaginationControls'
 import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
 import { CreateHerbDialog } from './dialogs/CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import { ExpandableDescription } from '../ui/table-cell-dinamic-h'
 import { HerbIdCell } from '../ui/HerbIdCell'
 
-// PlantTable.tsx
 interface PlantTableProps {
   herbs: Plant[]
   onCreate: (data: CreateHerbFormValues) => Promise<Plant>
   onEdit: (id: string, data: EditPlantFormInput) => Promise<Plant>
   onDelete: (id: string) => Promise<void>
   onAddSymptom: (herbId: string, data: AddSymptomFormValues) => Promise<void>
+  onEditSymptom: (
+    herbId: string,
+    symptomId: string,
+    data: EditTreatmentFormValues,
+  ) => Promise<void>
+  onRemoveSymptom: (herbId: string, symptomId: string) => Promise<void>
   isCreating?: boolean
   isEditing?: boolean
   isDeleting?: boolean
   isAddingSymptom?: boolean
+  isEditingSymptom?: boolean
+  isRemovingSymptom?: boolean
   pagination?: PaginationControlsProps
 }
 
@@ -55,14 +62,19 @@ export function PlantTable({
   onEdit,
   onDelete,
   onAddSymptom,
+  onEditSymptom,
+  onRemoveSymptom,
   onCreate,
   isAddingSymptom = false,
   isCreating = false,
   isEditing = false,
   isDeleting = false,
+  isEditingSymptom = false,
+  isRemovingSymptom = false,
   pagination,
 }: PlantTableProps) {
   const [selectedSymptom, setSelectedSymptom] = useState<SelectedSymptom>(null)
+  const [editSymptomOpen, setEditSymptomOpen] = useState(false)
   const {
     selectedPlant,
     editOpen,
@@ -86,6 +98,22 @@ export function PlantTable({
     )
   }
 
+  const handleRemoveSymptom = (
+    e: React.MouseEvent,
+    herbId: string,
+    symptomId: string,
+  ) => {
+    e.stopPropagation()
+    onRemoveSymptom(herbId, symptomId)
+    setSelectedSymptom((prev) => (prev?.plantId === herbId ? null : prev))
+  }
+
+  const activeTreatment: HerbTreatment | null = selectedSymptom
+    ? (herbs.find((h) => h.herb_id === selectedSymptom.plantId)?.symptoms[
+        selectedSymptom.symptomIndex
+      ] ?? null)
+    : null
+
   return (
     <>
       <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
@@ -103,14 +131,6 @@ export function PlantTable({
               <TableHead className='w-50 text-gray-600'>NOMBRE</TableHead>
               <TableHead className='text-gray-600'>DESCRIPCIÓN</TableHead>
               <TableHead className='w-75 text-gray-600'>SÍNTOMAS</TableHead>
-              {selectedSymptom && (
-                <TableHead className='w-100 text-gray-600'>
-                  <div className='flex items-center gap-2'>
-                    <FlaskConical className='w-4 h-4 text-green-600' />
-                    PREPARACIÓN
-                  </div>
-                </TableHead>
-              )}
               <TableHead className='w-20 text-right text-gray-600'>
                 ACCIONES
               </TableHead>
@@ -119,55 +139,68 @@ export function PlantTable({
           <TableBody>
             {herbs.map((plant) => (
               <TableRow key={plant.herb_id}>
-                <TableCell className='font-mono text-sm'>
+                <TableCell className='font-mono text-sm align-top'>
                   <HerbIdCell id={plant.herb_id} />
                 </TableCell>
-                <TableCell className='font-medium text-gray-900'>
+                <TableCell className='font-medium text-gray-900 align-top'>
                   {plant.name}
                 </TableCell>
                 <TableCell className='text-gray-600 text-sm align-top max-w-58'>
                   <ExpandableDescription description={plant.description} />
                 </TableCell>
-                <TableCell>
-                  <div className='flex flex-wrap gap-1.5 items-center'>
-                    {plant.symptoms.map((symptom, index) => {
-                      const isSelected =
-                        selectedSymptom?.plantId === plant.herb_id &&
-                        selectedSymptom?.symptomIndex === index
-                      return (
-                        <Badge
-                          key={index}
-                          variant='secondary'
-                          className={`text-xs cursor-pointer transition-all ${
-                            isSelected
-                              ? 'bg-green-600 text-white hover:bg-green-700'
-                              : 'bg-green-50 text-green-700 hover:bg-green-100'
-                          }`}
-                          onClick={() =>
-                            handleSymptomClick(plant.herb_id, index)
-                          }
-                          title={`Click para ver preparación: ${symptom.prepare}`}
-                        >
-                          {symptom.symptom.name}
-                        </Badge>
-                      )
-                    })}
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='h-4 w-4 cursor-pointer'
-                      onClick={() => openAddSymptom(plant)}
-                      title='Agregar síntoma'
-                    >
-                      <PlusCircle className='h-4 w-4 text-green-600' />
-                    </Button>
-                  </div>
-                </TableCell>
-                {selectedSymptom && (
-                  <TableCell className='align-top'>
-                    {selectedSymptom.plantId === plant.herb_id ? (
-                      <div className='bg-green-50 rounded-lg p-4 border border-green-200'>
-                        <div className='flex items-center gap-2 mb-3'>
+                <TableCell className='align-top'>
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex flex-wrap gap-1.5 items-center'>
+                      {plant.symptoms.map((treatment, index) => {
+                        const isSelected =
+                          selectedSymptom?.plantId === plant.herb_id &&
+                          selectedSymptom?.symptomIndex === index
+                        return (
+                          <Badge
+                            key={treatment.symptomId}
+                            variant='secondary'
+                            className={`group relative text-xs cursor-pointer transition-all pr-1 ${
+                              isSelected
+                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                : 'bg-green-50 text-green-700 hover:bg-green-100'
+                            }`}
+                            onClick={() =>
+                              handleSymptomClick(plant.herb_id, index)
+                            }
+                            title='Click para ver detalles'
+                          >
+                            {treatment.symptom.name}
+                            <button
+                              onClick={(e) =>
+                                handleRemoveSymptom(
+                                  e,
+                                  plant.herb_id,
+                                  treatment.symptomId,
+                                )
+                              }
+                              disabled={isRemovingSymptom}
+                              className='ml-1 hidden group-hover:inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10 disabled:opacity-40'
+                              title='Eliminar síntoma'
+                            >
+                              <X className='h-3 w-3' />
+                            </button>
+                          </Badge>
+                        )
+                      })}
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='h-4 w-4 cursor-pointer'
+                        onClick={() => openAddSymptom(plant)}
+                        title='Agregar síntoma'
+                      >
+                        <PlusCircle className='h-4 w-4 text-green-600' />
+                      </Button>
+                    </div>
+
+                    {selectedSymptom?.plantId === plant.herb_id && (
+                      <div className='bg-green-50 rounded-lg p-3 border border-green-200 text-sm space-y-2'>
+                        <div className='flex items-center justify-between gap-2'>
                           <Badge
                             variant='secondary'
                             className='bg-green-600 text-white'
@@ -177,26 +210,40 @@ export function PlantTable({
                                 .symptom.name
                             }
                           </Badge>
-                          <span className='text-xs text-green-700 font-medium'>
-                            →{' '}
-                            {
-                              plant.symptoms[selectedSymptom.symptomIndex]
-                                .prepare
-                            }
-                          </span>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='h-6 w-6'
+                            onClick={() => setEditSymptomOpen(true)}
+                            title='Editar tratamiento'
+                          >
+                            <Edit className='h-3.5 w-3.5 text-green-700' />
+                          </Button>
                         </div>
-                        <ol className='space-y-2 text-sm'>
-                          {plant.symptoms[selectedSymptom.symptomIndex].apply}
-                        </ol>
-                      </div>
-                    ) : (
-                      <div className='text-gray-400 text-sm italic text-center py-4'>
-                        Selecciona un síntoma
+                        <p>
+                          <span className='font-medium'>
+                            Partes de la planta:{' '}
+                          </span>
+                          {
+                            plant.symptoms[selectedSymptom.symptomIndex]
+                              .partsplant
+                          }
+                        </p>
+                        <p>
+                          <span className='font-medium'>Preparación: </span>
+                          {plant.symptoms[selectedSymptom.symptomIndex].prepare}
+                        </p>
+                        {plant.symptoms[selectedSymptom.symptomIndex].apply && (
+                          <p>
+                            <span className='font-medium'>Aplicación: </span>
+                            {plant.symptoms[selectedSymptom.symptomIndex].apply}
+                          </p>
+                        )}
                       </div>
                     )}
-                  </TableCell>
-                )}
-                <TableCell className='text-right'>
+                  </div>
+                </TableCell>
+                <TableCell className='text-right align-top'>
                   <div className='flex justify-end gap-2'>
                     <Button
                       variant='ghost'
@@ -222,6 +269,7 @@ export function PlantTable({
         </Table>
         {pagination && <PaginationControls {...pagination} />}
       </div>
+
       <AddSymptomDialog
         plant={selectedPlant}
         open={addSymptomOpen}
@@ -242,7 +290,13 @@ export function PlantTable({
         onSubmit={onEdit}
         isLoading={isEditing}
       />
-
+      <EditSymptomDialog
+        treatment={activeTreatment}
+        open={editSymptomOpen}
+        onOpenChange={setEditSymptomOpen}
+        onSubmit={onEditSymptom}
+        isLoading={isEditingSymptom}
+      />
       <DeletePlantDialog
         plant={selectedPlant}
         open={deleteOpen}

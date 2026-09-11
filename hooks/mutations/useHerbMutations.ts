@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { herbService } from '@/services/herbs-service'
+import { herbService, UpdateTreatmentPayload } from '@/services/herbs-service'
 import { QUERY_KEYS } from '@/constants/query-keys'
 import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
 
-export function useHerbMutations() { 
+export function useHerbMutations() {
   const queryClient = useQueryClient()
 
   // Función reutilizable — todas las mutations invalidan el mismo cache
@@ -46,5 +46,29 @@ export function useHerbMutations() {
     onSuccess: invalidateHerbs,
   })
 
-  return { create, update, remove, addSymptom }
+  const updateSymptom = useMutation({
+    mutationFn: ({
+      herbId,
+      symptomId,
+      data,
+    }: {
+      herbId: string
+      symptomId: string
+      data: UpdateTreatmentPayload
+    }) => herbService.updateTreatment(herbId, symptomId, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['herbs'] }),
+  })
+
+  const removeSymptom = useMutation({
+    mutationFn: ({
+      herbId,
+      symptomId,
+    }: {
+      herbId: string
+      symptomId: string
+    }) => herbService.removeTreatment(herbId, symptomId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['herbs'] }),
+  })
+
+  return { create, update, remove, addSymptom, updateSymptom, removeSymptom }
 }

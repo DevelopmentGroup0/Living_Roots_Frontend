@@ -13,7 +13,7 @@ export function PlantManagement() {
   const [page, setPage] = useState(1)
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
-  
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setSearch(searchInput)
@@ -23,7 +23,8 @@ export function PlantManagement() {
   }, [searchInput])
 
   const { data, isLoading, isError } = useHerbs({ page, limit: LIMIT, search })
-  const { create, update, remove, addSymptom } = useHerbMutations()
+  const { create, update, remove, addSymptom, updateSymptom, removeSymptom } =
+    useHerbMutations()
 
   const herbs = data?.data ?? []
   const meta = data?.meta
@@ -60,10 +61,18 @@ export function PlantManagement() {
         onAddSymptom={(herbId, data) =>
           addSymptom.mutateAsync({ herbId, data })
         }
+        onEditSymptom={(herbId, symptomId, data) =>
+          updateSymptom.mutateAsync({ herbId, symptomId, data })
+        }
+        onRemoveSymptom={(herbId, symptomId) =>
+          removeSymptom.mutateAsync({ herbId, symptomId })
+        }
         isCreating={create.isPending}
         isEditing={update.isPending}
         isDeleting={remove.isPending}
         isAddingSymptom={addSymptom.isPending}
+        isEditingSymptom={updateSymptom.isPending}
+        isRemovingSymptom={removeSymptom.isPending}
         pagination={
           meta && {
             page: meta.page,
@@ -74,7 +83,6 @@ export function PlantManagement() {
           }
         }
       />
-
       <BackupRestorePanel />
     </div>
   )
