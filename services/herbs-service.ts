@@ -2,7 +2,7 @@ import { getSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api-client'
 import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
-import type { MedicinalHerb, Plant } from '@/components/herbs/interfaces'
+import type { HerbTreatment, Plant } from '@/components/herbs/interfaces'
 
 export interface UpdateTreatmentPayload {
   partsplant?: string
@@ -35,7 +35,7 @@ export const HerbService = {
   },
 
   getById: async (id: string, token: string) => {
-    return apiClient.get<MedicinalHerb>(`/herbs/${id}`, token)
+    return apiClient.get<HerbTreatment>(`/herbs/${id}`, token)
   },
 }
 
@@ -58,7 +58,6 @@ export const herbService = {
     if (params.limit) sp.set('limit', String(params.limit))
     if (params.search) sp.set('search', params.search)
     if (params.symptomId) sp.set('symptomId', params.symptomId)
-    // const token = await getToken()
     return apiClient.get(`/herbs?${sp}`, token)
   },
 
@@ -98,6 +97,16 @@ export const herbService = {
     data: UpdateTreatmentPayload,
   ) {
     const token = await getToken()
+    console.log(
+      'Updating treatment for herbId:',
+      herbId,
+      'symptomId:',
+      symptomId,
+      'with data:',
+      data,
+      'and token:',
+      token,
+    )
     return apiClient.patch<void>(
       `/herbs/${herbId}/symptoms/${symptomId}`,
       data,

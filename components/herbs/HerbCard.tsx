@@ -60,7 +60,7 @@ export function HerbCard({ plant }: { plant: Plant }) {
         <div className='flex flex-wrap gap-2'>
           {plant.symptoms.map((symptom, index) => (
             <Badge key={index} variant='default'>
-              {symptom.symptom.name}
+              {symptom.name}
             </Badge>
           ))}
         </div>

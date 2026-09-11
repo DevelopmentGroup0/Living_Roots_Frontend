@@ -27,6 +27,7 @@ export type EditTreatmentFormValues = z.infer<typeof editTreatmentSchema>
 interface EditSymptomDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  herbId: string | null
   treatment: HerbTreatment | null
   onSubmit: (
     herbId: string,
@@ -39,6 +40,7 @@ interface EditSymptomDialogProps {
 export function EditSymptomDialog({
   open,
   onOpenChange,
+  herbId,
   treatment,
   onSubmit,
   isLoading,
@@ -54,10 +56,9 @@ export function EditSymptomDialog({
       : undefined,
   })
 
-  if (!treatment) return null
-
+  if (!treatment || !herbId) return null
   const handleSubmit = form.handleSubmit(async (data) => {
-    await onSubmit(treatment.herbId, treatment.symptomId, data)
+    await onSubmit(herbId, treatment.symptomId, data)
     onOpenChange(false)
   })
 
@@ -65,9 +66,7 @@ export function EditSymptomDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Editar tratamiento — {treatment.symptom.name}
-          </DialogTitle>
+          <DialogTitle>Editar tratamiento — {treatment.name}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='space-y-1.5'>

@@ -114,6 +114,8 @@ export function PlantTable({
       ] ?? null)
     : null
 
+  console.log('Rendering PlantTable with selectedSymptom:', selectedSymptom)
+
   return (
     <>
       <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
@@ -169,7 +171,7 @@ export function PlantTable({
                             }
                             title='Click para ver detalles'
                           >
-                            {treatment.symptom.name}
+                            {treatment.name}
                             <button
                               onClick={(e) =>
                                 handleRemoveSymptom(
@@ -205,10 +207,7 @@ export function PlantTable({
                             variant='secondary'
                             className='bg-green-600 text-white'
                           >
-                            {
-                              plant.symptoms[selectedSymptom.symptomIndex]
-                                .symptom.name
-                            }
+                            {plant.symptoms[selectedSymptom.symptomIndex].name}
                           </Badge>
                           <Button
                             variant='ghost'
@@ -291,6 +290,7 @@ export function PlantTable({
         isLoading={isEditing}
       />
       <EditSymptomDialog
+        herbId={selectedSymptom?.plantId ?? null}
         treatment={activeTreatment}
         open={editSymptomOpen}
         onOpenChange={setEditSymptomOpen}
