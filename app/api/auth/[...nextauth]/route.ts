@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
             sub: decoded.sub,
             email: decoded.email,
             role: decoded.role as Role,
-            accessTokenExpires: decoded.exp,
+            accessTokenExpires: decoded.exp * 1000,
           }
         } catch {
           // Token inválido o expirado
@@ -63,6 +63,15 @@ export const authOptions: NextAuthOptions = {
       // 2. El token aún no ha expirado
       if (token.accessTokenExpires && Date.now() < token.accessTokenExpires) {
         return token
+      }
+      try {
+        return await refreshAccessToken(token)
+      } catch (error) {
+        return {
+          ...token,
+          mssg: error,
+          error: 'RefreshAccessTokenError' as const,
+        }
       }
 
       // 3. El token expiró, intentamos refrescarlo en segundo plano

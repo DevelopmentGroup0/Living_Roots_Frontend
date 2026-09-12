@@ -1,15 +1,11 @@
-import Link from 'next/link'
-import { Home, UserRoundPlus, BookOpen } from 'lucide-react'
 import { hasPermission, Permission, Role } from './auth/helpers/has-permission'
-import LeafLogo from './Logo'
-import { Button } from './ui/button'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getServerSession } from 'next-auth'
+import SidebarClient from './session/Sidebar'
 
-// 1. Estructura de navegación declarativa con su respectivo permiso
-interface NavItem {
+export interface NavItem {
   href: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: 'dashboard' | 'stories' | 'users' | 'home'
   permission: Permission
   label: string
 }
@@ -17,25 +13,25 @@ interface NavItem {
 const navigationItems: NavItem[] = [
   {
     href: '/dashboard',
-    icon: LeafLogo,
+    icon: 'dashboard',
     permission: 'view:dashboard',
     label: 'Dashboard',
   },
   {
     href: '/stories',
-    icon: BookOpen,
+    icon: 'stories',
     permission: 'view:home',
     label: 'Relatos',
   },
   {
     href: '/users',
-    icon: UserRoundPlus,
+    icon: 'users',
     permission: 'view:register-users',
     label: 'Gestión de usuarios',
   },
   {
     href: '/',
-    icon: Home,
+    icon: 'home',
     permission: 'view:home',
     label: 'Inicio',
   },
@@ -46,33 +42,11 @@ export async function Sidebar() {
   const session = await getServerSession(authOptions)
 
   // 3. Si no hay sesión, asumimos un rol por defecto (ej. GUEST)
-  const userRole: Role = session?.user?.role ?? 'GUEST'
+  const userRole: Role = session?.user?.role
 
-  return (
-    <aside className='w-16 h-screen bg-gray-900 border-r border-gray-700 flex flex-col items-center py-6 gap-8'>
-      <nav className='flex flex-col gap-6'>
-        {navigationItems.map((item) => {
-          // 4. Validación RBAC centralizada antes de renderizar
-          if (!hasPermission(userRole, item.permission)) {
-            return null // No renderiza absolutamente nada en el HTML final enviado al cliente
-          }
-
-          const Icon = item.icon
-
-          return (
-            <Button
-              key={item.href}
-              variant='link'
-              size='lg'
-              className='text-gray-400 hover:text-white hover:bg-gray-800'
-            >
-              <Link href={item.href} title={item.label}>
-                <Icon className='w-6 h-6' />{' '}
-              </Link>
-            </Button>
-          )
-        })}
-      </nav>
-    </aside>
+  const authorizedItems = navigationItems.filter((item) =>
+    hasPermission(userRole, item.permission),
   )
+  console.log('authorizedItems', authorizedItems)
+  return <SidebarClient navigationItems={authorizedItems} />
 }

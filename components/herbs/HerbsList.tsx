@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { herbService } from '@/services/herbs-service'
 import { HerbCard } from './HerbCard'
 import { FeedbackForm } from '../emails/Contact-Form'
@@ -22,13 +22,12 @@ export function HerbsList({
   initialQuery: string
   initialSymptomId?: string
 }) {
-  const router = useRouter()
   const { data: session } = useSession()
   const token = session?.accessToken as string | undefined
   const [isChatExpanded, setIsChatExpanded] = useState(false)
-  const [activeTab, setActiveTab] = useState<
-    'catalogo' | 'jigra' | 'comentarios'
-  >('catalogo')
+  // const [activeTab, setActiveTab] = useState<
+  //   'catalogo' | 'jigra' | 'comentarios'
+  // >('catalogo')
   const searchParams = useSearchParams()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -70,6 +69,14 @@ export function HerbsList({
 
   const herbs = data?.pages.flatMap((page) => page.data) ?? []
 
+  // <svg viewBox='0 0 24 24' className={`w-6 h-6 fill-current`}>
+  //             <path d='M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z' />
+  //           </svg>
+
+  // <ShoppingBag size={26} />
+  //           <span className='text-[9px] font-bold uppercase tracking-tighter'>
+  //             Mi Jigra
+  //           </span>
   return (
     <>
       <div className='flex-1 flex flex-col min-h-screen pb-32'>
@@ -79,61 +86,31 @@ export function HerbsList({
             marginRight: isChatExpanded ? '800px' : '0',
           }}
         >
-          {activeTab === 'catalogo' ? (
-            /* LISTA DEL CATÁLOGO */
-            <div
-              className={`grid gap-6 max-w-7xl mx-auto transition-all duration-300 ${
-                isChatExpanded ? 'grid-cols-1' : 'grid-cols-2'
-              }`}
-            >
-              {herbs.map((h) => (
-                <HerbCard key={h.name} plant={h} />
+          <div
+            className={`grid gap-6 max-w-7xl mx-auto transition-all duration-300 ${
+              isChatExpanded ? 'grid-cols-1' : 'grid-cols-2'
+            }`}
+          >
+            {herbs.map((h) => (
+              <HerbCard key={h.name} plant={h} />
+            ))}
+            {isFetchingNextPage &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={`skeleton-${i}`} className='animate-pulse'>
+                  <div className='aspect-square rounded-lg bg-[#DCE5D8]' />
+                  <div className='mt-2 h-4 w-2/3 rounded bg-[#DCE5D8]' />
+                </div>
               ))}
-              {isFetchingNextPage &&
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={`skeleton-${i}`} className='animate-pulse'>
-                    <div className='aspect-square rounded-lg bg-[#DCE5D8]' />
-                    <div className='mt-2 h-4 w-2/3 rounded bg-[#DCE5D8]' />
-                  </div>
-                ))}
-              <div ref={sentinelRef} className='h-1' />
-            </div>
-          ) : activeTab === 'jigra' ? (
-            /* MI JIGRA */
-            <div className='max-w-6xl mx-auto'></div>
-          ) : (
-            /* MENSAJES */
+            <div ref={sentinelRef} className='h-1' />
+          </div>
+          {/* {
             <div className='max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-stone-200 shadow-sm animate-in fade-in'>
               <FeedbackForm />
             </div>
-          )}
+          } */}
         </main>
 
-        <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm left-1/2 -translate-x-1/2'>
-          <button
-            onClick={() => {
-              setActiveTab('catalogo')
-            }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'catalogo' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
-          >
-            <svg viewBox='0 0 24 24' className={`w-6 h-6 fill-current`}>
-              <path d='M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z' />
-            </svg>
-            <span className='text-[9px] font-bold uppercase tracking-tighter'>
-              Catálogo
-            </span>
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab('comentarios')
-            }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'comentarios' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
-          >
-            <MessageCircle size={26} />
-            <span className='text-[9px] font-bold uppercase tracking-tighter'>
-              Mensajes
-            </span>
-          </button>
+        {/* <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm left-1/2 -translate-x-1/2'>
           <button className='bg-amber-600 p-3 rounded-full -mt-12 shadow-xl border-4 border-[#F4EFE4] hover:scale-110 transition-transform text-white'>
             <ScanEye size={28} />
           </button>
@@ -146,19 +123,7 @@ export function HerbsList({
               Wala IA
             </span>
           </button>
-          <button
-            onClick={() => {
-              setActiveTab('jigra')
-              router.push('/jigra')
-            }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'jigra' ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
-          >
-            <ShoppingBag size={26} />
-            <span className='text-[9px] font-bold uppercase tracking-tighter'>
-              Mi Jigra
-            </span>
-          </button>
-        </nav>
+        </nav> */}
       </div>
       {isChatExpanded && (
         <div className='fixed z-40 flex items-center justify-center p-4animate-in fade-in duration-300'>
