@@ -5,7 +5,7 @@ import SidebarClient from './session/Sidebar'
 
 export interface NavItem {
   href: string
-  icon: 'dashboard' | 'stories' | 'users' | 'home'
+  icon: 'dashboard' | 'stories' | 'users' | 'home' | 'ShoppingBag' | 'MessageCircle'
   permission: Permission
   label: string
 }
@@ -18,16 +18,30 @@ const navigationItems: NavItem[] = [
     label: 'Dashboard',
   },
   {
+    href: '/users',
+    icon: 'users',
+    permission: 'view:register-users',
+    label: 'Gestión de usuarios',
+  },
+  {
     href: '/stories',
     icon: 'stories',
     permission: 'view:home',
     label: 'Relatos',
   },
   {
-    href: '/users',
-    icon: 'users',
-    permission: 'view:register-users',
-    label: 'Gestión de usuarios',
+    href: '/comments',
+    icon: 'MessageCircle',
+    // permission: 'view:comments',
+    permission: 'view:home',
+    label: 'Comentarios y Testimonios',
+  },
+  {
+    href: '/jigra',
+    icon: 'ShoppingBag',
+    // permission: 'view:jigra',
+    permission: 'view:home',
+    label: 'Jigra',
   },
   {
     href: '/',

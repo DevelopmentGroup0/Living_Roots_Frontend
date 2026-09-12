@@ -3,6 +3,13 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { Sacramento } from 'next/font/google'
+
+const sacramento = Sacramento({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 import {
   Home,
@@ -10,6 +17,8 @@ import {
   BookOpen,
   PanelLeft,
   PanelLeftClose,
+  MessageCircle,
+  ShoppingBag,
 } from 'lucide-react'
 
 import {
@@ -23,15 +32,18 @@ import { Button } from '../ui/button'
 
 import type { NavItem } from '../Sidebar'
 import LeafLogo from '../Logo'
+import { LogoSVG } from '../icons/LeafIcon'
 
 interface SidebarClientProps {
   navigationItems: NavItem[]
 }
 
 const iconMap = {
-  dashboard: LeafLogo,
-  stories: BookOpen,
+  dashboard: LogoSVG,
   users: UserRoundPlus,
+  stories: BookOpen,
+  MessageCircle: MessageCircle,
+  ShoppingBag: ShoppingBag,
   home: Home,
 }
 
@@ -47,28 +59,27 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
   return (
     <TooltipProvider>
       <aside
-        className={`
-          sticky top-0
-          h-screen
-          shrink-0
-          border-r border-gray-200
-          bg-white
-          transition-all duration-300 ease-in-out
+        className={`sticky top-0 h-screen shrink-0 border-r border-gray-200 bg-white transition-all duration-300 ease-in-out
           ${isOpen ? 'w-64' : 'w-16'}
         `}
       >
         <div className='flex h-full flex-col'>
-          {/* Botón abrir / cerrar */}
           <div
-            className={`
-              flex h-16
-              items-center
-              border-b border-gray-200
-              px-2
-              ${isOpen ? 'justify-end' : 'justify-center'}
-            `}
+            className={`flex h-16 items-center border-b border-gray-200 px-2 ${isOpen ? 'justify-end' : 'justify-center'}`}
           >
             <Tooltip>
+              {isOpen && (
+                <div className='flex items-center gap-3 px-3 py-2 text-neutral-800 dark:text-neutral-100'>
+                  <LeafLogo />
+                  {/* className={``} */}
+                  <span
+                    className={`${sacramento.className} whitespace-nowrap text-2xl font-normal tracking-wide select-none transition-all duration-200 ${isOpen ? 'w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+                  >
+                    Living Roots
+                  </span>
+                </div>
+              )}
+
               <Button
                 variant='ghost'
                 size='icon'
@@ -84,7 +95,6 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
                   <PanelLeft className='h-5 w-5' />
                 )}
               </Button>
-
               <TooltipContent side='right'>
                 {isOpen ? 'Cerrar barra lateral' : 'Abrir barra lateral'}
               </TooltipContent>
@@ -96,15 +106,6 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
             {navigationItems.map((item) => {
               const Icon = iconMap[item.icon]
 
-              /*
-               * La URL determina cuál opción está activa.
-               *
-               * Para rutas exactas:
-               * /dashboard === /dashboard
-               *
-               * Para rutas hijas:
-               * /users/123 pertenece a /users
-               */
               const isActive =
                 pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(`${item.href}/`))
@@ -112,78 +113,37 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
               const link = (
                 <Link
                   href={item.href}
-                  className={`
-                    group
-                    flex
-                    h-11
-                    w-full
-                    items-center
-                    gap-3
-                    overflow-hidden
-                    rounded-md
-                    text-sm
-                    transition-colors
+                  className={`group flex h-11 w-full items-center overflow-hidden rounded-md text-sm transition-colors ${
+                    isActive
+                      ? `bg-green-100 text-green-700hover:bg-green-100 hover:text-green-700`
+                      : `text-gray-600 hover:bg-gray-100 hover:text-gray-900`
+                  }
 
-                    ${
-                      isActive
-                        ? `
-                          bg-green-100
-                          text-green-700
-                          hover:bg-green-100
-                          hover:text-green-700
-                        `
-                        : `
-                          text-gray-600
-                          hover:bg-gray-100
-                          hover:text-gray-900
-                        `
-                    }
-
-                    ${isOpen ? 'justify-start px-3' : 'justify-center px-0'}
+                    ${isOpen ? 'justify-start px-3 gap-3' : 'justify-center px-0'}
                   `}
                 >
                   <Icon
-                    className={`
-                      h-5
-                      w-5
-                      shrink-0
-                      transition-colors
-
-                      ${
-                        isActive
-                          ? 'text-green-600'
-                          : 'text-gray-500 group-hover:text-gray-900'
-                      }
+                    className={`h-5 w-5 shrink-0 transition-colors ${
+                      isActive
+                        ? 'text-green-600'
+                        : 'text-gray-500 group-hover:text-gray-900'
+                    }
                     `}
                   />
 
                   <span
-                    className={`
-                      whitespace-nowrap
-                      transition-all
-                      duration-200
-                      ${
-                        isOpen
-                          ? 'w-auto opacity-100'
-                          : 'pointer-events-none w-0 opacity-0'
-                      }
-                    `}
+                    className={`whitespace-nowrap transition-all duration-200 ${isOpen ? 'w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
                   >
                     {item.label}
                   </span>
                 </Link>
               )
 
-              /*
-               * Cuando está cerrado:
-               * mostramos el nombre mediante Tooltip.
-               */
               if (!isOpen) {
                 return (
                   <Tooltip key={item.href}>
                     <TooltipTrigger>{link}</TooltipTrigger>
-
-                    <TooltipContent side='right'>{item.label}</TooltipContent>
+                    <TooltipContent>{item.label}</TooltipContent>
                   </Tooltip>
                 )
               }

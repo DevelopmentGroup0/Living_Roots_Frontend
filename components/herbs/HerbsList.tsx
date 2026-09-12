@@ -6,13 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { herbService } from '@/services/herbs-service'
 import { HerbCard } from './HerbCard'
-import { FeedbackForm } from '../emails/Contact-Form'
-import {
-  MessageCircle,
-  MessageSquare,
-  ScanEye,
-  ShoppingBag,
-} from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import { Chat } from '../chat/Chat'
 
 export function HerbsList({
@@ -25,9 +19,6 @@ export function HerbsList({
   const { data: session } = useSession()
   const token = session?.accessToken as string | undefined
   const [isChatExpanded, setIsChatExpanded] = useState(false)
-  // const [activeTab, setActiveTab] = useState<
-  //   'catalogo' | 'jigra' | 'comentarios'
-  // >('catalogo')
   const searchParams = useSearchParams()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -69,17 +60,9 @@ export function HerbsList({
 
   const herbs = data?.pages.flatMap((page) => page.data) ?? []
 
-  // <svg viewBox='0 0 24 24' className={`w-6 h-6 fill-current`}>
-  //             <path d='M17,8C8,10,5.9,16.17,3.82,21.34L5.71,22l1-2.3A4.49,4.49,0,0,0,8,20C19,20,22,3,22,3,21,5,14,5.25,9,6.25S2,11.5,2,13.5a6.22,6.22,0,0,0,1.75,3.75C7,8,17,8,17,8Z' />
-  //           </svg>
-
-  // <ShoppingBag size={26} />
-  //           <span className='text-[9px] font-bold uppercase tracking-tighter'>
-  //             Mi Jigra
-  //           </span>
   return (
     <>
-      <div className='flex-1 flex flex-col min-h-screen pb-32'>
+      <div className='flex-1 flex flex-col min-h-screen pb-12'>
         <main
           className='flex-1 overflow-auto p-4 md:p-6 '
           style={{
@@ -103,17 +86,9 @@ export function HerbsList({
               ))}
             <div ref={sentinelRef} className='h-1' />
           </div>
-          {/* {
-            <div className='max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-stone-200 shadow-sm animate-in fade-in'>
-              <FeedbackForm />
-            </div>
-          } */}
         </main>
 
-        {/* <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm left-1/2 -translate-x-1/2'>
-          <button className='bg-amber-600 p-3 rounded-full -mt-12 shadow-xl border-4 border-[#F4EFE4] hover:scale-110 transition-transform text-white'>
-            <ScanEye size={28} />
-          </button>
+        <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm right-6 md:right-12'>
           <button
             onClick={() => setIsChatExpanded(!isChatExpanded)}
             className={`flex flex-col items-center gap-1 transition-all ${isChatExpanded ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
@@ -123,7 +98,7 @@ export function HerbsList({
               Wala IA
             </span>
           </button>
-        </nav> */}
+        </nav>
       </div>
       {isChatExpanded && (
         <div className='fixed z-40 flex items-center justify-center p-4animate-in fade-in duration-300'>
