@@ -29,6 +29,7 @@ export function useChatPersist(options: UseChatPersistOptions = {}) {
   // Persistencia principal
   // ─────────────────────────────────────
   const persist = useCallback(async () => {
+    console.log(`[useChatPersist] persist() called for chatId=${currentChat?.id}, userId=${currentChat?.userId}`)  
     if (!currentChat) return false
     if (currentChat.messages.length === 0) {
       return false
@@ -40,6 +41,7 @@ export function useChatPersist(options: UseChatPersistOptions = {}) {
 
     isPersistingRef.current = true
     try {
+      console.log(`[useChatPersist] Persistiendo chatId=${currentChat.id}, userId=${currentChat.userId}, msgs=${currentChat.messages.length}`)
       await persistChat({
         chatId: currentChat.id,
         userId: currentChat.userId,

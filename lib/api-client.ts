@@ -9,7 +9,6 @@ async function apiRequest<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      // Si hay token, lo inyectamos. Si no, no (para rutas públicas)
       ...(token && {
         Authorization: `Bearer ${token}`,
       }),
@@ -30,10 +29,7 @@ async function apiRequest<T>(
   return response.json()
 }
 
-async function apiRequestBlob(
-  endpoint: string,
-  token?: string,
-): Promise<Blob> {
+async function apiRequestBlob(endpoint: string, token?: string): Promise<Blob> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'GET',
     headers: {

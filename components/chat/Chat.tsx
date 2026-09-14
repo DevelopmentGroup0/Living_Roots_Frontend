@@ -52,7 +52,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   // const userId = session?.user?.sub
   const { messages, sendMessage, status, error, persistAndClear, chats } =
     useChatSession({
-      userId: 'abc',
+      userId: session?.user?.id || '',
     })
   const [input, setInput] = useState('')
   console.log('status:', status)

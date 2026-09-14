@@ -1,3 +1,4 @@
+import { apiClient } from '@/lib/api-client';
 import type {
   PersistChatPayload,
   ApiChatSummary,
@@ -35,10 +36,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export async function persistChat(
   payload: PersistChatPayload,
 ): Promise<ApiChatDetail> {
-  return apiFetch<ApiChatDetail>('/chat/persist', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  })
+  console.log(`[chat-api] persistChat userId=${payload.userId}, msgs=${payload.messages.length}`)
+  //return apiFetch<ApiChatDetail>('/chat/persist', {
+  return apiClient.post('/chat/persist', payload)
 }
 
 /**
