@@ -1,144 +1,190 @@
 import { useEffect, useRef, useCallback } from 'react'
 
 import { useChatStore } from '@/store/useChatStore'
-import { persistChat } from '../services/chat-service'
-import type { UseChatPersistOptions } from '../components/chat/types/chat.types'
+import { createChat, appendChatMessages } from '../services/chat-service'
+import type {
+  UseChatPersistOptions,
+  BackendMessage,
+} from '../components/chat/types/chat.types'
+import type { UIMessage } from 'ai'
 
 const DEFAULT_INACTIVITY_MS =
   Number(process.env.NEXT_PUBLIC_INACTIVITY_MS) || 30 * 60 * 1000
 
-export function useChatPersist(options: UseChatPersistOptions = {}) {
-  const { inactivityMs = DEFAULT_INACTIVITY_MS, onPersisted, onError } = options
+/** Filtra a solo partes de texto y descarta mensajes que se queden vacíos. */
+function toBackendMessages(messages: UIMessage[]): BackendMessage[] {
+  return messages
+    .map((m) => ({
+      id: m.id,
+      role: m.role as BackendMessage['role'],
+      parts: m.parts
+        .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+        .map((p) => ({ type: 'text' as const, text: p.text })),
+    }))
+    .filter((m) => m.parts.length > 0)
+}
 
-  // ─────────────────────────────────────
-  // Zustand selectors
-  // ─────────────────────────────────────
+export function useChatPersist(options: UseChatPersistOptions) {
+  const {
+    inactivityMs = DEFAULT_INACTIVITY_MS,
+    onPersisted,
+    onError,
+    accessToken,
+  } = options
 
   const chats = useChatStore((state) => state.chats)
   const selectedChatId = useChatStore((state) => state.selectedChatId)
   const clearSelectedChat = useChatStore((state) => state.clearSelectedChat)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const isPersistingRef = useRef(false)
+  const resolveChatId = useChatStore((state) => state.resolveChatId)
+  const setPersistedCount = useChatStore((state) => state.setPersistedCount)
+  const updateChatTitle = useChatStore((state) => state.updateChatTitle)
 
-  // ─────────────────────────────────────
-  // Chat actual
-  // ─────────────────────────────────────
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const isSyncingRef = useRef(false)
+
   const currentChat = chats.find((chat) => chat.id === selectedChatId)
 
-  // ─────────────────────────────────────
-  // Persistencia principal
-  // ─────────────────────────────────────
-  const persist = useCallback(async () => {
-    console.log(`[useChatPersist] persist() called for chatId=${currentChat?.id}, userId=${currentChat?.userId}`)  
-    if (!currentChat) return false
-    if (currentChat.messages.length === 0) {
-      return false
-    }
+  // Refs "frescos" para leer el estado más reciente dentro del handler de
+  // beforeunload, que se registra una sola vez y no puede depender de closures viejas.
+  const currentChatRef = useRef(currentChat)
+  currentChatRef.current = currentChat
+  const accessTokenRef = useRef(accessToken)
+  accessTokenRef.current = accessToken
 
-    if (isPersistingRef.current) {
-      return false
-    }
+  // syncChat: crea (primera vez) o agrega (incremental)
+  const syncChat = useCallback(
+    async ({
+      allowCreate = false,
+    }: { allowCreate?: boolean } = {}): Promise<boolean> => {
+      const chat = currentChat
+      if (!chat || chat.messages.length === 0) return false
+      if (isSyncingRef.current) return false
 
-    isPersistingRef.current = true
-    try {
-      console.log(`[useChatPersist] Persistiendo chatId=${currentChat.id}, userId=${currentChat.userId}, msgs=${currentChat.messages.length}`)
-      await persistChat({
-        chatId: currentChat.id,
-        userId: currentChat.userId,
-        title: currentChat.title,
-        lastActiveAt: new Date(currentChat.lastActiveAt).toISOString(),
-        messages: currentChat.messages,
-      })
+      // Primer guardado: solo si se autoriza explícitamente (botón "Guardar chat").
+      if (chat.persistedMessageCount === 0 && !allowCreate) return false
 
-      onPersisted?.(currentChat.id)
-      return true
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err))
-      console.error('[useChatPersist]', error)
-      onError?.(error)
-      return false
-    } finally {
-      isPersistingRef.current = false
-    }
-  }, [currentChat, onPersisted, onError])
+      isSyncingRef.current = true
+      try {
+        if (chat.persistedMessageCount === 0) {
+          const backendMessages = toBackendMessages(chat.messages)
+          if (backendMessages.length === 0) return false
 
-  // ─────────────────────────────────────
-  // Persist manual
-  // ─────────────────────────────────────
-  const persistAndClear = useCallback(async () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-    }
-    await persist()
+          const saved = await createChat({
+            title: chat.title,
+            lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
+            messages: backendMessages,
+          })
+
+          resolveChatId(chat.id, saved.chat_id)
+          setPersistedCount(saved.chat_id, chat.messages.length)
+          if (!chat.title && saved.title) {
+            updateChatTitle(saved.chat_id, saved.title)
+          }
+          onPersisted?.(saved.chat_id)
+          return true
+        }
+
+        // Incremental: solo el delta desde el último guardado.
+        const pending = chat.messages.slice(chat.persistedMessageCount)
+        const backendMessages = toBackendMessages(pending)
+        if (backendMessages.length === 0) return true // nada nuevo que sincronizar
+
+        await appendChatMessages(chat.id, {
+          lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
+          messages: backendMessages,
+        })
+
+        setPersistedCount(chat.id, chat.messages.length)
+        onPersisted?.(chat.id)
+        return true
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err))
+        onError?.(error)
+        return false
+      } finally {
+        isSyncingRef.current = false
+      }
+    },
+    [
+      currentChat,
+      onPersisted,
+      onError,
+      resolveChatId,
+      setPersistedCount,
+      updateChatTitle,
+    ],
+  )
+
+  // Acción del botón "Guardar chat": guarda (crea si es la primera vez) y cierra la sesión.
+  const saveAndCloseChat = useCallback(async () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    await syncChat({ allowCreate: true })
     clearSelectedChat()
-  }, [persist, clearSelectedChat])
+  }, [syncChat, clearSelectedChat])
 
-  // ─────────────────────────────────────
-  // Watch inactivity
-  // ─────────────────────────────────────
+  // Cierre silencioso (inactividad): nunca crea, solo sincroniza si ya existía.
+  const closeSessionSilently = useCallback(async () => {
+    await syncChat({ allowCreate: false })
+    clearSelectedChat()
+  }, [syncChat, clearSelectedChat])
+
+  // Watch inactividad
   useEffect(() => {
-    if (!currentChat) return
-    if (currentChat.messages.length === 0) {
-      return
-    }
+    if (!currentChat || currentChat.messages.length === 0) return
 
     const elapsed = Date.now() - currentChat.lastActiveAt
     if (elapsed >= inactivityMs) {
-      void persistAndClear()
+      void closeSessionSilently()
       return
     }
 
     const remaining = inactivityMs - elapsed
-
-    timerRef.current = setTimeout(() => {
-      void persistAndClear()
-    }, remaining)
+    timerRef.current = setTimeout(() => void closeSessionSilently(), remaining)
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
+      if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [currentChat, inactivityMs, persistAndClear])
+  }, [currentChat, inactivityMs, closeSessionSilently])
 
   // ─────────────────────────────────────
-  // beforeunload
+  // beforeunload — solo sincroniza chats YA guardados antes (nunca crea).
+  // fetch + keepalive reemplaza a sendBeacon porque este último no admite
+  // headers personalizados y no podríamos mandar el Authorization.
   // ─────────────────────────────────────
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (!currentChat) return
-      if (currentChat.messages.length === 0) {
-        return
-      }
-      navigator.sendBeacon(
-        `${process.env.NEXT_PUBLIC_API_URL}/chat/persist`,
-        new Blob(
-          [
-            JSON.stringify({
-              chatId: currentChat.id,
-              userId: currentChat.userId,
-              title: currentChat.title,
-              lastActiveAt: new Date(currentChat.lastActiveAt).toISOString(),
-              messages: currentChat.messages,
-            }),
-          ],
-          {
-            type: 'application/json',
-          },
-        ),
-      )
+      const chat = currentChatRef.current
+      if (!chat || chat.messages.length === 0) return
+      if (chat.persistedMessageCount === 0) return // nunca guardado: no autocrear
+
+      const pending = chat.messages.slice(chat.persistedMessageCount)
+      const backendMessages = toBackendMessages(pending)
+      if (backendMessages.length === 0) return
+
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/${chat.id}/messages`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessTokenRef.current}`,
+        },
+        body: JSON.stringify({
+          lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
+          messages: backendMessages,
+        }),
+        keepalive: true,
+      }).catch(() => {
+        // best-effort: la página ya se está cerrando, no hay nada más que hacer
+      })
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [currentChat])
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
 
   return {
-    persist,
-
-    persistAndClear,
+    /** Sincroniza el chat activo. Úsalo tras cada respuesta del bot (allowCreate: false por defecto). */
+    syncChat,
+    /** Acción del botón "Guardar chat": guarda (crea si hace falta) y cierra la sesión activa. */
+    saveAndCloseChat,
   }
 }

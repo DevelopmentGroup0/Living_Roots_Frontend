@@ -50,9 +50,10 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
 
   console.log('estado de la session', session)
   // const userId = session?.user?.sub
-  const { messages, sendMessage, status, error, persistAndClear, chats } =
+  const { messages, sendMessage, status, error, saveAndCloseChat, chats } =
     useChatSession({
       userId: session?.user?.id || '',
+      accessToken: session?.accessToken || '', // TODO: confirmar el nombre real del campo
     })
   const [input, setInput] = useState('')
   console.log('status:', status)
@@ -87,7 +88,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
           </Button>
           <button
             onClick={async () => {
-              await persistAndClear()
+              await saveAndCloseChat()
             }}
           >
             Guardar chat

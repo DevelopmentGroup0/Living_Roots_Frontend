@@ -1,83 +1,65 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/lib/api-client'
 import type {
-  PersistChatPayload,
-  ApiChatSummary,
+  CreateChatPayload,
+  AppendMessagesPayload,
   ApiChatDetail,
+  ApiPaginatedChats,
+  ListChatsQuery,
 } from '../components/chat/types/chat.types'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+// ─── Chat API (HU-10) ───────────────────────────────────────────────────────
+// userId ya NO viaja en ningún lado: apiClient inyecta el token y el backend
+// resuelve el usuario desde el JWT (@ActiveUser).
 
-// ─── Helper ────────────────────────────────────────────────────────────────────
-
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...init,
-  })
-
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`[chat-api] ${res.status} ${res.statusText}: ${body}`)
-  }
-
-  // 204 No Content no tiene body
-  if (res.status === 204) return undefined as T
-
-  return res.json() as Promise<T>
-}
-
-// ─── Chat API ──────────────────────────────────────────────────────────────────
-
-/**
- * Persiste la conversación de Zustand en PostgreSQL.
- * Usa upsert: crea si es nueva, actualiza si ya tiene chatId.
- * Llamado en: logout | timeout inactividad | fin de sesión.
- */
-export async function persistChat(
-  payload: PersistChatPayload,
+/** Primer guardado manual del chat en curso. */
+export async function createChat(
+  payload: CreateChatPayload,
 ): Promise<ApiChatDetail> {
-  console.log(`[chat-api] persistChat userId=${payload.userId}, msgs=${payload.messages.length}`)
-  //return apiFetch<ApiChatDetail>('/chat/persist', {
   return apiClient.post('/chat/persist', payload)
 }
 
-/**
- * Obtiene el historial de chats del usuario para el sidebar.
- */
-export async function getUserChats(userId: string): Promise<ApiChatSummary[]> {
-  return apiFetch<ApiChatSummary[]>(`/chat/history/${userId}`)
-}
-
-/**
- * Obtiene un chat completo con mensajes para restaurar contexto.
- */
-export async function getChatDetail(
+/** Guardado incremental: solo los mensajes nuevos del último turno. */
+export async function appendChatMessages(
   chatId: string,
-  userId: string,
+  payload: AppendMessagesPayload,
 ): Promise<ApiChatDetail> {
-  return apiFetch<ApiChatDetail>(`/chat/${chatId}/${userId}`)
+  return apiClient.patch(`/chat/${chatId}/messages`, payload)
 }
 
-/**
- * Elimina un chat del historial.
- */
-export async function deleteChat(
-  chatId: string,
-  userId: string,
-): Promise<void> {
-  return apiFetch<void>(`/chat/${chatId}/${userId}`, { method: 'DELETE' })
+/** Historial paginado del usuario autenticado (HU-10). */
+export async function getChatHistory(
+  query: ListChatsQuery = {},
+): Promise<ApiPaginatedChats> {
+  const searchParams = new URLSearchParams(
+    Object.entries(query).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = String(value)
+        }
+        return acc
+      },
+      {} as Record<string, string>,
+    ),
+  ).toString()
+
+  const queryString = searchParams ? `?${searchParams}` : ''
+  return apiClient.get(`/chat/history${queryString}`)
 }
 
-/**
- * Renombra un chat.
- */
+/** Chat completo con mensajes, para restaurar contexto. */
+export async function getChatDetail(chatId: string): Promise<ApiChatDetail> {
+  return apiClient.get(`/chat/${chatId}`)
+}
+
+/** Elimina un chat del historial. */
+export async function deleteChat(chatId: string): Promise<void> {
+  return apiClient.delete(`/chat/${chatId}`)
+}
+
+/** Renombra un chat. */
 export async function renameChat(
   chatId: string,
-  userId: string,
   title: string,
 ): Promise<ApiChatDetail> {
-  return apiFetch<ApiChatDetail>(`/chat/${chatId}/${userId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ title }),
-  })
+  return apiClient.patch(`/chat/${chatId}`, { title })
 }

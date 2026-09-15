@@ -2,159 +2,106 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { UIMessage } from 'ai'
 
-import type {
-  ChatStore,
-  ChatSession,
-} from '../components/chat/types/chat.types'
-
-// ─────────────────────────────────────────────
-// Estado inicial
-// ─────────────────────────────────────────────
+import type { ChatStore, ChatSession } from '../components/chat/types/chat.types'
 
 const INITIAL_STATE = {
-  chats: [],
-  selectedChatId: null,
-  selectedMessages: [],
+  chats: [] as ChatSession[],
+  selectedChatId: null as string | null,
+  selectedMessages: [] as UIMessage[],
 }
-
-// ─────────────────────────────────────────────
-// Store
-// ─────────────────────────────────────────────
 
 export const useChatStore = create<ChatStore>()(
   persist(
     (set, get) => ({
       ...INITIAL_STATE,
-      // ───────────────────────────────────
-      // Crear chat
-      // ───────────────────────────────────
 
-      createChat: (chat: ChatSession) => {
+      createChat: (chat) => {
+        const session: ChatSession = { ...chat, persistedMessageCount: 0 }
         set((state) => ({
-          chats: [...state.chats, chat],
-          selectedChatId: chat.id,
-          selectedMessages: chat.messages,
+          chats: [...state.chats, session],
+          selectedChatId: session.id,
+          selectedMessages: session.messages,
         }))
       },
 
-      // ───────────────────────────────────
-      // Seleccionar chat
-      // ───────────────────────────────────
-
-      setSelectedChat: (chatId: string) => {
+      setSelectedChat: (chatId) => {
         const chat = get().chats.find((c) => c.id === chatId)
         if (!chat) return
-        set({
-          selectedChatId: chatId,
-          selectedMessages: chat.messages,
-        })
+        set({ selectedChatId: chatId, selectedMessages: chat.messages })
       },
 
-      // ───────────────────────────────────
-      // Actualizar mensajes
-      // ───────────────────────────────────
-      updateSelectedMessages: (messages: UIMessage[]) => {
+      updateSelectedMessages: (messages) => {
         const selectedChatId = get().selectedChatId
         if (!selectedChatId) return
         set((state) => ({
           selectedMessages: messages,
           chats: state.chats.map((chat) =>
             chat.id === selectedChatId
-              ? {
-                  ...chat,
-                  messages,
-                  updatedAt: Date.now(),
-                  lastActiveAt: Date.now(),
-                }
+              ? { ...chat, messages, updatedAt: Date.now(), lastActiveAt: Date.now() }
               : chat,
           ),
         }))
       },
 
-      // ───────────────────────────────────
-      // Actualizar título
-      // ───────────────────────────────────
-      updateChatTitle: (chatId: string, title: string) => {
+      updateChatTitle: (chatId, title) => {
         set((state) => ({
           chats: state.chats.map((chat) =>
-            chat.id === chatId
-              ? {
-                  ...chat,
-                  title,
-                }
-              : chat,
+            chat.id === chatId ? { ...chat, title } : chat,
           ),
         }))
       },
 
-      // ───────────────────────────────────
-      // Actualizar actividad
-      // ───────────────────────────────────
-      updateLastActivity: (chatId: string) => {
+      updateLastActivity: (chatId) => {
         set((state) => ({
           chats: state.chats.map((chat) =>
-            chat.id === chatId
-              ? {
-                  ...chat,
-                  lastActiveAt: Date.now(),
-                }
-              : chat,
+            chat.id === chatId ? { ...chat, lastActiveAt: Date.now() } : chat,
           ),
         }))
       },
 
-      // ───────────────────────────────────
-      // Eliminar chat
-      // ───────────────────────────────────
-
-      deleteChat: (chatId: string) => {
+      deleteChat: (chatId) => {
         set((state) => ({
           chats: state.chats.filter((chat) => chat.id !== chatId),
-          selectedChatId:
-            state.selectedChatId === chatId ? null : state.selectedChatId,
-          selectedMessages:
-            state.selectedChatId === chatId ? [] : state.selectedMessages,
+          selectedChatId: state.selectedChatId === chatId ? null : state.selectedChatId,
+          selectedMessages: state.selectedChatId === chatId ? [] : state.selectedMessages,
         }))
       },
 
-      // ───────────────────────────────────
-      // Limpiar selección
-      // ───────────────────────────────────
-
       clearSelectedChat: () => {
-        set({
-          selectedChatId: null,
-          selectedMessages: [],
-        })
+        set({ selectedChatId: null, selectedMessages: [] })
       },
-
-      // ───────────────────────────────────
-      // Logout
-      // ───────────────────────────────────
 
       resetStore: () => {
         set(INITIAL_STATE)
       },
-    }),
 
-    // ─────────────────────────────────────
-    // Persist
-    // ─────────────────────────────────────
+      resolveChatId: (localId, chatId) => {
+        set((state) => ({
+          chats: state.chats.map((chat) =>
+            chat.id === localId ? { ...chat, id: chatId } : chat,
+          ),
+          selectedChatId:
+            state.selectedChatId === localId ? chatId : state.selectedChatId,
+        }))
+      },
+
+      setPersistedCount: (chatId, count) => {
+        set((state) => ({
+          chats: state.chats.map((chat) =>
+            chat.id === chatId ? { ...chat, persistedMessageCount: count } : chat,
+          ),
+        }))
+      },
+    }),
 
     {
       name: 'ai-chat-storage',
-
       storage: createJSONStorage(() => {
         if (typeof window === 'undefined') {
-          return {
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
-          }
+          return { getItem: () => null, setItem: () => {}, removeItem: () => {} }
         }
         return localStorage
       }),
-
       partialize: (state) => ({
         chats: state.chats,
         selectedChatId: state.selectedChatId,
@@ -163,10 +110,6 @@ export const useChatStore = create<ChatStore>()(
     },
   ),
 )
-
-// ─────────────────────────────────────────────
-// Selectores
-// ─────────────────────────────────────────────
 
 export const selectChats = (s: ChatStore) => s.chats
 export const selectSelectedChatId = (s: ChatStore) => s.selectedChatId
