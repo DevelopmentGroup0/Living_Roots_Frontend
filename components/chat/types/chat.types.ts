@@ -46,6 +46,7 @@ export interface ChatStoreActions {
   resolveChatId: (localId: string, chatId: string) => void
   /** Actualiza cuántos mensajes ya están sincronizados con el backend. */
   setPersistedCount: (chatId: string, count: number) => void
+  hydrateChat: (chat: ChatSession) => void
 }
 
 export type ChatStore = ChatStoreState & ChatStoreActions

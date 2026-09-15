@@ -33,7 +33,7 @@ export function PlantManagement() {
   if (isError) return <p>Error al cargar las plantas.</p>
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-3'>
       <div className='flex items-center justify-between'>
         <h1 className='text-3xl font-semibold text-gray-900'>
           Gestión de Plantas Medicinales

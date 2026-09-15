@@ -7,7 +7,7 @@ export const addSymptomSchema = z.object({
     .max(100, 'Máximo 100 caracteres'),
   description: z
     .string()
-    .max(300, 'Máximo 300 caracteres')
+    .max(1000, 'Máximo 1000 caracteres')
     .optional()
     .or(z.literal('')),
   parts_plant: z
@@ -17,10 +17,10 @@ export const addSymptomSchema = z.object({
   prepare: z
     .string()
     .min(5, 'Describe cómo se prepara')
-    .max(300, 'Máximo 300 caracteres'),
+    .max(1000, 'Máximo 1000 caracteres'),
   apply: z
     .string()
-    .max(300, 'Máximo 300 caracteres')
+    .max(500, 'Máximo 500 caracteres')
     .optional()
     .or(z.literal('')),
 })

@@ -48,9 +48,9 @@ export function UserAvatarButton() {
                   ? session.user?.role
                   : 'Mi Cuenta'}
             </span>
-            <span className='text-muted-foreground text-[11px] tracking-wider uppercase'>
+            {/* <span className='text-muted-foreground text-[11px] tracking-wider uppercase'>
               {session ? `${session.user.name}` : ''}
-            </span>
+            </span> */}
           </div>
           <ChevronDown className='text-muted-foreground group-hover:text-foreground h-4 w-4 transition-transform duration-200 group-hover:rotate-180' />
         </button>
@@ -61,9 +61,9 @@ export function UserAvatarButton() {
             // Vista con sesión
             <>
               <div className='border-border mb-1.5 border-b px-3 py-2.5'>
-                <p className='text-foreground truncate text-sm font-semibold'>
+                {/* <p className='text-foreground truncate text-sm font-semibold'>
                   {session.user?.email}
-                </p>
+                </p> */}
                 <p className='text-muted-foreground truncate text-xs italic'>
                   {session.user?.email}
                 </p>

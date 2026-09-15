@@ -118,10 +118,10 @@ export function PlantTable({
 
   return (
     <>
-      <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden'>
+      <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden relative'>
         <Button
           onClick={() => setCreateOpen(true)}
-          className='bg-green-600 hover:bg-green-700 gap-2 absolute right-0 -mt-10 mr-6'
+          className='bg-green-600 hover:bg-green-700 gap-2 absolute left-7 top-1 z-10'
         >
           <CirclePlus className='h-4 w-4' />
           Nueva Planta
@@ -131,9 +131,9 @@ export function PlantTable({
             <TableRow>
               <TableHead className='w-25 text-gray-600'>ID</TableHead>
               <TableHead className='w-50 text-gray-600'>NOMBRE</TableHead>
-              <TableHead className='text-gray-600'>DESCRIPCIÓN</TableHead>
-              <TableHead className='w-75 text-gray-600'>SÍNTOMAS</TableHead>
-              <TableHead className='w-20 text-right text-gray-600'>
+              <TableHead className='w-60 text-gray-600'>DESCRIPCIÓN</TableHead>
+              <TableHead className=' text-gray-600'>SÍNTOMAS</TableHead>
+              <TableHead className='w-18 text-right text-gray-600'>
                 ACCIONES
               </TableHead>
             </TableRow>
@@ -150,7 +150,7 @@ export function PlantTable({
                 <TableCell className='text-gray-600 text-sm align-top max-w-58'>
                   <ExpandableDescription description={plant.description} />
                 </TableCell>
-                <TableCell className='align-top'>
+                <TableCell className='align-top max-w-58'>
                   <div className='flex flex-col gap-2'>
                     <div className='flex flex-wrap gap-1.5 items-center'>
                       {plant.symptoms.map((treatment, index) => {
@@ -201,14 +201,8 @@ export function PlantTable({
                     </div>
 
                     {selectedSymptom?.plantId === plant.herb_id && (
-                      <div className='bg-green-50 rounded-lg p-3 border border-green-200 text-sm space-y-2'>
-                        <div className='flex items-center justify-between gap-2'>
-                          <Badge
-                            variant='secondary'
-                            className='bg-green-600 text-white'
-                          >
-                            {plant.symptoms[selectedSymptom.symptomIndex].name}
-                          </Badge>
+                      <div className='bg-green-50 rounded-lg p-3 border border-green-200 text-sm space-y-2 whitespace-normal  overflow-hidden'>
+                        <div className='flex items-center justify-end'>
                           <Button
                             variant='ghost'
                             size='icon'
