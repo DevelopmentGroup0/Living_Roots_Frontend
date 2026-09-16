@@ -52,6 +52,8 @@ interface PlantTableProps {
   isAddingSymptom?: boolean
   isEditingSymptom?: boolean
   isRemovingSymptom?: boolean
+  isError?: boolean
+  error?: Error | null
   pagination?: PaginationControlsProps
 }
 
@@ -71,6 +73,8 @@ export function PlantTable({
   isDeleting = false,
   isEditingSymptom = false,
   isRemovingSymptom = false,
+  isError,
+  error,
   pagination,
 }: PlantTableProps) {
   const [selectedSymptom, setSelectedSymptom] = useState<SelectedSymptom>(null)
@@ -275,6 +279,8 @@ export function PlantTable({
         open={createOpen}
         onOpenChange={setCreateOpen}
         onSubmit={onCreate}
+        isError={isError}
+        error={error}
         isLoading={isCreating}
       />
       <EditPlantDialog

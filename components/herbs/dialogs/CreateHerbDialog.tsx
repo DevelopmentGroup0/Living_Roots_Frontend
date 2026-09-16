@@ -31,6 +31,8 @@ interface CreateHerbDialogProps {
   onOpenChange: (open: boolean) => void
   onSubmit: (data: CreateHerbFormValues) => Promise<Plant>
   isLoading?: boolean
+  isError?: boolean
+  error?: Error | null
 }
 
 const defaultValues = {
@@ -45,6 +47,8 @@ export function CreateHerbDialog({
   open,
   onOpenChange,
   onSubmit,
+  isError,
+  error,
   isLoading = false,
 }: CreateHerbDialogProps) {
   const form = useForm<CreateHerbFormValues>({
@@ -207,7 +211,12 @@ export function CreateHerbDialog({
               </div>
             </FieldGroup>
 
-            <DialogFooter className='pt-2'>
+            <DialogFooter className='flex items-center px-8'>
+              {isError && (
+                <div className='bg-destructive/15 text-destructive text-sm p-3 rounded-md my-2 w-full bg-red text-center'>
+                  {error?.message || 'Ocurrió un error inesperado'}
+                </div>
+              )}
               <Button
                 type='button'
                 variant='outline'

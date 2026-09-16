@@ -73,6 +73,8 @@ export function PlantManagement() {
         isAddingSymptom={addSymptom.isPending}
         isEditingSymptom={updateSymptom.isPending}
         isRemovingSymptom={removeSymptom.isPending}
+        isError={create.isError}
+        error={create.error}
         pagination={
           meta && {
             page: meta.page,
