@@ -161,7 +161,7 @@ export function PlantTable({
                           <Badge
                             key={treatment.symptomId}
                             variant='secondary'
-                            className={`group relative text-xs cursor-pointer transition-all pr-1 ${
+                            className={`group relative text-xs cursor-pointer transition-all pr-5 ${
                               isSelected
                                 ? 'bg-green-600 text-white hover:bg-green-700'
                                 : 'bg-green-50 text-green-700 hover:bg-green-100'
@@ -171,17 +171,18 @@ export function PlantTable({
                             }
                             title='Click para ver detalles'
                           >
-                            {treatment.name}
+                            <span className='pr-2'>{treatment.name}</span>{' '}
                             <button
-                              onClick={(e) =>
+                              onClick={(e) => {
+                                e.stopPropagation()
                                 handleRemoveSymptom(
                                   e,
                                   plant.herb_id,
                                   treatment.symptomId,
                                 )
-                              }
+                              }}
                               disabled={isRemovingSymptom}
-                              className='ml-1 hidden group-hover:inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10 disabled:opacity-40'
+                              className='absolute right-1.5 top-1/2 -translate-y-1/2 hidden group-hover:inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10 disabled:opacity-40'
                               title='Eliminar síntoma'
                             >
                               <X className='h-3 w-3' />
