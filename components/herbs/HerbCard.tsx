@@ -12,12 +12,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plant } from './interfaces'
 import { useFavorites } from '@/hooks/useFavorites'
-import { PlantImage } from './PlantImage';
+import { PlantImage } from './PlantImage'
 
 export function HerbCard({ plant }: { plant: Plant }) {
   const { toggleFavorite, isFavorite } = useFavorites()
   const favorite = isFavorite(plant.herb_id)
-  
+
   const router = useRouter()
 
   const handleCardClick = () => {
@@ -36,7 +36,10 @@ export function HerbCard({ plant }: { plant: Plant }) {
         <Button
           variant='ghost'
           size='icon'
-          onClick={() => toggleFavorite(plant)}
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleFavorite(plant)
+          }}
           className='absolute py-0 top-3 right-3 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background shadow-md'
         >
           <Heart

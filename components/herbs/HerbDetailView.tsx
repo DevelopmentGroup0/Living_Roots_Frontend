@@ -2,13 +2,9 @@
 'use client'
 import { useFavorites } from '@/hooks/useFavorites'
 import { ArrowLeft, Heart, Info } from 'lucide-react'
-import { MedicinalHerb } from './interfaces'
+import { Plant } from './interfaces'
 
-export function HerbDetailView({
-  plantDetails,
-}: {
-  plantDetails: MedicinalHerb
-}) {
+export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
   console.log('para el componente client', plantDetails)
   const { toggleFavorite, isFavorite } = useFavorites()
   const favorite = isFavorite(plantDetails.herb_id)
@@ -25,8 +21,8 @@ export function HerbDetailView({
           <ArrowLeft size={24} />
         </button>
         <button
-          className='absolute top-6 right-6 bg-white/20 backdrop-blur-md p-3 rounded-full transition-all'
-          // onClick={() => toggleFavorite(plantDetails)}
+          className='absolute top-6 right-6 backdrop-blur-md p-3 rounded-full transition-all hover:bg-background bg-background/80'
+          onClick={() => toggleFavorite(plantDetails)}
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
@@ -97,7 +93,7 @@ export function HerbDetailView({
                     <h3 className='text-lg font-bold text-emerald-900 font-serif'>
                       Para el alivio de:{' '}
                       <span className='underline decoration-emerald-300 underline-offset-4'>
-                        {item.symptom.name}
+                        {item.name}
                       </span>
                     </h3>
                   </div>
