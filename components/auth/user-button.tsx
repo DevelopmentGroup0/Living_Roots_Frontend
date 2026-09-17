@@ -17,7 +17,7 @@ export function UserAvatarButton() {
     <div className='flex items-center gap-4'>
       <div className='group relative inline-block'>
         <button
-          className='hover:bg-muted flex items-center gap-2.5 rounded-full p-1 pr-3 transition-colors duration-200 focus:outline-none'
+          className='hover:bg-muted flex items-center gap-1 md:gap-2.5 rounded-full p-1 pr-3 transition-colors duration-200 focus:outline-none'
           disabled={isLoading}
         >
           {/*Avatar*/}
@@ -41,7 +41,7 @@ export function UserAvatarButton() {
 
           {/* Info de usuario */}
           <div className='flex flex-col text-left'>
-            <span className='text-foreground text-sm leading-tight font-semibold'>
+            <span className='hidden md:inline text-foreground text-sm leading-tight font-semibold'>
               {isLoading
                 ? 'Cargando...'
                 : session

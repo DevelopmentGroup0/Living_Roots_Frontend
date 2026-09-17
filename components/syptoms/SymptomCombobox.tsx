@@ -36,7 +36,7 @@ export function SymptomCombobox({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className='w-60 flex justify-center items-center'>
+      <PopoverTrigger className='w-50 md:w-60 flex justify-center items-center'>
         {selected ? selected.name : 'Filtrar por síntoma...'}
         <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
       </PopoverTrigger>

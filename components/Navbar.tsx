@@ -4,14 +4,12 @@ import { SearchSymptom } from './search/SearchSymptom'
 
 export function Navbar() {
   return (
-    <nav className='h-16 bg-white border-b border-gray-200 flex items-center px-6 gap-6'>
-      <h2 className='text-lg md:text-2xl font-serif italic text-amber-700 tracking-wide font-medium '>
+    <nav className='h-16 bg-white border-b border-gray-200 flex items-center sm:px-6 sm:gap-6 justify-between'>
+      <h2 className='hidden md:inline text-2xl font-serif italic text-amber-700 tracking-wide font-medium '>
         Recorriendo el Tul
       </h2>
-      <div className='flex-1 flex justify-center'>
+      <div className='flex justify-center relative'>
         <SearchBar />
-      </div>
-      <div className='flex justify-center'>
         <SearchSymptom />
       </div>
 

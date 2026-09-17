@@ -71,7 +71,7 @@ export function HerbsList({
         >
           <div
             className={`grid gap-6 max-w-7xl mx-auto transition-all duration-300 ${
-              isChatExpanded ? 'grid-cols-1' : 'grid-cols-2'
+              isChatExpanded ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
             }`}
           >
             {herbs.map((h) => (

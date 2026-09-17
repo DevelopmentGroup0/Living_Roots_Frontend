@@ -59,7 +59,7 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
   return (
     <TooltipProvider>
       <aside
-        className={`sticky top-0 h-screen shrink-0 border-r border-gray-200 bg-white transition-all duration-300 ease-in-out
+        className={`sticky top-0 h-screen shrink-0 border-r border-gray-200 bg-white transition-all duration-300 ease-in-out hidden sm:inline
           ${isOpen ? 'w-64' : 'w-16'}
         `}
       >
