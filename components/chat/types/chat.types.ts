@@ -51,9 +51,7 @@ export interface ChatStoreActions {
 
 export type ChatStore = ChatStoreState & ChatStoreActions
 
-// ─────────────────────────────────────────────────────────────
 // Persist Payload
-// ─────────────────────────────────────────────────────────────
 export interface PersistChatPayload {
   chatId?: string
   userId: string
@@ -62,7 +60,7 @@ export interface PersistChatPayload {
   messages: UIMessage[]
 }
 
-// Payloads salientes (ya sin userId — va por token)
+// Payloads salientes (Sin userId — va por token)
 export interface BackendMessagePart {
   type: 'text'
   text: string

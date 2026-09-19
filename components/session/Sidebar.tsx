@@ -33,9 +33,11 @@ import { Button } from '../ui/button'
 import type { NavItem } from '../Sidebar'
 import LeafLogo from '../Logo'
 import { LogoSVG } from '../icons/LeafIcon'
+import { ChatSidemenu } from '../chat/ChatSidemenu'
 
 interface SidebarClientProps {
   navigationItems: NavItem[]
+  activeUser: string
 }
 
 const iconMap = {
@@ -47,7 +49,10 @@ const iconMap = {
   home: Home,
 }
 
-export default function SidebarClient({ navigationItems }: SidebarClientProps) {
+export default function SidebarClient({
+  navigationItems,
+  activeUser,
+}: SidebarClientProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const pathname = usePathname()
@@ -151,6 +156,7 @@ export default function SidebarClient({ navigationItems }: SidebarClientProps) {
               return <div key={item.href}>{link}</div>
             })}
           </nav>
+              <ChatSidemenu userId={activeUser} />
         </div>
       </aside>
     </TooltipProvider>

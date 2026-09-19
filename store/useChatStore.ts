@@ -2,7 +2,10 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { UIMessage } from 'ai'
 
-import type { ChatStore, ChatSession } from '../components/chat/types/chat.types'
+import type {
+  ChatStore,
+  ChatSession,
+} from '../components/chat/types/chat.types'
 
 const INITIAL_STATE = {
   chats: [] as ChatSession[],
@@ -37,7 +40,12 @@ export const useChatStore = create<ChatStore>()(
           selectedMessages: messages,
           chats: state.chats.map((chat) =>
             chat.id === selectedChatId
-              ? { ...chat, messages, updatedAt: Date.now(), lastActiveAt: Date.now() }
+              ? {
+                  ...chat,
+                  messages,
+                  updatedAt: Date.now(),
+                  lastActiveAt: Date.now(),
+                }
               : chat,
           ),
         }))
@@ -62,8 +70,10 @@ export const useChatStore = create<ChatStore>()(
       deleteChat: (chatId) => {
         set((state) => ({
           chats: state.chats.filter((chat) => chat.id !== chatId),
-          selectedChatId: state.selectedChatId === chatId ? null : state.selectedChatId,
-          selectedMessages: state.selectedChatId === chatId ? [] : state.selectedMessages,
+          selectedChatId:
+            state.selectedChatId === chatId ? null : state.selectedChatId,
+          selectedMessages:
+            state.selectedChatId === chatId ? [] : state.selectedMessages,
         }))
       },
 
@@ -88,9 +98,23 @@ export const useChatStore = create<ChatStore>()(
       setPersistedCount: (chatId, count) => {
         set((state) => ({
           chats: state.chats.map((chat) =>
-            chat.id === chatId ? { ...chat, persistedMessageCount: count } : chat,
+            chat.id === chatId
+              ? { ...chat, persistedMessageCount: count }
+              : chat,
           ),
         }))
+      },
+      hydrateChat: (chat) => {
+        set((state) => {
+          const exists = state.chats.some((c) => c.id === chat.id)
+          return {
+            chats: exists
+              ? state.chats.map((c) => (c.id === chat.id ? chat : c))
+              : [...state.chats, chat],
+            selectedChatId: chat.id,
+            selectedMessages: chat.messages,
+          }
+        })
       },
     }),
 
@@ -98,7 +122,11 @@ export const useChatStore = create<ChatStore>()(
       name: 'ai-chat-storage',
       storage: createJSONStorage(() => {
         if (typeof window === 'undefined') {
-          return { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          }
         }
         return localStorage
       }),

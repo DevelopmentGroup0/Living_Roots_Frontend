@@ -62,5 +62,5 @@ export async function Sidebar() {
     hasPermission(userRole, item.permission),
   )
   console.log('authorizedItems', authorizedItems)
-  return <SidebarClient navigationItems={authorizedItems} />
+  return <SidebarClient navigationItems={authorizedItems} activeUser={session?.user.id} />
 }
