@@ -50,7 +50,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
 
   console.log('estado de la session', session)
   // const userId = session?.user?.sub
-  const { messages, sendMessage, status, error, saveAndCloseChat, chats } =
+  const { selectedMessages, sendMessage, status, error, saveAndCloseChat, chats, selectedChatId } =
     useChatSession({
       userId: session?.user?.id || '',
       accessToken: session?.accessToken || '', // TODO: confirmar el nombre real del campo
@@ -58,7 +58,8 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   const [input, setInput] = useState('')
   console.log('status:', status)
 
-  console.log('📨 Messages:', messages)
+  console.log('📨 Mostrando Messages:', selectedMessages)
+  console.log('Id del chat seleccionado:', selectedChatId)
   console.log('🗂️ Chats de zustand:', chats)
 
   const isLoading = status === 'streaming' || status === 'submitted'
@@ -107,13 +108,13 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
           >
             <Conversation>
               <ConversationContent>
-                {messages.length === 0 ? (
+                {selectedMessages.length === 0 ? (
                   <ConversationEmptyState
                     title='Asistente Living Roots'
                     description='¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte con tus plantas hoy?'
                   />
                 ) : (
-                  messages.map((message) => (
+                  selectedMessages.map((message) => (
                     <Message key={message.id} from={message.role}>
                       <MessageContent>
                         {message.parts.map((part, index) => {

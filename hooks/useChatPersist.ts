@@ -119,8 +119,7 @@ export function useChatPersist(options: UseChatPersistOptions) {
   const saveAndCloseChat = useCallback(async () => {
     if (timerRef.current) clearTimeout(timerRef.current)
     await syncChat({ allowCreate: true })
-    clearSelectedChat()
-  }, [syncChat, clearSelectedChat])
+  }, [syncChat])
 
   // Cierre silencioso (inactividad): nunca crea, solo sincroniza si ya existía.
   const closeSessionSilently = useCallback(async () => {

@@ -6,16 +6,22 @@ import type {
   ApiPaginatedChats,
   ListChatsQuery,
 } from '../components/chat/types/chat.types'
+import { getSession } from 'next-auth/react'
 
-// ─── Chat API (HU-10) ───────────────────────────────────────────────────────
-// userId ya NO viaja en ningún lado: apiClient inyecta el token y el backend
-// resuelve el usuario desde el JWT (@ActiveUser).
+async function getToken(): Promise<string | undefined> {
+  const session = await getSession()
+  if (!session?.accessToken) {
+    throw new Error('Sesión no encontrada. Por favor inicia sesión nuevamente.')
+  }
+  return session?.accessToken as string | undefined
+}
 
 /** Primer guardado manual del chat en curso. */
 export async function createChat(
   payload: CreateChatPayload,
 ): Promise<ApiChatDetail> {
-  return apiClient.post('/chat/persist', payload)
+  const token = await getToken()
+  return apiClient.post('/chat/persist', payload, token)
 }
 
 /** Guardado incremental: solo los mensajes nuevos del último turno. */
@@ -23,7 +29,8 @@ export async function appendChatMessages(
   chatId: string,
   payload: AppendMessagesPayload,
 ): Promise<ApiChatDetail> {
-  return apiClient.patch(`/chat/${chatId}/messages`, payload)
+  const token = await getToken()
+  return apiClient.patch(`/chat/${chatId}/messages`, payload, token)
 }
 
 /** Historial paginado del usuario autenticado (HU-10). */
@@ -43,17 +50,20 @@ export async function getChatHistory(
   ).toString()
 
   const queryString = searchParams ? `?${searchParams}` : ''
-  return apiClient.get(`/chat/history${queryString}`)
+  const token = await getToken()
+  return apiClient.get(`/chat/history${queryString}`, token)
 }
 
 /** Chat completo con mensajes, para restaurar contexto. */
 export async function getChatDetail(chatId: string): Promise<ApiChatDetail> {
-  return apiClient.get(`/chat/${chatId}`)
+  const token = await getToken()
+  return apiClient.get(`/chat/${chatId}`, token)
 }
 
 /** Elimina un chat del historial. */
 export async function deleteChat(chatId: string): Promise<void> {
-  return apiClient.delete(`/chat/${chatId}`)
+  const token = await getToken()
+  return apiClient.delete(`/chat/${chatId}`, token)
 }
 
 /** Renombra un chat. */
@@ -61,5 +71,6 @@ export async function renameChat(
   chatId: string,
   title: string,
 ): Promise<ApiChatDetail> {
-  return apiClient.patch(`/chat/${chatId}`, { title })
+  const token = await getToken()
+  return apiClient.patch(`/chat/${chatId}`, { title }, token)
 }

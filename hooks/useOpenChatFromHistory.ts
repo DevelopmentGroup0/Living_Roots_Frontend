@@ -12,7 +12,9 @@ export function useOpenChatFromHistory(userId: string) {
       setLoadingChatId(chatId)
       try {
         const detail = await getChatDetail(chatId)
-        hydrateChat(toChatSession(detail, userId))
+        const logueo = toChatSession(detail, userId)
+        console.log('UseOpenChatFromHistory', logueo)
+        hydrateChat(logueo)
       } finally {
         setLoadingChatId(null)
       }

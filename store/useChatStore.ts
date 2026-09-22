@@ -35,6 +35,7 @@ export const useChatStore = create<ChatStore>()(
 
       updateSelectedMessages: (messages) => {
         const selectedChatId = get().selectedChatId
+        console.log("Id d chat desde store", selectedChatId)
         if (!selectedChatId) return
         set((state) => ({
           selectedMessages: messages,

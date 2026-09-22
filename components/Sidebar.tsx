@@ -54,7 +54,7 @@ const navigationItems: NavItem[] = [
 export async function Sidebar() {
   // 2. Extraemos la sesión en el servidor de forma segura
   const session = await getServerSession(authOptions)
-
+  const activeUser = session?.user.id ?? ''
   // 3. Si no hay sesión, asumimos un rol por defecto (ej. GUEST)
   const userRole: Role = session?.user?.role
 
@@ -62,5 +62,5 @@ export async function Sidebar() {
     hasPermission(userRole, item.permission),
   )
   console.log('authorizedItems', authorizedItems)
-  return <SidebarClient navigationItems={authorizedItems} activeUser={session?.user.id} />
+  return <SidebarClient navigationItems={authorizedItems} activeUser={activeUser} />
 }

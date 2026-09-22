@@ -97,6 +97,7 @@ export function useChatSession(options: UseChatSessionOptions) {
     stop,
     chats,
     selectedChatId,
+    selectedMessages,
     saveAndCloseChat,
     startNewChat,
   }
