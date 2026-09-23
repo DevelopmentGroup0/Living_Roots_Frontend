@@ -101,7 +101,7 @@ export function HerbsList({
         </nav>
       </div>
       {isChatExpanded && (
-        <div className='fixed z-40 flex items-center justify-center p-4animate-in fade-in duration-300'>
+        <div className='fixed z-40 flex items-center justify-center p-4 animate-in fade-in duration-300'>
           {/* Ventana de Conversación del Chat */}
           <Chat isExpanded={true} onExpandedChange={setIsChatExpanded} />
         </div>

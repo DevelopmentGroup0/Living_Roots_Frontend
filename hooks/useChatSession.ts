@@ -59,10 +59,8 @@ export function useChatSession(options: UseChatSessionOptions) {
     },
   })
 
-  // ─────────────────────────────────────
   // Crea el registro local en el primer mensaje de una conversación nueva.
   // Así sobrevive a navegaciones (localStorage) aunque nunca se guarde en BD.
-  // ─────────────────────────────────────
   const sendMessage: typeof sendMessageRaw = useCallback(
     (message, ...rest) => {
       if (!selectedChatId) {
@@ -74,7 +72,6 @@ export function useChatSession(options: UseChatSessionOptions) {
           messages: [],
           createdAt: now,
           updatedAt: now,
-          lastActiveAt: now,
         })
       }
       return sendMessageRaw(message, ...rest)

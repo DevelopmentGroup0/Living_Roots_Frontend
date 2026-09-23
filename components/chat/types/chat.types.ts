@@ -8,7 +8,6 @@ export interface ChatSession {
   messages: UIMessage[]
   createdAt: number
   updatedAt: number
-  lastActiveAt: number
   persistedMessageCount: number
 }
 
@@ -34,8 +33,6 @@ export interface ChatStoreActions {
   updateSelectedMessages: (messages: UIMessage[]) => void
   /** Actualizar título */
   updateChatTitle: (chatId: string, title: string) => void
-  /** Actualizar actividad */
-  updateLastActivity: (chatId: string) => void
   /** Eliminar chat */
   deleteChat: (chatId: string) => void
   /** Limpiar chat seleccionado */
@@ -75,13 +72,11 @@ export interface BackendMessage {
 /** Primer guardado manual. */
 export interface CreateChatPayload {
   title?: string | null
-  lastActiveAt: string
   messages: BackendMessage[]
 }
 
-/** Guardados automáticos posteriores: solo los mensajes nuevos. */
+/** Guardados posteriores: solo los mensajes nuevos. */
 export interface AppendMessagesPayload {
-  lastActiveAt: string
   messages: BackendMessage[]
 }
 
@@ -127,8 +122,6 @@ export interface ListChatsQuery {
 
 // Hook Options
 export interface UseChatPersistOptions {
-  /** Default: 30 minutos */
-  inactivityMs?: number
   /** Callback tras persistencia */
   onPersisted?: (chatId: string) => void
   /** Callback de error */

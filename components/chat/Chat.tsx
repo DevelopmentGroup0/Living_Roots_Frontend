@@ -50,17 +50,22 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
 
   console.log('estado de la session', session)
   // const userId = session?.user?.sub
-  const { selectedMessages, sendMessage, status, error, saveAndCloseChat, chats, selectedChatId } =
-    useChatSession({
-      userId: session?.user?.id || '',
-      accessToken: session?.accessToken || '', // TODO: confirmar el nombre real del campo
-    })
+  const {
+    selectedMessages,
+    sendMessage,
+    status,
+    error,
+    saveAndCloseChat,
+    selectedChatId,
+  } = useChatSession({
+    userId: session?.user?.id || '',
+    accessToken: session?.accessToken || '', // TODO: confirmar el nombre real del campo
+  })
   const [input, setInput] = useState('')
   console.log('status:', status)
 
   console.log('📨 Mostrando Messages:', selectedMessages)
   console.log('Id del chat seleccionado:', selectedChatId)
-  console.log('🗂️ Chats de zustand:', chats)
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
@@ -159,13 +164,10 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
         <PromptInput
           onSubmit={(message, event) => {
             event.preventDefault()
-
             if (!message.text.trim()) return
-
             sendMessage({
               text: message.text,
             })
-
             setInput('')
           }}
         >

@@ -8,9 +8,6 @@ import type {
 } from '../components/chat/types/chat.types'
 import type { UIMessage } from 'ai'
 
-const DEFAULT_INACTIVITY_MS =
-  Number(process.env.NEXT_PUBLIC_INACTIVITY_MS) || 30 * 60 * 1000
-
 /** Filtra a solo partes de texto y descarta mensajes que se queden vacíos. */
 function toBackendMessages(messages: UIMessage[]): BackendMessage[] {
   return messages
@@ -25,16 +22,10 @@ function toBackendMessages(messages: UIMessage[]): BackendMessage[] {
 }
 
 export function useChatPersist(options: UseChatPersistOptions) {
-  const {
-    inactivityMs = DEFAULT_INACTIVITY_MS,
-    onPersisted,
-    onError,
-    accessToken,
-  } = options
+  const { onPersisted, onError, accessToken } = options
 
   const chats = useChatStore((state) => state.chats)
   const selectedChatId = useChatStore((state) => state.selectedChatId)
-  const clearSelectedChat = useChatStore((state) => state.clearSelectedChat)
   const resolveChatId = useChatStore((state) => state.resolveChatId)
   const setPersistedCount = useChatStore((state) => state.setPersistedCount)
   const updateChatTitle = useChatStore((state) => state.updateChatTitle)
@@ -43,13 +34,17 @@ export function useChatPersist(options: UseChatPersistOptions) {
   const isSyncingRef = useRef(false)
 
   const currentChat = chats.find((chat) => chat.id === selectedChatId)
+  console.log('current chat desde useChatpersist', currentChat)
 
   // Refs "frescos" para leer el estado más reciente dentro del handler de
   // beforeunload, que se registra una sola vez y no puede depender de closures viejas.
   const currentChatRef = useRef(currentChat)
-  currentChatRef.current = currentChat
   const accessTokenRef = useRef(accessToken)
-  accessTokenRef.current = accessToken
+
+  useEffect(() => {
+    currentChatRef.current = currentChat
+    accessTokenRef.current = accessToken
+  }, [currentChat, accessToken])
 
   // syncChat: crea (primera vez) o agrega (incremental)
   const syncChat = useCallback(
@@ -71,7 +66,6 @@ export function useChatPersist(options: UseChatPersistOptions) {
 
           const saved = await createChat({
             title: chat.title,
-            lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
             messages: backendMessages,
           })
 
@@ -90,7 +84,6 @@ export function useChatPersist(options: UseChatPersistOptions) {
         if (backendMessages.length === 0) return true // nada nuevo que sincronizar
 
         await appendChatMessages(chat.id, {
-          lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
           messages: backendMessages,
         })
 
@@ -121,30 +114,6 @@ export function useChatPersist(options: UseChatPersistOptions) {
     await syncChat({ allowCreate: true })
   }, [syncChat])
 
-  // Cierre silencioso (inactividad): nunca crea, solo sincroniza si ya existía.
-  const closeSessionSilently = useCallback(async () => {
-    await syncChat({ allowCreate: false })
-    clearSelectedChat()
-  }, [syncChat, clearSelectedChat])
-
-  // Watch inactividad
-  useEffect(() => {
-    if (!currentChat || currentChat.messages.length === 0) return
-
-    const elapsed = Date.now() - currentChat.lastActiveAt
-    if (elapsed >= inactivityMs) {
-      void closeSessionSilently()
-      return
-    }
-
-    const remaining = inactivityMs - elapsed
-    timerRef.current = setTimeout(() => void closeSessionSilently(), remaining)
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [currentChat, inactivityMs, closeSessionSilently])
-
   // ─────────────────────────────────────
   // beforeunload — solo sincroniza chats YA guardados antes (nunca crea).
   // fetch + keepalive reemplaza a sendBeacon porque este último no admite
@@ -167,7 +136,6 @@ export function useChatPersist(options: UseChatPersistOptions) {
           Authorization: `Bearer ${accessTokenRef.current}`,
         },
         body: JSON.stringify({
-          lastActiveAt: new Date(chat.lastActiveAt).toISOString(),
           messages: backendMessages,
         }),
         keepalive: true,

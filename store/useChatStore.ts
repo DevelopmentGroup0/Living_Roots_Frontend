@@ -35,7 +35,7 @@ export const useChatStore = create<ChatStore>()(
 
       updateSelectedMessages: (messages) => {
         const selectedChatId = get().selectedChatId
-        console.log("Id d chat desde store", selectedChatId)
+        console.log("Id del chat desde updateSelectedMessages", selectedChatId)
         if (!selectedChatId) return
         set((state) => ({
           selectedMessages: messages,
@@ -56,14 +56,6 @@ export const useChatStore = create<ChatStore>()(
         set((state) => ({
           chats: state.chats.map((chat) =>
             chat.id === chatId ? { ...chat, title } : chat,
-          ),
-        }))
-      },
-
-      updateLastActivity: (chatId) => {
-        set((state) => ({
-          chats: state.chats.map((chat) =>
-            chat.id === chatId ? { ...chat, lastActiveAt: Date.now() } : chat,
           ),
         }))
       },
