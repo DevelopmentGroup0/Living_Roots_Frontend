@@ -18,7 +18,7 @@ export function DashboardNav({
   return (
     <div className='w-full border-b border-slate-200 mb-6'>
       {/* 'grid-cols-2' hace que cada pestaña ocupe exactamente el 50% del ancho. */}
-      <div className='grid grid-cols-2 w-full text-center'>
+      <div className={`grid grid-cols-${dashboardItems.length} w-full text-center`}>
         {dashboardItems.map((item) => {
           const isActive = pathname === item.href
 
