@@ -1,56 +1,12 @@
 import { getSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api-client'
-
-export type UserRole = 'admin' | 'client'
-
-export type UserSortField = 'name' | 'lastName' | 'email' | 'role' | 'createdAt'
-
-export type SortDirection = 'asc' | 'desc'
-
-export interface User {
-  user_id: string
-  name: string
-  lastName: string
-  phone: string | null
-  email: string
-  role: UserRole
-  avatar?: string | null
-  createdAt: string
-  updateAt: string
-}
-
-export interface UpdateUserPayload {
-  name?: string
-  lastName?: string
-  email?: string
-  phone?: string
-}
-
-export interface UpdateUserRolePayload {
-  role: UserRole
-}
-
-export interface UsersFilters {
-  page?: number
-  limit?: number
-  search?: string
-  sortBy?: UserSortField
-  sortDir?: SortDirection
-}
-
-export interface PaginationMeta {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-}
-
-export interface PaginatedUsersResponse {
-  data: User[]
-  meta: PaginationMeta
-}
+import {
+  PaginatedUsersResponse,
+  UpdateUserPayload,
+  UpdateUserRolePayload,
+  User,
+  UsersFilters,
+} from '@/interfaces/auth'
 
 async function getToken(): Promise<string> {
   const session = await getSession()
@@ -102,6 +58,18 @@ export const userService = {
     const token = await getToken()
 
     return apiClient.get<User>(`/users/${id}`, token)
+  },
+
+  async getProfile(): Promise<User> {
+    const token = await getToken()
+
+    return apiClient.get<User>(`/auth/profile`, token)
+  },
+
+  async updateProfile(data: UpdateUserPayload): Promise<User> {
+    const token = await getToken()
+
+    return apiClient.patch<User>(`/auth/profile`, data, token)
   },
 
   async update(id: string, data: UpdateUserPayload): Promise<User> {

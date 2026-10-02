@@ -70,7 +70,7 @@ export default function SidebarClient({
       >
         <div className='flex h-full flex-col'>
           <div
-            className={`flex h-16 items-center border-b border-gray-200 px-2 ${isOpen ? 'justify-end' : 'justify-center'}`}
+            className={`flex min-h-16 items-center border-b border-gray-200 px-2 ${isOpen ? 'justify-end' : 'justify-center'}`}
           >
             <Tooltip>
               {isOpen && (
@@ -120,7 +120,7 @@ export default function SidebarClient({
                   href={item.href}
                   className={`group flex h-11 w-full items-center overflow-hidden rounded-md text-sm transition-colors ${
                     isActive
-                      ? `bg-green-100 text-green-700hover:bg-green-100 hover:text-green-700`
+                      ? `bg-green-100 text-green-700 hover:text-green-700`
                       : `text-gray-600 hover:bg-gray-100 hover:text-gray-900`
                   }
 
@@ -156,7 +156,7 @@ export default function SidebarClient({
               return <div key={item.href}>{link}</div>
             })}
           </nav>
-              <ChatSidemenu userId={activeUser} />
+          <ChatSidemenu userId={activeUser} openSideMenu={isOpen} />
         </div>
       </aside>
     </TooltipProvider>

@@ -4,13 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import {
   MessageSquare,
+  MessageSquarePlus,
   MoreVertical,
   Pencil,
   Trash2,
   ExternalLink,
   Check,
   X,
-  Plus,
   Loader2,
 } from 'lucide-react'
 
@@ -25,9 +25,10 @@ import {
 
 interface ChatSidemenuProps {
   userId: string
+  openSideMenu: boolean
 }
 
-export function ChatSidemenu({ userId }: ChatSidemenuProps) {
+export function ChatSidemenu({ userId, openSideMenu }: ChatSidemenuProps) {
   const selectedChatId = useChatStore((state) => state.selectedChatId)
   const clearSelectedChat = useChatStore((state) => state.clearSelectedChat)
 
@@ -51,26 +52,36 @@ export function ChatSidemenu({ userId }: ChatSidemenuProps) {
   }
 
   return (
-    <aside className='w-64 bg-zinc-900 text-zinc-200 flex flex-col h-full border-r border-zinc-800 p-3'>
+    <aside
+      className={`flex flex-col h-full pt-0 border-zinc-800 p-2 transition-all duration-300 ease-in-out ${openSideMenu ? 'w-64' : 'w-16'}`}
+    >
       <button
         onClick={() => clearSelectedChat()}
-        className='flex items-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-100 px-3 py-2 rounded-lg text-sm font-medium transition mb-4'
+        className={`group flex h-11 w-full items-center overflow-hidden rounded-md text-sm transition-colors hover:bg-gray-100 hover:text-green-700 px-3 py-2 font-medium mb-4 ${openSideMenu ? 'justify-start px-3 gap-3' : 'justify-center px-0'}`}
       >
-        <Plus size={16} />
-        Nuevo chat
+        <MessageSquarePlus className='h-5 w-5 shrink-0 transition-colors text-green-600' />
+        <span
+          className={`whitespace-nowrap text-gray-600 hover:text-gray-900 transition-all duration-200 ${openSideMenu ? 'w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+        >
+          Nuevo chat
+        </span>
       </button>
 
-      <div className='text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 px-2'>
+      <div
+        className={`text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-2 ${openSideMenu ? 'w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+      >
         Historial reciente
       </div>
 
-      <div className='flex-1 overflow-y-auto space-y-1'>
+      <div
+        className={`flex-1 overflow-y-auto space-y-1 ${openSideMenu ? 'w-auto opacity-100' : 'pointer-events-none w-0 opacity-0'}`}
+      >
         {isLoading && (
-          <div className='text-sm text-zinc-500 px-2 py-1'>Cargando...</div>
+          <div className='text-sm text-gray-900 px-2 py-1'>Cargando...</div>
         )}
 
         {!isLoading && chats.length === 0 && (
-          <div className='text-sm text-zinc-500 px-2 py-2'>
+          <div className='text-sm text-gray-900 px-2 py-2'>
             Aún no tienes consultas guardadas.
           </div>
         )}
@@ -83,10 +94,10 @@ export function ChatSidemenu({ userId }: ChatSidemenuProps) {
           return (
             <div
               key={chat.chat_id}
-              className={`group relative flex items-center justify-between rounded-lg px-2 py-2 text-sm transition hover:bg-zinc-800 ${
+              className={`group relative flex items-center justify-between rounded-lg px-2 py-2 text-sm transition hover:bg-gray-100 ${
                 isSelected
-                  ? 'bg-zinc-800 text-white font-medium'
-                  : 'text-zinc-400'
+                  ? 'bg-green-100 text-green-700 hover:bg-green-100 font-medium'
+                  : 'text-zinc-600 hover:text-gray-900'
               }`}
             >
               {isEditing ? (
@@ -175,12 +186,12 @@ export function ChatSidemenu({ userId }: ChatSidemenuProps) {
         })}
       </div>
 
-      <div className='pt-3 border-t border-zinc-800 mt-2'>
+      <div className='pt-3 border-t border-zinc-400 mt-2'>
         <Link
           href='/chats'
-          className='flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition'
+          className='flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-zinc-800 hover:text-white hover:bg-zinc-600 rounded-lg transition'
         >
-          <span>Ver todos los chats</span>
+          {openSideMenu && <span>Ver todos los chats</span>}
           <ExternalLink size={14} />
         </Link>
       </div>

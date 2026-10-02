@@ -70,20 +70,12 @@ export function UserAvatarButton() {
               </div>
 
               <Link
-                href='#/profile'
+                href='/profile'
                 className='hover:bg-accent flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors'
               >
                 <UserCircle className='text-muted-foreground h-4 w-4' />
                 <span>Mi Perfil</span>
               </Link>
-
-              {/* <Link
-                href='#/config'
-                className='hover:bg-accent flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors'
-              >
-                <Settings className='text-muted-foreground h-4 w-4' />
-                <span>Configuración</span>
-              </Link> */}
 
               <button
                 onClick={handleLogout}
