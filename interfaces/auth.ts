@@ -32,6 +32,16 @@ export interface RecognizedDevice {
   current: boolean
 }
 
+export interface TrustedDevice {
+  id: string
+  browser: string
+  os: string
+  deviceType: 'desktop' | 'mobile' | 'tablet'
+  expiresAt: string
+  lastUsedAt: string | null
+  isCurrent: boolean
+}
+
 // Actualizamos el payload de actualización para incluir el avatar
 export interface UpdateUserPayload {
   name?: string

@@ -16,7 +16,7 @@ export function DangerZoneCard({
     <div className='bg-white rounded-2xl border border-red-100 p-6 shadow-sm space-y-6'>
       <div className='flex items-center justify-between border-b border-gray-100 pb-4'>
         <div>
-          <h3 className='text-lg font-bold text-gray-950'>Danger Zone</h3>
+          <h3 className='text-lg font-bold text-red-600'>Danger Zone</h3>
           <p className='text-sm text-gray-500'>
             Acciones críticas relacionadas con el acceso y estado de tu cuenta.
           </p>

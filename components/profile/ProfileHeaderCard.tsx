@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Edit2, X, Check } from 'lucide-react'
+import { Edit2, X, Check, UserCheck } from 'lucide-react'
 import { User } from '@/interfaces/auth'
 import { ImageDropzone } from '../herbs/ImageDropzone'
 
@@ -35,6 +35,15 @@ export function ProfileHeaderCard({
 
   return (
     <div className='bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-6'>
+      <div className='flex items-center justify-between border-b border-gray-100 pb-4'>
+        <div>
+          <h3 className='text-lg font-bold text-gray-900'>Tu Perfíl</h3>
+          <p className='text-sm text-gray-500'>
+            Administra la información de tu cuenta.
+          </p>
+        </div>
+        <UserCheck className='h-5 w-5 text-gray-400' />
+      </div>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-4'>
           {/* Avatar con soporte de subida si está en modo edición */}
