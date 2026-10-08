@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Toaster } from '@/components/ui/sonner'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/components/auth/AuthProvider'
@@ -33,7 +34,10 @@ export default function RootLayout({
       <body className='min-h-full flex flex-col'>
         <QueryProvider>
           <AuthProvider>
-            <SessionManager>{children}</SessionManager>
+            <SessionManager>
+              {children}
+              <Toaster position='bottom-right' richColors />
+            </SessionManager>
           </AuthProvider>
         </QueryProvider>
       </body>

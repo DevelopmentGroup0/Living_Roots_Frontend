@@ -16,7 +16,7 @@ export function DangerZoneCard({
     <div className='bg-white rounded-2xl border border-red-100 p-6 shadow-sm space-y-6'>
       <div className='flex items-center justify-between border-b border-gray-100 pb-4'>
         <div>
-          <h3 className='text-lg font-bold text-red-600'>Danger Zone</h3>
+          <h3 className='text-lg font-bold text-red-600'>Zona Peligro</h3>
           <p className='text-sm text-gray-500'>
             Acciones críticas relacionadas con el acceso y estado de tu cuenta.
           </p>
@@ -28,10 +28,10 @@ export function DangerZoneCard({
       <div className='flex items-center justify-between py-2'>
         <div>
           <h4 className='text-sm font-semibold text-gray-800'>
-            Logout all devices
+            LogOut En Tus Dispositivos.
           </h4>
           <p className='text-xs text-gray-500'>
-            Sign out from every active session across all browsers.
+            Cerrar sesión en todas las sesiones activas en todos los navegadores.
           </p>
         </div>
         <Button
@@ -47,7 +47,7 @@ export function DangerZoneCard({
       {/* Eliminar cuenta */}
       <div className='flex items-center justify-between py-2 pt-4 border-t border-gray-100'>
         <div>
-          <h4 className='text-sm font-semibold text-red-600'>Delete account</h4>
+          <h4 className='text-sm font-semibold text-red-600'>Eliminar Cuenta</h4>
           <p className='text-xs text-gray-500'>
             Permanently delete your account and all associated data.
           </p>

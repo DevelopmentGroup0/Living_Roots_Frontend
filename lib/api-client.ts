@@ -66,6 +66,26 @@ async function apiRequestForm<T>(
   return response.json()
 }
 
+async function apiRequestDelete(endpoint: string, token?: string) {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    method: 'DELETE',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
+
+  if (!res.ok) {
+    throw new Error('Error en la petición DELETE')
+  }
+
+  // Si es 204 No Content o no hay contenido, retornamos null o vacío para evitar el error de JSON
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return null
+  }
+
+  return res.json()
+}
+
 export const apiClient = {
   get: <T>(url: string, token?: string) =>
     apiRequest<T>(url, { method: 'GET' }, token),
@@ -75,8 +95,7 @@ export const apiClient = {
     apiRequest<T>(url, { method: 'PUT', body: JSON.stringify(body) }, token),
   patch: <T>(url: string, body: unknown, token?: string) =>
     apiRequest<T>(url, { method: 'PATCH', body: JSON.stringify(body) }, token),
-  delete: <T>(url: string, token?: string) =>
-    apiRequest<T>(url, { method: 'DELETE' }, token),
+  delete: (url: string, token?: string) => apiRequestDelete(url, token),
   getBlob: (url: string, token?: string) => apiRequestBlob(url, token),
   postForm: <T>(url: string, body: FormData, token?: string) =>
     apiRequestForm<T>(url, body, token),

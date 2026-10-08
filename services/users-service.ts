@@ -87,6 +87,6 @@ export const userService = {
   async delete(id: string): Promise<void> {
     const token = await getToken()
 
-    return apiClient.delete<void>(`/users/${id}`, token)
+    return apiClient.delete(`/users/${id}`, token)
   },
 }

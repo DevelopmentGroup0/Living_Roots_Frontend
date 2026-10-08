@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { TrustedDevice } from '@/interfaces/auth'
 import { Shield, Laptop, Smartphone, Tablet } from 'lucide-react'
+import { toast } from 'sonner' // Importa el toast de shadcn (sonner)
 
 interface SecurityCardProps {
   devices: TrustedDevice[]
@@ -52,7 +53,7 @@ export function SecurityCard({
     <div className='bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-6'>
       <div className='flex items-center justify-between border-b border-gray-100 pb-4'>
         <div>
-          <h3 className='text-lg font-bold text-gray-900'>Security</h3>
+          <h3 className='text-lg font-bold text-gray-900'>Seguridad</h3>
           <p className='text-sm text-gray-500'>
             Gestiona tu contraseña y dispositivos con acceso activo.
           </p>
@@ -64,11 +65,8 @@ export function SecurityCard({
       <div className='flex items-center justify-between py-2'>
         <div>
           <h4 className='text-sm font-semibold text-gray-800'>
-            Change Password
+            Cambio de Contraseña
           </h4>
-          <p className='text-xs text-gray-500'>
-            Receive real-time notifications and security alerts.
-          </p>
         </div>
         <Button variant='outline' size='sm'>
           Change Password
@@ -78,7 +76,7 @@ export function SecurityCard({
       {/* Dispositivos Reconocidos */}
       <div className='pt-4 border-t border-gray-100 space-y-4'>
         <h4 className='text-sm font-semibold text-gray-800'>
-          Recognized Devices
+          Tus Dispositivos Reconocidos
         </h4>
 
         {isLoadingDevices && (
@@ -101,9 +99,12 @@ export function SecurityCard({
           </p>
         )}
 
+        {/* Si prefieres usar un banner general de error o delegarlo a los Toasts */}
         {!!revokeError && (
           <p className='text-xs text-red-600'>
-            No se pudo revocar el dispositivo. Intenta de nuevo.
+            {/* Muestra el mensaje real del error si viene estructurado */}
+            {(revokeError as Error)?.message ||
+              'No se pudo revocar el dispositivo. Intenta de nuevo.'}
           </p>
         )}
 

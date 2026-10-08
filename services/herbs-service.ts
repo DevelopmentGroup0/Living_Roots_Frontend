@@ -83,7 +83,7 @@ export const herbService = {
 
   async delete(id: string): Promise<void> {
     const token = await getToken()
-    return apiClient.delete<void>(`/herbs/${id}`, token)
+    return apiClient.delete(`/herbs/${id}`, token)
   },
 
   async addSymptom(herbId: string, data: AddSymptomFormValues): Promise<void> {
@@ -116,7 +116,7 @@ export const herbService = {
 
   async removeTreatment(herbId: string, symptomId: string) {
     const token = await getToken()
-    return apiClient.delete<void>(
+    return apiClient.delete(
       `/herbs/${herbId}/symptoms/${symptomId}`,
       token,
     )

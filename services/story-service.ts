@@ -130,7 +130,7 @@ export const storyService = {
    */
   async delete(storyId: string): Promise<void> {
     const token = await getToken()
-    return apiClient.delete<void>(`/stories/${storyId}`, token)
+    return apiClient.delete(`/stories/${storyId}`, token)
   },
 
   /**

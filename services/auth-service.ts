@@ -7,16 +7,11 @@ export const authService = {
     return await signIn('credentials', {
       email: credentials.email,
       password: credentials.password,
-      redirect: false, // Para manejar el error con un toast
+      redirect: false,
     })
   },
 
   register: async (data: RegisterData): Promise<AuthResponse> => {
     return apiClient.post<AuthResponse>('/auth/register', data)
   },
-
-  // Ejemplo de obtención de perfil (usando GET)
-  // getProfile: async (): Promise<any> => {
-  //   return apiClient.get('/auth/profile')
-  // },
 }
