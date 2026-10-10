@@ -44,12 +44,13 @@ const sidebarVariant = {
 
 import { useChatSession } from '@/hooks/useChatSession'
 import { useSession } from 'next-auth/react'
+import { ChatSaveToggle } from './ChatSaveToggle'
 
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   const { data: session } = useSession()
 
   console.log('estado de la session', session)
-  // const userId = session?.user?.sub
+
   const {
     selectedMessages,
     sendMessage,
@@ -78,27 +79,32 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
       style={{ border: `1px solid ${isExpanded ? '#e5e7eb' : '#d1d5db'}` }}
     >
       {isExpanded && (
-        <div className='h-14 bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0'>
+        <div className='h-14 relative bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0'>
+          <ChatSaveToggle
+            onSave={() => void saveAndCloseChat()}
+            isSaving={false}
+          />
           <div className='flex items-center gap-3'>
             <MessageCircle className='w-5 h-5 text-green-600' />
             <span className='font-semibold text-gray-900'>
               Asistente de Plantas
             </span>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={() => onExpandedChange(false)}
+            >
+              <X className='w-5 h-5' />
+            </Button>
           </div>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={() => onExpandedChange(false)}
-          >
-            <X className='w-5 h-5' />
-          </Button>
-          <button
+
+          {/* <button
             onClick={async () => {
               await saveAndCloseChat()
             }}
           >
             Guardar chat
-          </button>
+          </button> */}
         </div>
       )}
 

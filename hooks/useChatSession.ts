@@ -24,7 +24,7 @@ export function useChatSession(options: UseChatSessionOptions) {
   const clearSelectedChat = useChatStore((state) => state.clearSelectedChat)
 
   // 1. Crea un ID temporal único para cuando el usuario está en un chat nuevo sin ID de BD/Store aún
-  const [tempChatId, setTempChatId] = useState(() => crypto.randomUUID())
+  const [tempChatId, setTempChatId] = useState('nosaved')
 
   // Si cambia el selectedChatId real (ej. selecciona uno del historial), reseteamos el temporal
   useEffect(() => {
