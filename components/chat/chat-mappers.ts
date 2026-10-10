@@ -15,7 +15,6 @@ export function toChatSession(
     messages: chat.messages,
     createdAt: new Date(chat.createdAt).getTime(),
     updatedAt: new Date(chat.updatedAt).getTime(),
-    lastActiveAt: new Date(chat.lastActiveAt).getTime(),
     persistedMessageCount: chat.messages.length,
   }
 }

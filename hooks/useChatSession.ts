@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react' // <--- Importar useState
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useChatStore } from '@/store/useChatStore'
@@ -23,6 +23,16 @@ export function useChatSession(options: UseChatSessionOptions) {
   )
   const clearSelectedChat = useChatStore((state) => state.clearSelectedChat)
 
+  // 1. Crea un ID temporal único para cuando el usuario está en un chat nuevo sin ID de BD/Store aún
+  const [tempChatId, setTempChatId] = useState(() => crypto.randomUUID())
+
+  // Si cambia el selectedChatId real (ej. selecciona uno del historial), reseteamos el temporal
+  useEffect(() => {
+    if (selectedChatId) {
+      setTempChatId(crypto.randomUUID())
+    }
+  }, [selectedChatId])
+
   const { syncChat, saveAndCloseChat } = useChatPersist({
     accessToken,
     ...persistOptions,
@@ -33,6 +43,9 @@ export function useChatSession(options: UseChatSessionOptions) {
     if (initialChatId) setSelectedChat(initialChatId)
   }, [userId, initialChatId, setSelectedChat])
 
+  // 2. El ID que usará la AI SDK será el del chat seleccionado O el temporal único
+  const activeChatId = selectedChatId ?? tempChatId
+
   const {
     messages,
     sendMessage: sendMessageRaw,
@@ -40,17 +53,14 @@ export function useChatSession(options: UseChatSessionOptions) {
     error,
     stop,
   } = useChat({
+    id: activeChatId,
     messages: selectedMessages,
 
     transport: new DefaultChatTransport({
-      // api: 'http://localhost:4000/chat/generate',
-      // headers: { Authorization: `Bearer ${accessToken}` },
       api: 'http://localhost:4000/rag/ask',
     }),
 
     onFinish: () => {
-      // Guardado automático incremental — solo pega si el chat ya fue
-      // guardado manualmente antes (allowCreate: false por defecto).
       void syncChat()
     },
 
@@ -60,13 +70,12 @@ export function useChatSession(options: UseChatSessionOptions) {
   })
 
   // Crea el registro local en el primer mensaje de una conversación nueva.
-  // Así sobrevive a navegaciones (localStorage) aunque nunca se guarde en BD.
   const sendMessage: typeof sendMessageRaw = useCallback(
     (message, ...rest) => {
       if (!selectedChatId) {
         const now = Date.now()
         createChatLocal({
-          id: crypto.randomUUID(),
+          id: tempChatId,
           userId,
           title: null,
           messages: [],
@@ -76,7 +85,7 @@ export function useChatSession(options: UseChatSessionOptions) {
       }
       return sendMessageRaw(message, ...rest)
     },
-    [selectedChatId, createChatLocal, userId, sendMessageRaw],
+    [selectedChatId, createChatLocal, userId, sendMessageRaw, tempChatId],
   )
 
   // Sync AI SDK → Zustand
@@ -84,7 +93,11 @@ export function useChatSession(options: UseChatSessionOptions) {
     updateSelectedMessages(messages)
   }, [messages, updateSelectedMessages])
 
-  const startNewChat = () => clearSelectedChat()
+  // Al iniciar un nuevo chat, genera UUID temporal limpio para la SDK
+  const startNewChat = () => {
+    clearSelectedChat()
+    setTempChatId(crypto.randomUUID())
+  }
 
   return {
     messages,

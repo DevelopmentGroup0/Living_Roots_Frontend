@@ -97,16 +97,6 @@ export const herbService = {
     data: UpdateTreatmentPayload,
   ) {
     const token = await getToken()
-    console.log(
-      'Updating treatment for herbId:',
-      herbId,
-      'symptomId:',
-      symptomId,
-      'with data:',
-      data,
-      'and token:',
-      token,
-    )
     return apiClient.patch<void>(
       `/herbs/${herbId}/symptoms/${symptomId}`,
       data,

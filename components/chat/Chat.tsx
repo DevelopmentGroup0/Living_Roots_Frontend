@@ -59,7 +59,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
     selectedChatId,
   } = useChatSession({
     userId: session?.user?.id || '',
-    accessToken: session?.accessToken || '', // TODO: confirmar el nombre real del campo
+    accessToken: session?.accessToken || '',
   })
   const [input, setInput] = useState('')
   console.log('status:', status)
