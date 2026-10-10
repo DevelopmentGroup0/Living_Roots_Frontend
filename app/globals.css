@@ -8,11 +8,11 @@
 :root {
   /* 🌿 LIVING ROOTS - COLORES BASE */
   --background: #eaf2ec; /* <-- Verde pastel suave para el fondo */
-  --foreground: #1a3324; /* Verde pino oscuro para el texto general */
+  --foreground: #0F3521; /* Verde pino oscuro para el texto general */
 
   /* 🌿 COLORES PERSONALIZADOS PARA TARJETAS */
-  --lr-green-light: #9cb39c; /* Verde salvia (Tarjeta clara) */
-  --lr-green-dark: #2c4c3b; /* Verde bosque (Tarjeta oscura) */
+  --lr-green-light: #BDD0AC; /* Verde salvia (Tarjeta clara) */
+  --lr-green-dark: #135c34; /* Verde bosque (Tarjeta oscura) */
   --lr-terracotta: #a65e53; /* Ladrillo/Terracota (Etiquetas) */
   --lr-text-light: #f4f0e6; /* Texto claro para contraste */
 

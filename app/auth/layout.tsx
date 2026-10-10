@@ -11,7 +11,7 @@ export default function AuthLayout({
          formulario a pantalla completa (según lo definido). */}
       <div className='relative hidden lg:block'>
         <Image
-          src='/images/hidroelectrica.png'
+          src='/images/vista.jpg'
           alt='Paisaje de Morales, Cauca'
           fill
           priority
