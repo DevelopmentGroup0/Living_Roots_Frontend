@@ -23,15 +23,6 @@ export interface RegisterData {
   password: string
 }
 
-export interface RecognizedDevice {
-  id: string
-  userAgent: string
-  browser?: string
-  os?: string
-  lastActive: string
-  current: boolean
-}
-
 export interface TrustedDevice {
   id: string
   browser: string
