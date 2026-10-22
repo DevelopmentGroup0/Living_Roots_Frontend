@@ -6,7 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { herbService } from '@/services/herbs-service'
 import { HerbCard } from './HerbCard'
-import { MessageSquare } from 'lucide-react'
+import Image from 'next/image'
 import { Chat } from '../chat/Chat'
 
 export function HerbsList({
@@ -88,17 +88,32 @@ export function HerbsList({
           </div>
         </main>
 
-        <nav className='fixed bottom-6 bg-emerald-900 text-stone-100 px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 md:gap-10 z-40 border border-white/10 backdrop-blur-sm right-6 md:right-12'>
-          <button
-            onClick={() => setIsChatExpanded(!isChatExpanded)}
-            className={`flex flex-col items-center gap-1 transition-all ${isChatExpanded ? 'text-amber-300 scale-110' : 'text-stone-400'}`}
-          >
-            <MessageSquare size={26} />
-            <span className='text-[9px] font-bold uppercase tracking-tighter'>
-              Wala IA
-            </span>
-          </button>
-        </nav>
+        <button
+          onClick={() => setIsChatExpanded(!isChatExpanded)}
+          className={`${isChatExpanded ? 'hidden' : 'flex'} fixed bottom-6 right-10 z-50 flex items-center justify-center w-34 h-34 rounded-full shadow-xl hover:bg-green-200 dark:bg-zinc-800 hover:scale-105 active:scale-95 transition-all duration-100 focus:outline-none focus:ring-4 focus:ring-primary/40 group overflow-hidden border-2 border-primary/20`}
+        >
+          <div className='absolute inset-0 transition-opacity duration-300 ease-in-out group-hover:opacity-0'>
+            <Image
+              src='/images/mascot-normal.png'
+              alt='Mascota del chat'
+              fill
+              sizes='64px'
+              className='object-cover'
+              priority
+            />
+          </div>
+
+          <div className='absolute inset-0 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100'>
+            <Image
+              src='/images/mascot-wink.png'
+              alt='Mascota guiñando el ojo'
+              fill
+              sizes='64px'
+              className='object-cover'
+              priority
+            />
+          </div>
+        </button>
       </div>
       {isChatExpanded && (
         <div className='fixed z-40 flex items-center justify-center p-4 animate-in fade-in duration-300'>

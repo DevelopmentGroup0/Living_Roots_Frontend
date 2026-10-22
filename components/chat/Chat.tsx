@@ -97,14 +97,6 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
               <X className='w-5 h-5' />
             </Button>
           </div>
-
-          {/* <button
-            onClick={async () => {
-              await saveAndCloseChat()
-            }}
-          >
-            Guardar chat
-          </button> */}
         </div>
       )}
 
@@ -166,7 +158,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
         )}
       </AnimatePresence>
 
-      <div className='border-t p-4 bg-white shrink-0'>
+      <div className='border-t p-4 bg-white shrink-0 mr-5'>
         <PromptInput
           onSubmit={(message, event) => {
             event.preventDefault()

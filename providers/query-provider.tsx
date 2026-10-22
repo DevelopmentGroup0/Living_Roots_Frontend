@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
   // useState garantiza que cada sesión de usuario tenga su propio QueryClient
@@ -23,8 +22,6 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* DevTools solo aparece en desarrollo */}
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }
