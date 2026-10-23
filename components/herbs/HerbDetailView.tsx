@@ -3,6 +3,7 @@
 import { useFavorites } from '@/hooks/useFavorites'
 import { ArrowLeft, Heart, Info } from 'lucide-react'
 import { Plant } from './interfaces'
+import { TreatmentCategoryBadges } from './TreatmentCategoryBadges'
 
 export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
   console.log('para el componente client', plantDetails)
@@ -97,6 +98,8 @@ export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
                       </span>
                     </h3>
                   </div>
+
+                  <TreatmentCategoryBadges treatment={item} className='mb-3' />
 
                   <hr className='border-emerald-100 mb-4' />
 

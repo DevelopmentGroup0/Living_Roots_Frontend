@@ -37,6 +37,8 @@ import {
   InputGroupTextarea,
 } from '../ui/input-group'
 import { ScrollArea } from '../ui/scroll-area'
+import { TreatmentCategoryPicker } from '../herbs/TreatmentCategoryPicker'
+import { DEFAULT_TREATMENT_CATEGORIES } from '@/constants/treatment-categories'
 
 interface AddSymptomDialogProps {
   plant: Plant | null
@@ -52,6 +54,7 @@ const defaultValues: AddSymptomFormValues = {
   parts_plant: '',
   prepare: '',
   apply: '',
+  category: DEFAULT_TREATMENT_CATEGORIES,
 }
 
 export function AddSymptomDialog({
@@ -279,6 +282,29 @@ export function AddSymptomDialog({
                         </InputGroupText>
                       </InputGroupAddon>
                     </InputGroup>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                control={form.control}
+                name='category'
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor='form-symptom-category'>
+                      Categoría del tratamiento{' '}
+                      <span className='text-red-500'>*</span>
+                    </FieldLabel>
+                    <TreatmentCategoryPicker
+                      id='form-symptom-category'
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                    <FieldDescription className='text-xs'>
+                      Puedes elegir más de una.
+                    </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

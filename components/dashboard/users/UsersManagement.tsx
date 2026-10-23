@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
-import { useUsersManagement } from '@/components/hooks/useUsersManagement'
+import { useUsersManagement } from '@/hooks/useUsersManagement'
 import type { User, UserRole, UserSortField } from '@/services/users-service'
 import { ConfirmDeleteUserModal } from './ConfirmDeleteUserModal'
 
