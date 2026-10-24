@@ -5,6 +5,10 @@ export interface HerbTreatment {
   partsplant: string
   prepare: string
   apply?: string | null
+  // GET /herbs devuelve `category` y GET /herbs/:id devuelve `categories`
+  // (mismo dato). Usar getTreatmentCategories() para leerlo.
+  category?: string[]
+  categories?: string[]
 }
 
 export interface Plant {

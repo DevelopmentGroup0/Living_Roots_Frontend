@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client'
-import { SymptomCombobox } from '@/components/syptoms/SymptomCombobox'
+import { SymptomCombobox } from '@/components/symptoms/SymptomCombobox'
 import { useRouter, useSearchParams } from 'next/navigation'
 export function SearchSymptom() {
   const router = useRouter()

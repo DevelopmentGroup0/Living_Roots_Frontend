@@ -15,11 +15,21 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { HerbTreatment } from '../interfaces'
+import { Controller } from 'react-hook-form'
+import { TreatmentCategoryPicker } from '../TreatmentCategoryPicker'
+import {
+  DEFAULT_TREATMENT_CATEGORIES,
+  TREATMENT_CATEGORIES,
+  getTreatmentCategories,
+} from '@/constants/treatment-categories'
 
 const editTreatmentSchema = z.object({
   partsplant: z.string().min(1, 'Requerido'),
   prepare: z.string().min(1, 'Requerido'),
   apply: z.string().optional(),
+  category: z
+    .array(z.enum(TREATMENT_CATEGORIES))
+    .min(1, 'Selecciona al menos una categoría'),
 })
 
 export type EditTreatmentFormValues = z.infer<typeof editTreatmentSchema>
@@ -52,6 +62,9 @@ export function EditSymptomDialog({
           partsplant: treatment.partsplant,
           prepare: treatment.prepare,
           apply: treatment.apply ?? '',
+          category: getTreatmentCategories(treatment).length
+            ? getTreatmentCategories(treatment)
+            : DEFAULT_TREATMENT_CATEGORIES,
         }
       : undefined,
   })
@@ -80,6 +93,27 @@ export function EditSymptomDialog({
           <div className='space-y-1.5'>
             <Label htmlFor='apply'>Aplicación</Label>
             <Textarea id='apply' {...form.register('apply')} />
+          </div>
+          <div className='space-y-1.5'>
+            <Label htmlFor='edit-treatment-category'>Categoría</Label>
+            <Controller
+              control={form.control}
+              name='category'
+              render={({ field, fieldState }) => (
+                <>
+                  <TreatmentCategoryPicker
+                    id='edit-treatment-category'
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                  {fieldState.error && (
+                    <p className='text-xs text-red-500'>
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
           </div>
           <DialogFooter>
             <Button

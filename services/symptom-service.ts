@@ -1,4 +1,4 @@
-import { Symptom } from '@/components/syptoms/interfaces'
+import { Symptom } from '@/components/symptoms/interfaces'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 

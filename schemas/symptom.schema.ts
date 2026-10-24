@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { TREATMENT_CATEGORIES } from '@/constants/treatment-categories'
 
 export const addSymptomSchema = z.object({
   name: z
@@ -23,6 +24,9 @@ export const addSymptomSchema = z.object({
     .max(500, 'Máximo 500 caracteres')
     .optional()
     .or(z.literal('')),
+  category: z
+    .array(z.enum(TREATMENT_CATEGORIES))
+    .min(1, 'Selecciona al menos una categoría'),
 })
 
 export type AddSymptomFormValues = z.infer<typeof addSymptomSchema>

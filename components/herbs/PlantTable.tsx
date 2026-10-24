@@ -28,11 +28,12 @@ import {
   PaginationControls,
   PaginationControlsProps,
 } from './PaginationControls'
-import { AddSymptomDialog } from '../syptoms/AddSymptomDialog'
+import { AddSymptomDialog } from '../symptoms/AddSymptomDialog'
 import { CreateHerbDialog } from './dialogs/CreateHerbDialog'
 import { AddSymptomFormValues } from '@/schemas/symptom.schema'
-import { ExpandableDescription } from '../ui/table-cell-dinamic-h'
+import { ExpandableDescription } from '../ui/table-cell-dynamic-h'
 import { HerbIdCell } from '../ui/HerbIdCell'
+import { TreatmentCategoryBadges } from './TreatmentCategoryBadges'
 
 interface PlantTableProps {
   herbs: Plant[]
@@ -218,6 +219,9 @@ export function PlantTable({
                             <Edit className='h-3.5 w-3.5 text-green-700' />
                           </Button>
                         </div>
+                        <TreatmentCategoryBadges
+                          treatment={plant.symptoms[selectedSymptom.symptomIndex]}
+                        />
                         <p>
                           <span className='font-medium'>
                             Partes de la planta:{' '}

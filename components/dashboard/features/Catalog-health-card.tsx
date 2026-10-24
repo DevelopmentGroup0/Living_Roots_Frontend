@@ -1,6 +1,6 @@
 'use client'
 
-import { useCatalogHealth } from '@/hooks/mutations/useDashboard'
+import { useCatalogHealth } from '@/hooks/queries/useDashboard'
 import { formatNumber } from '../format'
 import type { NamedItem } from '../types'
 import { DashboardCard } from './dashboard-card'

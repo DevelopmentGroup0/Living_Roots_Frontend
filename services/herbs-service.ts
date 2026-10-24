@@ -3,11 +3,13 @@ import { apiClient } from '@/lib/api-client'
 import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
 import type { HerbTreatment, Plant } from '@/components/herbs/interfaces'
+import type { TreatmentCategory } from '@/constants/treatment-categories'
 
 export interface UpdateTreatmentPayload {
   partsplant?: string
   prepare?: string
   apply?: string
+  category?: TreatmentCategory[]
 }
 
 export interface ListHerbsParams {
@@ -15,6 +17,7 @@ export interface ListHerbsParams {
   limit?: number
   search?: string
   symptomId?: string
+  category?: TreatmentCategory
 }
 
 export interface PaginatedResponse<T> {
@@ -58,6 +61,7 @@ export const herbService = {
     if (params.limit) sp.set('limit', String(params.limit))
     if (params.search) sp.set('search', params.search)
     if (params.symptomId) sp.set('symptomId', params.symptomId)
+    if (params.category) sp.set('category', params.category)
     return apiClient.get(`/herbs?${sp}`, token)
   },
 

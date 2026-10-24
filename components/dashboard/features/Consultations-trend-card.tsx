@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { DashboardDays, TrendGranularity } from '../types'
 import { DashboardCard } from './dashboard-card'
 import { CardSkeleton } from './card-states'
-import { useConsultationsTrend } from '@/hooks/mutations/useDashboard'
+import { useConsultationsTrend } from '@/hooks/queries/useDashboard'
 import { ConsultationsTrendChart } from '../ConsultationsTrendChart'
 
 const GRANULARITY_OPTIONS: Array<{ value: TrendGranularity; label: string }> = [

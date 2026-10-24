@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { formatNumber } from './format'
 import { DEFAULT_DAYS, type DashboardDays } from './types'
-import { useDashboardSummary } from '@/hooks/mutations/useDashboard'
+import { useDashboardSummary } from '@/hooks/queries/useDashboard'
 import { CardSkeleton } from './features/card-states'
 import { CatalogHealthCard } from './features/Catalog-health-card'
 import { KpiCard } from './features/kpi'

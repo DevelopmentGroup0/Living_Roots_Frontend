@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDebounce } from './useDebounce'
 import { symptomService } from '@/services/symptom-service'
-import { Symptom } from '@/components/syptoms/interfaces'
+import { Symptom } from '@/components/symptoms/interfaces'
 
 interface UseSymptomSearchReturn {
   results: Symptom[]
