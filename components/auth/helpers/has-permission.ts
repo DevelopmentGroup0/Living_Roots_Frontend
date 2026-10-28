@@ -31,7 +31,8 @@ export function hasPermission(role: Role, permission: Permission): boolean {
 export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   '/dashboard': 'view:dashboard',
   '/dashboard/stories': 'manage:stories',
-  '/auth/register': 'view:register-users',
+  // Cubre /users (gestión) y /users/register (crear usuario): solo admin.
+  '/users': 'view:register-users',
   '/herb': 'view:details-herbs',
   '/stories': 'view:stories-public',
 }

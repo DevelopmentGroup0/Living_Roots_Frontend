@@ -1,5 +1,4 @@
-import { apiClient } from '@/lib/api-client'
-import { LoginCredentials, AuthResponse, RegisterData } from '@/interfaces/auth'
+import { LoginCredentials } from '@/interfaces/auth'
 import { signIn } from 'next-auth/react'
 
 export const authService = {
@@ -9,9 +8,5 @@ export const authService = {
       password: credentials.password,
       redirect: false,
     })
-  },
-
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    return apiClient.post<AuthResponse>('/auth/register', data)
   },
 }
