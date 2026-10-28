@@ -7,6 +7,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import type { CreateUserPayload } from '@/schemas/user.schema'
 import {
   userService,
   type UpdateUserPayload,
@@ -21,6 +22,20 @@ export function useUsersQuery(filters: UsersFilters) {
     queryKey: [USERS_QUERY_KEY, filters],
     queryFn: () => userService.getAll(filters),
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: CreateUserPayload) => userService.create(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [USERS_QUERY_KEY],
+      })
+    },
   })
 }
 

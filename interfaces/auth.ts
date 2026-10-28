@@ -15,14 +15,6 @@ export interface LoginCredentials {
   password: string
 }
 
-// Lo que sale desde el registro
-export interface RegisterData {
-  name: string
-  lastName: string
-  email: string
-  password: string
-}
-
 export interface TrustedDevice {
   id: string
   browser: string
