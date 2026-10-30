@@ -136,6 +136,7 @@ export function ImageDropzone({ value, onChange, error }: ImageDropzoneProps) {
                 e.stopPropagation()
                 handleClear()
               }}
+              aria-label='Quitar imagen'
             >
               <X className='h-3 w-3' />
             </Button>

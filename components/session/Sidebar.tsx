@@ -34,6 +34,7 @@ import type { NavItem } from '../Sidebar'
 import LeafLogo from '../Logo'
 import { LogoSVG } from '../icons/LeafIcon'
 import { ChatSidemenu } from '../chat/ChatSidemenu'
+import { MobileNavDrawer } from './MobileNavDrawer'
 
 interface SidebarClientProps {
   navigationItems: NavItem[]
@@ -64,7 +65,7 @@ export default function SidebarClient({
   return (
     <TooltipProvider>
       <aside
-        className={`sticky top-0 h-screen shrink-0 border-r border-gray-200 bg-white transition-all duration-300 ease-in-out hidden sm:inline
+        className={`sticky top-0 h-dvh shrink-0 border-r border-gray-200 bg-white transition-all duration-300 ease-in-out hidden sm:inline
           ${isOpen ? 'w-64' : 'w-16'}
         `}
       >
@@ -159,6 +160,13 @@ export default function SidebarClient({
           <ChatSidemenu userId={activeUser} openSideMenu={isOpen} />
         </div>
       </aside>
+
+      {/* Menú para móvil (< sm): se abre con el botón del Navbar */}
+      <MobileNavDrawer
+        navigationItems={navigationItems}
+        activeUser={activeUser}
+        icons={iconMap}
+      />
     </TooltipProvider>
   )
 }

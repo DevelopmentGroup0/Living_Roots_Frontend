@@ -16,9 +16,12 @@ export function DashboardNav({
   const pathname = usePathname()
 
   return (
-    <div className='w-full border-b border-slate-200 mb-6'>
-      {/* 'grid-cols-2' hace que cada pestaña ocupe exactamente el 50% del ancho. */}
-      <div className={`flex w-full text-center`}>
+    <nav
+      aria-label='Secciones'
+      className='mb-6 w-full overflow-x-auto border-b border-slate-200'
+    >
+      {/* Cada pestaña ocupa el mismo ancho; si no caben, la barra se desplaza. */}
+      <div className='flex w-full min-w-max text-center'>
         {dashboardItems.map((item) => {
           const isActive = pathname === item.href
 
@@ -26,10 +29,11 @@ export function DashboardNav({
             <Link
               key={item.href}
               href={item.href}
-              className={`relative pb-3 text-sm font-medium transition-colors duration-200 -mb-px block w-full ${
+              aria-current={isActive ? 'page' : undefined}
+              className={`relative -mb-px block w-full whitespace-nowrap px-4 pb-3 pt-2 text-sm font-medium transition-colors duration-200 ${
                 isActive
                   ? 'text-amber-700 font-semibold'
-                  : 'text-slate-400 hover:text-slate-600'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               {item.label}
@@ -42,6 +46,6 @@ export function DashboardNav({
           )
         })}
       </div>
-    </div>
+    </nav>
   )
 }

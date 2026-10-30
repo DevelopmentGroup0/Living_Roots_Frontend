@@ -27,10 +27,22 @@ export function HerbCard({ plant }: { plant: Plant }) {
 
   return (
     <Card
-      className='bg-card-crema overflow-hidden hover:shadow-xl transition-all duration-300 py-0 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)]'
+      role='link'
+      tabIndex={0}
+      aria-label={`Ver detalle de ${plant.name}`}
+      className='bg-card-crema cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 py-0 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)] outline-none focus-visible:ring-3 focus-visible:ring-ring/60'
       onClick={handleCardClick}
+      onKeyDown={(e) => {
+        // Enter/Espacio abren el detalle (solo si el foco está en la tarjeta,
+        // no en el botón de favoritos).
+        if (e.target !== e.currentTarget) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleCardClick()
+        }
+      }}
     >
-      <div className='relative h-80 bg-lr-green-dark/10'>
+      <div className='relative h-56 sm:h-72 lg:h-80 bg-lr-green-dark/10'>
         <PlantImage src={plant.img} alt={plant.name} />
 
         <Button
@@ -40,7 +52,13 @@ export function HerbCard({ plant }: { plant: Plant }) {
             e.stopPropagation()
             toggleFavorite(plant)
           }}
-          className='absolute py-0 top-3 right-3 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background shadow-md'
+          aria-label={
+            favorite
+              ? `Quitar ${plant.name} de favoritos`
+              : `Agregar ${plant.name} a favoritos`
+          }
+          aria-pressed={favorite}
+          className='absolute py-0 top-3 right-3 size-10 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background shadow-md'
         >
           <Heart
             className={`w-5 h-5 transition-colors ${
@@ -51,7 +69,7 @@ export function HerbCard({ plant }: { plant: Plant }) {
       </div>
 
       <CardHeader>
-        <CardTitle className='text-2xl font-serif text-lr-green-dark flex justify-between items-center gap-4'>
+        <CardTitle className='text-xl sm:text-2xl font-serif text-lr-green-dark flex justify-between items-center gap-4'>
           {plant.name}
         </CardTitle>
         <CardDescription className='line-clamp-2 text-lr-green-dark/80 font-medium'>

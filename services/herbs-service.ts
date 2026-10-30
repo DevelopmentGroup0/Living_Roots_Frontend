@@ -67,13 +67,11 @@ export const herbService = {
 
   async getById(id: string): Promise<Plant> {
     const token = await getToken()
-    console.log('Getting herb by ID:', id, 'and token:', token)
     return apiClient.get<Plant>(`/herbs/${id}`, token)
   },
 
   async create(data: CreateHerbFormValues): Promise<Plant> {
     const token = await getToken()
-    console.log('Creating herb with data:', data, 'and token:', token)
     return apiClient.post<Plant>('/herbs', data, token)
   },
 
