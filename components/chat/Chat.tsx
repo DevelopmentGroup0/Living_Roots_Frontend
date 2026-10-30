@@ -9,11 +9,7 @@ import {
   ConversationContent,
   ConversationEmptyState,
 } from '@/components/ai-elements/conversation'
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from '@/components/ai-elements/message'
+import { Message, MessageContent } from '@/components/ai-elements/message'
 import {
   PromptInput,
   PromptInputTextarea,
@@ -45,6 +41,7 @@ const sidebarVariant = {
 import { useChatSession } from '@/hooks/useChatSession'
 import { useSession } from 'next-auth/react'
 import { ChatSaveToggle } from './ChatSaveToggle'
+import { TypewriterResponse } from './TypewriterResponse'
 
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   const { data: session } = useSession()
@@ -107,25 +104,33 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className='flex-1 overflow-y-auto p-4 bg-gray-50'
+            className='flex min-h-0 flex-1 flex-col bg-gray-50'
           >
-            <Conversation>
-              <ConversationContent>
+            {/* Conversation (use-stick-to-bottom) debe ser quien haga scroll:
+                necesita una altura definida (flex-1 + min-h-0) y el contenedor
+                padre NO debe tener overflow-y-auto, o el auto-scroll no actúa. */}
+            <Conversation className='min-h-0 flex-1'>
+              <ConversationContent className='p-8'>
                 {selectedMessages.length === 0 ? (
                   <ConversationEmptyState
                     title='Asistente Living Roots'
                     description='¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte con tus plantas hoy?'
                   />
                 ) : (
-                  selectedMessages.map((message) => (
+                  selectedMessages.map((message, messageIndex) => (
                     <Message key={message.id} from={message.role}>
                       <MessageContent>
                         {message.parts.map((part, index) => {
                           if (part.type === 'text') {
                             return message.role === 'assistant' ? (
-                              <MessageResponse key={index}>
-                                {part.text}
-                              </MessageResponse>
+                              <TypewriterResponse
+                                key={index}
+                                text={part.text}
+                                live={
+                                  isLoading &&
+                                  messageIndex === selectedMessages.length - 1
+                                }
+                              />
                             ) : (
                               <p key={index}>{part.text}</p>
                             )
@@ -150,7 +155,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
             </Conversation>
 
             {error && (
-              <p className='text-sm text-red-500 text-center mt-4'>
+              <p className='shrink-0 px-4 pb-4 text-sm text-red-500 text-center'>
                 {error.message}
               </p>
             )}
