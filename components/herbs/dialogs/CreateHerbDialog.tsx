@@ -64,7 +64,7 @@ export function CreateHerbDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='min-w-4xl max-h-[90vh]'>
+      <DialogContent className='max-h-[90dvh] overflow-y-auto sm:max-w-4xl'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2 text-green-800 text-xl font-bold'>
             <LeafLogo className='w-5 h-5' />
@@ -153,7 +153,7 @@ export function CreateHerbDialog({
                 )}
               />
 
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <Controller
                   name='cultivator'
                   control={form.control}

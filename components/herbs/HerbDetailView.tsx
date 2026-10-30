@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
+import { useRouter } from 'next/navigation'
 import { useFavorites } from '@/hooks/useFavorites'
 import { ArrowLeft, Heart, Info } from 'lucide-react'
 import { Plant } from './interfaces'
 import { TreatmentCategoryBadges } from './TreatmentCategoryBadges'
 
 export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
-  console.log('para el componente client', plantDetails)
+  const router = useRouter()
   const { toggleFavorite, isFavorite } = useFavorites()
   const favorite = isFavorite(plantDetails.herb_id)
   return (
@@ -18,11 +19,21 @@ export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
           alt={plantDetails.name}
         />
         <div className='absolute inset-0 bg-linear-to-t from-black/60 to-transparent'></div>
-        <button className='absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-white/40 transition-all'>
+        <button
+          type='button'
+          onClick={() => router.back()}
+          aria-label='Volver'
+          className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-white/40 transition-all'
+        >
           <ArrowLeft size={24} />
         </button>
         <button
-          className='absolute top-6 right-6 backdrop-blur-md p-3 rounded-full transition-all hover:bg-background bg-background/80'
+          type='button'
+          aria-label={
+            favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
+          }
+          aria-pressed={favorite}
+          className='absolute top-4 right-4 sm:top-6 sm:right-6 backdrop-blur-md p-3 rounded-full transition-all hover:bg-background bg-background/80'
           onClick={() => toggleFavorite(plantDetails)}
         >
           <Heart
@@ -31,7 +42,7 @@ export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
             }`}
           />
         </button>
-        <div className='absolute bottom-8 left-8'>
+        <div className='absolute bottom-5 left-5 right-5 sm:bottom-8 sm:left-8'>
           <span className='bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-2 inline-block'>
             {/* {plantDetails.category || 'Medicina Ancestral'} */}
             {'Medicina Ancestral'}
@@ -42,7 +53,7 @@ export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
         </div>
       </div>
 
-      <div className='p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-10'>
+      <div className='p-5 sm:p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10'>
         <div className='md:col-span-2'>
           <h3 className='text-xl font-serif font-bold text-slate-800 mb-4 flex items-center gap-2'>
             <Info className='text-emerald-700' size={20} /> Propiedades y

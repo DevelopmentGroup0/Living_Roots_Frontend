@@ -94,7 +94,7 @@ export function CreateStoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='min-w-4xl max-h-[90vh]'>
+      <DialogContent className='max-h-[90dvh] overflow-y-auto sm:max-w-4xl'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2 text-amber-700 text-xl font-bold'>
             <Plus className='w-5 h-5' />

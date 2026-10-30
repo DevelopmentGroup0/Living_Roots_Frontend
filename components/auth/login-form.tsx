@@ -70,7 +70,10 @@ export function LoginForm() {
             onSubmit={handleSubmit(onSubmitCredentials)}
           >
             <div>
-              <label className='block text-md font-bold mb-2 text-green-800'>
+              <label
+                htmlFor='login-email'
+                className='block text-md font-bold mb-2 text-green-800'
+              >
                 Correo electrónico
               </label>
               <div className='relative'>
@@ -78,7 +81,9 @@ export function LoginForm() {
                   <Mail size={18} strokeWidth={2.5} />
                 </div>
                 <input
+                  id='login-email'
                   type='email'
+                  autoComplete='email'
                   placeholder='andres.buittron@example.com'
                   {...register('email')}
                   className='w-full bg-lr-green-light border rounded-full pl-12 pr-4 py-3.5 text-[15px] text-green-800 placeholder:text-green-800/60 focus:outline-none focus:ring-2 focus:ring-green-500'
@@ -92,7 +97,10 @@ export function LoginForm() {
             </div>
 
             <div>
-              <label className='block text-md font-bold mb-2 text-green-800'>
+              <label
+                htmlFor='login-password'
+                className='block text-md font-bold mb-2 text-green-800'
+              >
                 Contraseña
               </label>
               <div className='relative'>
@@ -100,7 +108,9 @@ export function LoginForm() {
                   <Lock size={18} strokeWidth={2.5} />
                 </div>
                 <input
+                  id='login-password'
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete='current-password'
                   placeholder='••••••••••••'
                   {...register('password')}
                   className='w-full bg-lr-green-light border  rounded-full pl-12 pr-12 py-3.5 text-[15px] text-green-800 transition-all tracking-widest placeholder:tracking-widest placeholder:text-green-800/60 focus:outline-none focus:ring-2 focus:ring-green-500'
@@ -108,6 +118,9 @@ export function LoginForm() {
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={
+                    showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                  }
                   className='absolute right-4 top-1/2 -translate-y-1/2 text-green-800 hover:text-green-600 transition-colors'
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

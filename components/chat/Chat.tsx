@@ -21,8 +21,10 @@ interface ChatProps {
   onExpandedChange: (expanded: boolean) => void
 }
 
+// Los anchos usan min()/dvh para que el chat ocupe toda la pantalla en móvil
+// y no pase de 800px en escritorio (antes era fijo y se salía de la vista).
 const miniVariant = {
-  width: '750px',
+  width: 'min(750px, calc(100vw - 2rem))',
   height: '70px',
   bottom: '2rem',
   right: '50%',
@@ -30,8 +32,8 @@ const miniVariant = {
   borderRadius: '40px',
 }
 const sidebarVariant = {
-  width: '800px',
-  height: '100vh',
+  width: 'min(800px, 100vw)',
+  height: '100dvh',
   bottom: '0',
   right: '0',
   x: '0',
@@ -45,8 +47,6 @@ import { TypewriterResponse } from './TypewriterResponse'
 
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   const { data: session } = useSession()
-
-  console.log('estado de la session', session)
 
   const {
     selectedMessages,
@@ -76,20 +76,21 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
       style={{ border: `1px solid ${isExpanded ? '#e5e7eb' : '#d1d5db'}` }}
     >
       {isExpanded && (
-        <div className='h-14 relative bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0'>
+        <div className='h-14 relative bg-white border-b border-gray-200 px-3 sm:px-4 flex items-center justify-between gap-2 shrink-0'>
           <ChatSaveToggle
             onSave={() => void saveAndCloseChat()}
             isSaving={false}
           />
           <div className='flex items-center gap-3'>
             <MessageCircle className='w-5 h-5 text-green-600' />
-            <span className='font-semibold text-gray-900'>
+            <span className='hidden font-semibold text-gray-900 min-[420px]:inline'>
               Asistente de Plantas
             </span>
             <Button
               variant='ghost'
               size='icon'
               onClick={() => onExpandedChange(false)}
+              aria-label='Cerrar asistente'
             >
               <X className='w-5 h-5' />
             </Button>
@@ -110,7 +111,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
                 necesita una altura definida (flex-1 + min-h-0) y el contenedor
                 padre NO debe tener overflow-y-auto, o el auto-scroll no actúa. */}
             <Conversation className='min-h-0 flex-1'>
-              <ConversationContent className='p-8'>
+              <ConversationContent className='p-4 sm:p-8'>
                 {selectedMessages.length === 0 ? (
                   <ConversationEmptyState
                     title='Asistente Living Roots'
@@ -163,7 +164,7 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
         )}
       </AnimatePresence>
 
-      <div className='border-t p-4 bg-white shrink-0 mr-5'>
+      <div className='border-t bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0 sm:p-4 sm:mr-5'>
         <PromptInput
           onSubmit={(message, event) => {
             event.preventDefault()

@@ -119,22 +119,25 @@ export function PlantTable({
       ] ?? null)
     : null
 
-  console.log('Rendering PlantTable with selectedSymptom:', selectedSymptom)
-
   return (
     <>
       <div className='bg-white rounded-b-sm rounded-t-xs border border-gray-200 overflow-hidden relative'>
-        <Button
-          onClick={() => setCreateOpen(true)}
-          className='bg-green-600 hover:bg-green-700 gap-2 absolute left-7 top-1 z-10'
-        >
-          <CirclePlus className='h-4 w-4' />
-          Nueva Planta
-        </Button>
-        <Table>
+        <div className='flex items-center justify-between gap-3 border-b border-gray-200 p-3 sm:px-4'>
+          <p className='text-sm text-gray-500'>
+            {pagination ? `${pagination.total} plantas` : `${herbs.length} plantas`}
+          </p>
+          <Button
+            onClick={() => setCreateOpen(true)}
+            className='bg-green-600 hover:bg-green-700 gap-2'
+          >
+            <CirclePlus className='h-4 w-4' />
+            Nueva Planta
+          </Button>
+        </div>
+        <Table className='min-w-[640px]'>
           <TableHeader className='bg-gray-50'>
             <TableRow>
-              <TableHead className='w-25 text-gray-600'>ID</TableHead>
+              <TableHead className='hidden w-25 text-gray-600 md:table-cell'>ID</TableHead>
               <TableHead className='w-50 text-gray-600'>NOMBRE</TableHead>
               <TableHead className='w-60 text-gray-600'>DESCRIPCIÓN</TableHead>
               <TableHead className=' text-gray-600'>SÍNTOMAS</TableHead>
@@ -146,7 +149,7 @@ export function PlantTable({
           <TableBody>
             {herbs.map((plant) => (
               <TableRow key={plant.herb_id}>
-                <TableCell className='font-mono text-sm align-top'>
+                <TableCell className='hidden font-mono text-sm align-top md:table-cell'>
                   <HerbIdCell id={plant.herb_id} />
                 </TableCell>
                 <TableCell className='font-medium text-gray-900 align-top'>
@@ -187,8 +190,9 @@ export function PlantTable({
                                 )
                               }}
                               disabled={isRemovingSymptom}
-                              className='absolute right-1.5 top-1/2 -translate-y-1/2 hidden group-hover:inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10 disabled:opacity-40'
+                              className='absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex md:hidden md:group-hover:inline-flex md:group-focus-within:inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-black/10 disabled:opacity-40'
                               title='Eliminar síntoma'
+                              aria-label={`Eliminar síntoma ${treatment.name}`}
                             >
                               <X className='h-3 w-3' />
                             </button>
@@ -201,6 +205,7 @@ export function PlantTable({
                         className='h-4 w-4 cursor-pointer'
                         onClick={() => openAddSymptom(plant)}
                         title='Agregar síntoma'
+                        aria-label={`Agregar síntoma a ${plant.name}`}
                       >
                         <PlusCircle className='h-4 w-4 text-green-600' />
                       </Button>
@@ -215,6 +220,7 @@ export function PlantTable({
                             className='h-6 w-6'
                             onClick={() => setEditSymptomOpen(true)}
                             title='Editar tratamiento'
+                            aria-label='Editar tratamiento'
                           >
                             <Edit className='h-3.5 w-3.5 text-green-700' />
                           </Button>
@@ -250,16 +256,18 @@ export function PlantTable({
                     <Button
                       variant='ghost'
                       size='icon'
-                      className='h-8 w-8'
+                      className='size-9 sm:size-8'
                       onClick={() => openEdit(plant)}
+                      aria-label={`Editar ${plant.name}`}
                     >
                       <Edit className='h-4 w-4 text-gray-600' />
                     </Button>
                     <Button
                       variant='ghost'
                       size='icon'
-                      className='h-8 w-8'
+                      className='size-9 sm:size-8'
                       onClick={() => openDelete(plant)}
+                      aria-label={`Eliminar ${plant.name}`}
                     >
                       <Trash2 className='h-4 w-4 text-gray-600' />
                     </Button>

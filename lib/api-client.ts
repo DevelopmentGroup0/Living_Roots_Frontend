@@ -17,7 +17,6 @@ async function apiRequest<T>(
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, config)
-  console.log('url', `${BASE_URL}${endpoint}`, 'token', token)
 
   if (!response.ok) {
     const error = await response

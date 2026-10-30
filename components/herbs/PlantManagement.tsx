@@ -29,13 +29,23 @@ export function PlantManagement() {
   const herbs = data?.data ?? []
   const meta = data?.meta
 
-  if (isLoading && !data) return <p>Cargando plantas...</p>
-  if (isError) return <p>Error al cargar las plantas.</p>
+  if (isLoading && !data)
+    return (
+      <p role='status' className='text-gray-500'>
+        Cargando plantas...
+      </p>
+    )
+  if (isError)
+    return (
+      <p role='alert' className='text-red-600'>
+        Error al cargar las plantas.
+      </p>
+    )
 
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-3xl font-semibold text-gray-900'>
+        <h1 className='text-2xl font-semibold text-gray-900 sm:text-3xl'>
           Gestión de Plantas Medicinales
         </h1>
       </div>
@@ -46,6 +56,7 @@ export function PlantManagement() {
           <Input
             type='text'
             placeholder='Buscar plantas...'
+            aria-label='Buscar plantas'
             className='pl-10'
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}

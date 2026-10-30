@@ -1,15 +1,10 @@
-// export function useUsersManagement() {
 'use client'
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  Edit,
-  Loader2,
-  Search,
-  Trash2,
-} from 'lucide-react'
+import { ArrowDownUp, Edit, Loader2, Search, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { PaginationControls } from '@/components/herbs/PaginationControls'
 
 import { useUsersManagement } from '@/hooks/useUsersManagement'
 import type { User, UserRole, UserSortField } from '@/services/users-service'
@@ -62,13 +57,9 @@ export function UsersManagement() {
   const [selectedRoles, setSelectedRoles] = useState<Record<string, UserRole>>(
     {},
   )
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const total = meta?.total ?? 0
   const totalPages = meta?.totalPages ?? 1
   const limit = meta?.limit ?? 10
-  const from = total === 0 ? 0 : (page - 1) * limit + 1
-  const to = total === 0 ? 0 : Math.min(page * limit, total)
 
   const startEditing = (user: User) => {
     setEditingUserId(user.user_id)
@@ -77,8 +68,6 @@ export function UsersManagement() {
       lastName: user.lastName,
       email: user.email,
     })
-    setSuccessMessage(null)
-    setErrorMessage(null)
   }
 
   const cancelEditing = () => {
@@ -99,27 +88,19 @@ export function UsersManagement() {
     }
 
     if (!data.name || !data.lastName || !data.email) {
-      setErrorMessage('Nombre, apellido y correo son obligatorios.')
+      toast.error('Nombre, apellido y correo son obligatorios.')
       return
     }
 
     try {
-      setSuccessMessage(null)
-      setErrorMessage(null)
       await updateUser({
         userId: user.user_id,
         data,
       })
       setEditingUserId(null)
-      setSuccessMessage(
-        `Usuario ${user.name} ${user.lastName} actualizado correctamente.`,
-      )
+      toast.success(`Usuario ${user.name} ${user.lastName} actualizado correctamente.`)
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo actualizar el usuario.',
-      )
+      toast.error(error instanceof Error ? error.message : 'No se pudo actualizar el usuario.')
     }
   }
 
@@ -129,8 +110,6 @@ export function UsersManagement() {
     }
 
     try {
-      setSuccessMessage(null)
-      setErrorMessage(null)
       await updateRoleMutation.mutateAsync({
         userId: user.user_id,
         role,
@@ -140,20 +119,14 @@ export function UsersManagement() {
         delete next[user.user_id]
         return next
       })
-      setSuccessMessage(
-        `Rol de ${user.name} ${user.lastName} actualizado correctamente.`,
-      )
+      toast.success(`Rol de ${user.name} ${user.lastName} actualizado correctamente.`)
     } catch (error) {
       setSelectedRoles((current) => ({
         ...current,
         [user.user_id]: user.role,
       }))
 
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo actualizar el rol.',
-      )
+      toast.error(error instanceof Error ? error.message : 'No se pudo actualizar el rol.')
     }
   }
 
@@ -163,27 +136,116 @@ export function UsersManagement() {
     }
 
     try {
-      setSuccessMessage(null)
-      setErrorMessage(null)
       await deleteUser(deletingUser.user_id)
       setDeletingUser(null)
-      setSuccessMessage(
-        `Usuario ${deletingUser.name} ${deletingUser.lastName} eliminado correctamente.`,
-      )
+      toast.success(`Usuario ${deletingUser.name} ${deletingUser.lastName} eliminado correctamente.`)
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo eliminar el usuario.',
-      )
+      toast.error(error instanceof Error ? error.message : 'No se pudo eliminar el usuario.')
     }
   }
+
+  const dateFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' })
+
+  const editInput = (
+    field: 'name' | 'lastName' | 'email',
+    label: string,
+    isSaving: boolean,
+    type = 'text',
+  ) => (
+    <input
+      type={type}
+      aria-label={label}
+      value={editValues[field]}
+      onChange={(event) =>
+        setEditValues((current) => ({ ...current, [field]: event.target.value }))
+      }
+      disabled={isSaving}
+      className='h-10 w-full rounded-md border border-gray-300 px-3 text-sm outline-none focus:border-green-600 disabled:opacity-60'
+    />
+  )
+
+  const renderRole = (user: User, isEditing: boolean) => (
+    <select
+      aria-label={`Rol de ${user.name} ${user.lastName}`}
+      value={selectedRoles[user.user_id] ?? user.role}
+      onChange={(event) =>
+        handleRoleChange(user, event.target.value as UserRole)
+      }
+      disabled={isEditing || updateRoleMutation.isPending}
+      className='h-10 rounded-md border border-gray-300 bg-white px-3 text-sm disabled:opacity-60'
+    >
+      <option value='client'>{ROLE_LABELS.client}</option>
+      <option value='admin'>{ROLE_LABELS.admin}</option>
+    </select>
+  )
+
+  const renderActions = (
+    user: User,
+    isEditing: boolean,
+    isSaving: boolean,
+    compact = false,
+  ) => (
+    <>
+      {isEditing ? (
+        <>
+          <button
+            type='button'
+            onClick={() => handleConfirmEdit(user)}
+            disabled={isSaving}
+            className='inline-flex h-10 items-center gap-2 rounded-lg border border-green-200 px-3 text-sm font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50'
+          >
+            {isSaving ? 'Guardando...' : 'Confirmar'}
+          </button>
+          <button
+            type='button'
+            onClick={cancelEditing}
+            disabled={isSaving}
+            className='h-10 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
+          >
+            Cancelar
+          </button>
+        </>
+      ) : (
+        <button
+          type='button'
+          onClick={() => startEditing(user)}
+          className={`inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 ${compact ? 'w-10 justify-center' : 'px-3'}`}
+          title='Editar'
+        >
+          <Edit className='size-4' />
+          <span className={compact ? 'sr-only' : undefined}>Editar</span>
+        </button>
+      )}
+
+      <button
+        type='button'
+        onClick={() => setDeletingUser(user)}
+        disabled={isEditing || isDeleting}
+        className={`inline-flex h-10 items-center gap-2 rounded-lg border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${compact ? 'w-10 justify-center' : 'px-3'}`}
+        title='Eliminar'
+      >
+        <Trash2 className='size-4' />
+        <span className={compact ? 'sr-only' : undefined}>Eliminar</span>
+      </button>
+    </>
+  )
+
+  // Estados vacío / error / carga compartidos por la tabla y las tarjetas
+  const statusContent = isLoading ? (
+    <Loader2 className='mx-auto size-5 animate-spin' aria-label='Cargando' />
+  ) : error ? (
+    <span role='alert' className='text-red-500'>
+      No se pudieron cargar los usuarios.
+    </span>
+  ) : users.length === 0 ? (
+    <span className='text-gray-400'>No se encontraron usuarios.</span>
+  ) : null
 
   return (
     <>
       <div className='rounded-xl border border-gray-200 bg-white shadow-sm'>
         {/* Header */}
-        <div className='flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 p-6'>
+        <div className='flex flex-col gap-4 border-b border-gray-100 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-6'>
           <div>
             <h2 className='text-lg font-semibold text-gray-900'>
               Gestión de usuarios
@@ -194,86 +256,143 @@ export function UsersManagement() {
             </p>
           </div>
 
-          <div className='relative'>
+          <div className='relative w-full sm:w-64'>
             <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
 
             <input
-              type='text'
+              type='search'
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
               placeholder='Buscar usuario...'
-              className='w-64 rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm outline-none focus:border-gray-400'
+              aria-label='Buscar usuario'
+              className='h-10 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-base outline-none focus:border-gray-400 md:text-sm'
             />
           </div>
         </div>
 
-        {/* Messages */}
-        {(successMessage || errorMessage) && (
-          <div className='border-b border-gray-100 px-6 py-3 text-sm'>
-            {successMessage && (
-              <span className='text-green-600'>{successMessage}</span>
-            )}
+        {/* Ordenar (solo móvil: en escritorio se ordena desde los encabezados) */}
+        <div className='flex items-center gap-2 border-b border-gray-100 px-4 py-3 lg:hidden'>
+          <label htmlFor='users-sort' className='text-sm text-gray-500'>
+            Ordenar por
+          </label>
+          <select
+            id='users-sort'
+            value={sortBy}
+            onChange={(event) => toggleSort(event.target.value as UserSortField)}
+            className='h-10 min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-3 text-sm'
+          >
+            {SORTABLE_COLUMNS.map((column) => (
+              <option key={column.key} value={column.key}>
+                {column.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type='button'
+            onClick={() => toggleSort(sortBy)}
+            aria-label={
+              sortDir === 'asc'
+                ? 'Orden ascendente, cambiar a descendente'
+                : 'Orden descendente, cambiar a ascendente'
+            }
+            className='inline-flex h-10 items-center gap-1 rounded-md border border-gray-300 px-3 text-sm text-gray-700'
+          >
+            <ArrowDownUp className='size-4' />
+            {sortDir === 'asc' ? 'Asc' : 'Desc'}
+          </button>
+        </div>
 
-            {errorMessage && (
-              <span className='text-red-600'>{errorMessage}</span>
-            )}
-          </div>
-        )}
+        {/* Tarjetas (móvil) */}
+        <ul className='divide-y divide-gray-100 lg:hidden' aria-busy={isLoading}>
+          {statusContent && (
+            <li className='px-4 py-8 text-center text-sm'>{statusContent}</li>
+          )}
 
-        {/* Table */}
-        <div className='overflow-x-auto'>
+          {!error &&
+            users.map((user) => {
+              const isEditing = editingUserId === user.user_id
+              const isSaving = isUpdatingUser && isEditing
+
+              return (
+                <li key={user.user_id} className='space-y-3 p-4'>
+                  {isEditing ? (
+                    <div className='grid gap-2'>
+                      {editInput('name', 'Nombre', isSaving)}
+                      {editInput('lastName', 'Apellido', isSaving)}
+                      {editInput('email', 'Correo', isSaving, 'email')}
+                    </div>
+                  ) : (
+                    <div>
+                      <p className='font-medium text-gray-900'>
+                        {user.name} {user.lastName}
+                      </p>
+                      <p className='break-all text-sm text-gray-600'>
+                        {user.email}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className='flex items-center justify-between gap-3'>
+                    {renderRole(user, isEditing)}
+                    <span className='text-xs text-gray-500'>
+                      {dateFormatter.format(new Date(user.createdAt))}
+                    </span>
+                  </div>
+
+                  <div className='flex flex-wrap gap-2'>
+                    {renderActions(user, isEditing, isSaving)}
+                  </div>
+                </li>
+              )
+            })}
+        </ul>
+
+        {/* Tabla (md en adelante) */}
+        {/* relative: contiene el th sr-only (absolute) y evita que desborde el documento */}
+        <div className='relative hidden overflow-x-auto lg:block'>
           <table className='w-full text-left text-sm'>
             <thead>
               <tr className='border-b border-gray-100 text-gray-500'>
                 {SORTABLE_COLUMNS.map((column) => (
-                  <th key={column.key} className='px-6 py-3 font-medium'>
+                  <th
+                    key={column.key}
+                    scope='col'
+                    aria-sort={
+                      sortBy === column.key
+                        ? sortDir === 'asc'
+                          ? 'ascending'
+                          : 'descending'
+                        : 'none'
+                    }
+                    className='px-4 py-3 font-medium xl:px-6'
+                  >
                     <button
                       type='button'
                       onClick={() => toggleSort(column.key)}
-                      className='flex items-center gap-1 hover:text-gray-700'
+                      className='flex items-center gap-1 whitespace-nowrap hover:text-gray-700'
                     >
-                      {' '}
                       {column.label}
-                      <span className='text-[10px]'>
+                      <span aria-hidden='true' className='text-[10px]'>
                         {sortBy === column.key
                           ? sortDir === 'asc'
                             ? '▲'
                             : '▼'
-                          : '↕'}{' '}
-                      </span>{' '}
-                    </button>{' '}
+                          : '↕'}
+                      </span>
+                    </button>
                   </th>
                 ))}
+                <th scope='col' className='px-4 py-3 xl:px-6'>
+                  <span className='sr-only'>Acciones</span>
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {isLoading && (
+              {statusContent && (
                 <tr>
                   <td colSpan={6} className='px-6 py-8 text-center'>
-                    <Loader2 className='mx-auto size-5 animate-spin' />
-                  </td>
-                </tr>
-              )}
-
-              {!isLoading && error && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className='px-6 py-8 text-center text-red-500'
-                  >
-                    No se pudieron cargar los usuarios.
-                  </td>
-                </tr>
-              )}
-
-              {!isLoading && !error && users.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className='px-6 py-8 text-center text-gray-400'
-                  >
-                    No se encontraron usuarios.
+                    {statusContent}
                   </td>
                 </tr>
               )}
@@ -281,139 +400,49 @@ export function UsersManagement() {
               {!error &&
                 users.map((user) => {
                   const isEditing = editingUserId === user.user_id
-                  const currentRole = selectedRoles[user.user_id] ?? user.role
-                  const isSaving =
-                    isUpdatingUser && editingUserId === user.user_id
+                  const isSaving = isUpdatingUser && isEditing
+
                   return (
                     <tr
                       key={user.user_id}
                       className='border-b border-gray-50 hover:bg-gray-50'
                     >
-                      {/* Nombre */}
-                      <td className='px-6 py-4 font-medium text-gray-900'>
+                      <td className='px-4 py-4 font-medium text-gray-900 xl:px-6'>
+                        {isEditing
+                          ? editInput('name', 'Nombre', isSaving)
+                          : user.name}
+                      </td>
+
+                      <td className='px-4 py-4 xl:px-6'>
+                        {isEditing
+                          ? editInput('lastName', 'Apellido', isSaving)
+                          : user.lastName}
+                      </td>
+
+                      <td className='max-w-56 px-4 py-4 xl:px-6'>
                         {isEditing ? (
-                          <input
-                            value={editValues.name}
-                            onChange={(event) =>
-                              setEditValues((current) => ({
-                                ...current,
-                                name: event.target.value,
-                              }))
-                            }
-                            disabled={isSaving}
-                            className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500'
-                          />
+                          editInput('email', 'Correo', isSaving, 'email')
                         ) : (
-                          user.name
-                        )}
-                      </td>
-
-                      {/* Apellido */}
-                      <td className='px-6 py-4'>
-                        {isEditing ? (
-                          <input
-                            value={editValues.lastName}
-                            onChange={(event) =>
-                              setEditValues((current) => ({
-                                ...current,
-                                lastName: event.target.value,
-                              }))
-                            }
-                            disabled={isSaving}
-                            className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500'
-                          />
-                        ) : (
-                          user.lastName
-                        )}
-                      </td>
-
-                      {/* Correo */}
-                      <td className='px-6 py-4'>
-                        {isEditing ? (
-                          <input
-                            type='email'
-                            value={editValues.email}
-                            onChange={(event) =>
-                              setEditValues((current) => ({
-                                ...current,
-                                email: event.target.value,
-                              }))
-                            }
-                            disabled={isSaving}
-                            className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500'
-                          />
-                        ) : (
-                          <span className='text-blue-600'>{user.email}</span>
-                        )}
-                      </td>
-
-                      {/* Rol */}
-                      <td className='px-6 py-4'>
-                        <select
-                          value={currentRole}
-                          onChange={(event) =>
-                            handleRoleChange(
-                              user,
-                              event.target.value as UserRole,
-                            )
-                          }
-                          disabled={isEditing || updateRoleMutation.isPending}
-                          className='rounded-md border border-gray-300 bg-white px-3 py-2 text-sm'
-                        >
-                          <option value='client'>{ROLE_LABELS.client}</option>
-
-                          <option value='admin'>{ROLE_LABELS.admin}</option>
-                        </select>
-                      </td>
-
-                      {/* Fecha */}
-                      <td className='px-6 py-4 text-gray-500'>
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-
-                      {/* Acciones */}
-                      <td className='px-6 py-4'>
-                        <div className='flex justify-end gap-2'>
-                          {isEditing ? (
-                            <>
-                              <button
-                                type='button'
-                                onClick={() => handleConfirmEdit(user)}
-                                disabled={isSaving}
-                                className='inline-flex items-center gap-2 rounded-lg border border-blue-200 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50'
-                              >
-                                {isSaving ? 'Guardando...' : 'Confirmar'}
-                              </button>
-
-                              <button
-                                type='button'
-                                onClick={cancelEditing}
-                                disabled={isSaving}
-                                className='rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
-                              >
-                                Cancelar
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              type='button'
-                              onClick={() => startEditing(user)}
-                              className='inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50'
-                            >
-                              <Edit className='size-4' />
-                              Editar
-                            </button>
-                          )}
-
-                          <button
-                            type='button'
-                            onClick={() => setDeletingUser(user)}
-                            disabled={isEditing || isDeleting}
-                            className='inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50'
+                          <span
+                            className='block truncate text-gray-600'
+                            title={user.email}
                           >
-                            <Trash2 className='size-4' />
-                            Eliminar
-                          </button>
+                            {user.email}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className='px-4 py-4 xl:px-6'>
+                        {renderRole(user, isEditing)}
+                      </td>
+
+                      <td className='whitespace-nowrap px-4 py-4 text-gray-500 lg:px-6'>
+                        {dateFormatter.format(new Date(user.createdAt))}
+                      </td>
+
+                      <td className='px-4 py-4 xl:px-6'>
+                        <div className='flex flex-wrap justify-end gap-2'>
+                          {renderActions(user, isEditing, isSaving, true)}
                         </div>
                       </td>
                     </tr>
@@ -423,56 +452,13 @@ export function UsersManagement() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className='flex items-center justify-between px-6 py-4'>
-          <p className='text-sm text-gray-500'>
-            Mostrando <span className='font-medium'>{from}</span> a{' '}
-            <span className='font-medium'>{to}</span> de{' '}
-            <span className='font-medium'>{total}</span>
-          </p>
-
-          <div className='flex items-center gap-2'>
-            <button
-              type='button'
-              disabled={!meta?.hasPreviousPage}
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
-              className='flex size-8 items-center justify-center rounded-lg border border-gray-200 disabled:opacity-40'
-            >
-              <ArrowLeft className='size-4' />
-            </button>
-
-            {Array.from(
-              {
-                length: Math.min(totalPages, 5),
-              },
-              (_, index) => index + 1,
-            ).map((pageNumber) => (
-              <button
-                type='button'
-                key={pageNumber}
-                onClick={() => setPage(pageNumber)}
-                className={`flex size-8 items-center justify-center rounded-lg text-sm font-medium ${
-                  pageNumber === page
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button
-              type='button'
-              disabled={!meta?.hasNextPage}
-              onClick={() =>
-                setPage((current) => Math.min(totalPages, current + 1))
-              }
-              className='flex size-8 items-center justify-center rounded-lg border border-gray-200 disabled:opacity-40'
-            >
-              <ArrowRight className='size-4' />
-            </button>
-          </div>
-        </div>
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+        />
       </div>
 
       <ConfirmDeleteUserModal

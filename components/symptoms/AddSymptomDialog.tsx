@@ -124,7 +124,7 @@ export function AddSymptomDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='min-w-2xl'>
+      <DialogContent className='max-h-[90dvh] overflow-y-auto sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2 text-green-800 text-xl font-bold'>
             <BriefcaseMedical className='w-5 h-5' />

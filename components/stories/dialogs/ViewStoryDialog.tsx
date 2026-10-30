@@ -45,7 +45,7 @@ export function ViewStoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='min-w-2xl max-h-[90vh]'>
+      <DialogContent className='max-h-[90dvh] overflow-y-auto sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2 text-amber-700 text-xl font-bold'>
             <Eye className='w-5 h-5' />
@@ -84,7 +84,7 @@ export function ViewStoryDialog({
 
             {/* Metadata */}
             <div className='bg-gray-50 p-3 rounded-lg text-sm'>
-              <div className='grid grid-cols-2 gap-3'>
+              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                 <div>
                   <span className='font-semibold text-gray-700'>Autor:</span>
                   <p className='text-gray-600'>
