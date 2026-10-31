@@ -10,44 +10,35 @@ import {
 } from '@/constants/treatment-categories'
 
 interface TreatmentCategoryPickerProps {
-  value: TreatmentCategory[]
-  onChange: (value: TreatmentCategory[]) => void
+  value: TreatmentCategory
+  onChange: (value: TreatmentCategory) => void
   disabled?: boolean
   id?: string
 }
 
-// Selector múltiple (al menos una categoría) sin dependencias nuevas.
 export function TreatmentCategoryPicker({
   value,
   onChange,
   disabled = false,
   id,
 }: TreatmentCategoryPickerProps) {
-  const toggle = (category: TreatmentCategory) => {
-    onChange(
-      value.includes(category)
-        ? value.filter((c) => c !== category)
-        : [...value, category],
-    )
-  }
-
   return (
     <div
       id={id}
-      role='group'
+      role='radiogroup'
       aria-label='Categorías del tratamiento'
       className='grid gap-2 sm:grid-cols-3'
     >
       {TREATMENT_CATEGORIES.map((category) => {
-        const selected = value.includes(category)
+        const selected = value === category
         return (
           <button
             key={category}
             type='button'
-            role='checkbox'
+            role='radio'
             aria-checked={selected}
             disabled={disabled}
-            onClick={() => toggle(category)}
+            onClick={() => onChange(category)}
             className={`flex flex-col items-start gap-1 rounded-lg border p-3 text-left text-sm transition-colors disabled:opacity-50 ${
               selected
                 ? treatmentCategoryStyles[category]

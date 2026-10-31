@@ -38,7 +38,7 @@ import {
 } from '../ui/input-group'
 import { ScrollArea } from '../ui/scroll-area'
 import { TreatmentCategoryPicker } from '../herbs/TreatmentCategoryPicker'
-import { DEFAULT_TREATMENT_CATEGORIES } from '@/constants/treatment-categories'
+import { DEFAULT_TREATMENT_CATEGORY } from '@/constants/treatment-categories'
 
 interface AddSymptomDialogProps {
   plant: Plant | null
@@ -54,7 +54,7 @@ const defaultValues: AddSymptomFormValues = {
   parts_plant: '',
   prepare: '',
   apply: '',
-  category: DEFAULT_TREATMENT_CATEGORIES,
+  category: DEFAULT_TREATMENT_CATEGORY,
 }
 
 export function AddSymptomDialog({
@@ -302,9 +302,6 @@ export function AddSymptomDialog({
                       value={field.value}
                       onChange={field.onChange}
                     />
-                    <FieldDescription className='text-xs'>
-                      Puedes elegir más de una.
-                    </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

@@ -18,18 +18,16 @@ import { HerbTreatment } from '../interfaces'
 import { Controller } from 'react-hook-form'
 import { TreatmentCategoryPicker } from '../TreatmentCategoryPicker'
 import {
-  DEFAULT_TREATMENT_CATEGORIES,
+  DEFAULT_TREATMENT_CATEGORY,
   TREATMENT_CATEGORIES,
-  getTreatmentCategories,
+  getTreatmentCategory,
 } from '@/constants/treatment-categories'
 
 const editTreatmentSchema = z.object({
   partsplant: z.string().min(1, 'Requerido'),
   prepare: z.string().min(1, 'Requerido'),
   apply: z.string().optional(),
-  category: z
-    .array(z.enum(TREATMENT_CATEGORIES))
-    .min(1, 'Selecciona al menos una categoría'),
+  category: z.enum(TREATMENT_CATEGORIES),
 })
 
 export type EditTreatmentFormValues = z.infer<typeof editTreatmentSchema>
@@ -62,9 +60,8 @@ export function EditSymptomDialog({
           partsplant: treatment.partsplant,
           prepare: treatment.prepare,
           apply: treatment.apply ?? '',
-          category: getTreatmentCategories(treatment).length
-            ? getTreatmentCategories(treatment)
-            : DEFAULT_TREATMENT_CATEGORIES,
+          category:
+            getTreatmentCategory(treatment) ?? DEFAULT_TREATMENT_CATEGORY,
         }
       : undefined,
   })

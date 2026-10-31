@@ -1,3 +1,5 @@
+import type { TreatmentCategory } from '@/constants/treatment-categories'
+
 export interface HerbTreatment {
   symptomId: string
   name: string
@@ -5,10 +7,7 @@ export interface HerbTreatment {
   partsplant: string
   prepare: string
   apply?: string | null
-  // GET /herbs devuelve `category` y GET /herbs/:id devuelve `categories`
-  // (mismo dato). Usar getTreatmentCategories() para leerlo.
-  category?: string[]
-  categories?: string[]
+  category?: TreatmentCategory
 }
 
 export interface Plant {
@@ -20,4 +19,3 @@ export interface Plant {
   cultivator?: string
   symptoms: HerbTreatment[]
 }
-

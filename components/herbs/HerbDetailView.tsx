@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
 import { useRouter } from 'next/navigation'
 import { useFavorites } from '@/hooks/useFavorites'
@@ -29,9 +28,7 @@ export function HerbDetailView({ plantDetails }: { plantDetails: Plant }) {
         </button>
         <button
           type='button'
-          aria-label={
-            favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
-          }
+          aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           aria-pressed={favorite}
           className='absolute top-4 right-4 sm:top-6 sm:right-6 backdrop-blur-md p-3 rounded-full transition-all hover:bg-background bg-background/80'
           onClick={() => toggleFavorite(plantDetails)}

@@ -2,14 +2,14 @@ import { getSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api-client'
 import type { CreateHerbFormValues } from '@/schemas/herbs.schema'
 import type { AddSymptomFormValues } from '@/schemas/symptom.schema'
-import type { HerbTreatment, Plant } from '@/components/herbs/interfaces'
+import type { Plant } from '@/components/herbs/interfaces'
 import type { TreatmentCategory } from '@/constants/treatment-categories'
 
 export interface UpdateTreatmentPayload {
   partsplant?: string
   prepare?: string
   apply?: string
-  category?: TreatmentCategory[]
+  category?: TreatmentCategory
 }
 
 export interface ListHerbsParams {
@@ -38,7 +38,7 @@ export const HerbService = {
   },
 
   getById: async (id: string, token: string) => {
-    return apiClient.get<HerbTreatment>(`/herbs/${id}`, token)
+    return apiClient.get<Plant>(`/herbs/${id}`, token)
   },
 }
 

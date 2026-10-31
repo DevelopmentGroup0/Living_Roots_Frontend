@@ -1,4 +1,4 @@
-// Categorías de un tratamiento (tbl_treatment.tre_categories).
+// Categorías disponibles para un tratamiento (enum CulturalCategory).
 // Son un subconjunto del enum CulturalCategory del backend.
 export const TREATMENT_CATEGORIES = [
   'THERAPEUTIC',
@@ -8,7 +8,7 @@ export const TREATMENT_CATEGORIES = [
 
 export type TreatmentCategory = (typeof TREATMENT_CATEGORIES)[number]
 
-export const DEFAULT_TREATMENT_CATEGORIES: TreatmentCategory[] = ['THERAPEUTIC']
+export const DEFAULT_TREATMENT_CATEGORY: TreatmentCategory = 'THERAPEUTIC'
 
 export const treatmentCategoryLabels: Record<TreatmentCategory, string> = {
   THERAPEUTIC: 'Terapéutico',
@@ -35,13 +35,10 @@ export function isTreatmentCategory(value: unknown): value is TreatmentCategory 
   )
 }
 
-// El backend devuelve `category` en el listado (GET /herbs) y `categories` en
-// el detalle (GET /herbs/:id). Este helper acepta ambas formas y solo conserva
-// las categorías propias de un tratamiento.
-export function getTreatmentCategories(treatment: {
-  category?: readonly string[] | null
-  categories?: readonly string[] | null
-}): TreatmentCategory[] {
-  const raw = treatment.categories ?? treatment.category ?? []
-  return raw.filter(isTreatmentCategory)
+export function getTreatmentCategory(treatment: {
+  category?: string | null
+}): TreatmentCategory | undefined {
+  return isTreatmentCategory(treatment.category)
+    ? treatment.category
+    : undefined
 }

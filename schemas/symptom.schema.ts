@@ -24,9 +24,7 @@ export const addSymptomSchema = z.object({
     .max(500, 'Máximo 500 caracteres')
     .optional()
     .or(z.literal('')),
-  category: z
-    .array(z.enum(TREATMENT_CATEGORIES))
-    .min(1, 'Selecciona al menos una categoría'),
+  category: z.enum(TREATMENT_CATEGORIES),
 })
 
 export type AddSymptomFormValues = z.infer<typeof addSymptomSchema>
