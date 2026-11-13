@@ -15,7 +15,9 @@ export type LoginWizardStep =
   | 'success'
 
 interface UseLoginWizardOptions {
-  onSuccess: (accessToken: string) => void | Promise<void>
+  onSuccess: (tokens: { accessToken: string; refreshToken: string }) =>
+    | void
+    | Promise<void>
 }
 
 export function useLoginWizard({ onSuccess }: UseLoginWizardOptions) {
@@ -38,7 +40,10 @@ export function useLoginWizard({ onSuccess }: UseLoginWizardOptions) {
       setStep('device-recognized')
       setTimeout(() => {
         setStep('success')
-        void onSuccess(data.access_token)
+        void onSuccess({
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+        })
       }, 1200)
     },
     onError: (err: Error) => setError(err.message),
@@ -62,7 +67,10 @@ export function useLoginWizard({ onSuccess }: UseLoginWizardOptions) {
     onSuccess: async (data) => {
       setError(null)
       setStep('success')
-      await onSuccess(data.access_token)
+      await onSuccess({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+      })
     },
     onError: (err: Error) => setError(err.message),
   })

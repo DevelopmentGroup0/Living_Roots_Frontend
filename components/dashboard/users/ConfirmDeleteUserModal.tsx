@@ -1,5 +1,5 @@
+import { User } from '@/interfaces/auth'
 import React from 'react'
-import type { User } from '@/services/users-service'
 
 interface ConfirmDeleteUserModalProps {
   user: User | null

@@ -7,8 +7,8 @@ import { toast } from 'sonner'
 import { PaginationControls } from '@/components/herbs/PaginationControls'
 
 import { useUsersManagement } from '@/hooks/useUsersManagement'
-import type { User, UserRole, UserSortField } from '@/services/users-service'
 import { ConfirmDeleteUserModal } from './ConfirmDeleteUserModal'
+import { User, UserRole, UserSortField } from '@/interfaces/auth';
 
 const SORTABLE_COLUMNS: {
   key: UserSortField

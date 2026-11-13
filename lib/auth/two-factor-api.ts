@@ -1,9 +1,14 @@
 export type LoginResponse =
   | { requires2FA: true; preAuthToken: string }
-  | { requires2FA: false; access_token: string }
+  | {
+      requires2FA: false
+      access_token: string
+      refresh_token: string
+    }
 
 export interface VerifyTwoFactorResponse {
   access_token: string
+  refresh_token: string
 }
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL

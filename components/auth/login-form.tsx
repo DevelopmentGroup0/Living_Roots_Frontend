@@ -27,11 +27,12 @@ export function LoginForm() {
   })
 
   const wizard = useLoginWizard({
-    onSuccess: async (accessToken) => {
+    onSuccess: async ({ accessToken, refreshToken }) => {
       // CredentialsProvider de authOptions (backend) puede recibir
       // `accessToken` y validarlo contra GET /auth/profile para construir la sesión.
       const result = await signIn('credentials', {
         accessToken,
+        refreshToken,
         redirect: false,
       })
       if (!result?.error) {

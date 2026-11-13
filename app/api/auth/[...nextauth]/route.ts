@@ -23,15 +23,17 @@ export const authOptions: NextAuthOptions = {
       // acá, así que solo entra el access_token ya emitido para decodificar.
       credentials: {
         accessToken: { label: 'Access Token', type: 'text' },
+        refreshToken: { label: 'Refresh Token', type: 'text' },
       },
       async authorize(credentials) {
-        if (!credentials?.accessToken) return null
+        if (!credentials?.accessToken || !credentials.refreshToken) return null
 
         try {
           const decoded: sessionInterface = jwtDecode(credentials.accessToken)
           return {
             id: decoded.sub,
             accessToken: credentials.accessToken,
+            refreshToken: credentials.refreshToken,
             sub: decoded.sub,
             email: decoded.email,
             role: decoded.role as Role,
@@ -64,16 +66,12 @@ export const authOptions: NextAuthOptions = {
       }
       try {
         return await refreshAccessToken(token)
-      } catch (error) {
+      } catch {
         return {
           ...token,
-          mssg: error,
           error: 'RefreshAccessTokenError' as const,
         }
       }
-
-      // 3. El token expiró, intentamos refrescarlo en segundo plano
-      return await refreshAccessToken(token)
     },
 
     async session({ session, token }) {
@@ -89,6 +87,26 @@ export const authOptions: NextAuthOptions = {
       }
 
       return session
+    },
+  },
+  events: {
+    async signOut({ token }) {
+      if (!token?.refreshToken) return
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
+          {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token.refreshToken}` },
+          },
+        )
+        if (!response.ok) {
+          console.error(`Refresh token revocation failed (${response.status})`)
+        }
+      } catch (error) {
+        console.error('Could not revoke refresh token during sign-out', error)
+      }
     },
   },
   pages: {

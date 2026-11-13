@@ -5,7 +5,13 @@ import SidebarClient from './session/Sidebar'
 
 export interface NavItem {
   href: string
-  icon: 'dashboard' | 'stories' | 'users' | 'home' | 'ShoppingBag' | 'MessageCircle'
+  icon:
+    | 'dashboard'
+    | 'stories'
+    | 'users'
+    | 'home'
+    | 'ShoppingBag'
+    | 'MessageCircle'
   permission: Permission
   label: string
 }
@@ -56,11 +62,13 @@ export async function Sidebar() {
   const session = await getServerSession(authOptions)
   const activeUser = session?.user.id ?? ''
   // 3. Si no hay sesión, asumimos un rol por defecto (ej. GUEST)
-  const userRole: Role = session?.user?.role
+  const userRole = session?.user.role as Role
 
   const authorizedItems = navigationItems.filter((item) =>
     hasPermission(userRole, item.permission),
   )
   console.log('authorizedItems', authorizedItems)
-  return <SidebarClient navigationItems={authorizedItems} activeUser={activeUser} />
+  return (
+    <SidebarClient navigationItems={authorizedItems} activeUser={activeUser} />
+  )
 }

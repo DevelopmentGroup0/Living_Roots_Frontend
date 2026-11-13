@@ -1,7 +1,7 @@
 'use client'
 
+import { User } from '@/interfaces/auth';
 import { useState } from 'react'
-import type { User } from '@/services/users-service'
 
 interface EditUserFormProps {
   user: User

@@ -36,21 +36,21 @@ export function HerbsList({
     isError,
     refetch,
   } = useInfiniteQuery({
-      queryKey: ['herbs', query, symptomId],
-      queryFn: ({ pageParam }) =>
-        herbService.getAll(
-          {
-            page: pageParam,
-            limit: 12,
-            search: query,
-            symptomId,
-          },
-          token,
-        ),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) =>
-        lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
-    })
+    queryKey: ['herbs', query, symptomId],
+    queryFn: ({ pageParam }) =>
+      herbService.getAll(
+        {
+          page: pageParam,
+          limit: 12,
+          search: query,
+          symptomId,
+        },
+        token,
+      ),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+  })
 
   useEffect(() => {
     const el = sentinelRef.current
@@ -76,7 +76,7 @@ export function HerbsList({
         <main
           // Solo en pantallas muy anchas se deja espacio para el chat (800px);
           // en el resto el chat se superpone a pantalla completa.
-          className={`flex-1 overflow-auto p-4 md:p-6 ${isChatExpanded ? 'xl:mr-[800px]' : ''}`}
+          className={`flex-1 overflow-auto p-4 md:p-6 ${isChatExpanded ? 'xl:mr-200' : ''}`}
         >
           {isError && (
             <div
