@@ -17,7 +17,7 @@ export async function streamApiRequest({
 
   const token = session?.accessToken
 
-  if (!token) {
+  if (!token || session?.error) {
     throw new Error('Sesión no válida')
   }
 

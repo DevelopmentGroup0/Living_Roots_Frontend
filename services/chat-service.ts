@@ -10,7 +10,7 @@ import { getSession } from 'next-auth/react'
 
 async function getToken(): Promise<string | undefined> {
   const session = await getSession()
-  if (!session?.accessToken) {
+  if (!session?.accessToken || session.error) {
     throw new Error('Sesión no encontrada. Por favor inicia sesión nuevamente.')
   }
   return session?.accessToken as string | undefined

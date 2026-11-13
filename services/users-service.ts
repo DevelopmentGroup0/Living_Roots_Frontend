@@ -12,7 +12,7 @@ import {
 async function getToken(): Promise<string> {
   const session = await getSession()
 
-  if (!session?.accessToken) {
+  if (!session?.accessToken || session.error) {
     throw new Error('Sesión no encontrada. Por favor inicia sesión nuevamente.')
   }
 

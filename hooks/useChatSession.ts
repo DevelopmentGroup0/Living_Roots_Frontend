@@ -57,7 +57,7 @@ export function useChatSession(options: UseChatSessionOptions) {
     messages: selectedMessages,
 
     transport: new DefaultChatTransport({
-      api: 'http://localhost:4000/rag/ask',
+      api: '/api/rag/ask',
     }),
 
     onFinish: () => {

@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { Role } from '@/components/auth/interfaces/interfaces'
 import { refreshAccessToken } from '@/lib/auth/refresh-access-token'
+import { getBackendUrl } from '@/lib/server/backend-url'
 
 // Definimos las opciones fuera del handler para que sea más limpio (SOLID)
 
@@ -30,6 +31,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const decoded: sessionInterface = jwtDecode(credentials.accessToken)
+          if (decoded.exp * 1000 <= Date.now()) return null
           return {
             id: decoded.sub,
             accessToken: credentials.accessToken,
@@ -83,7 +85,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.sub as string
         session.user.role = token.role
-        session.accessToken = token.accessToken
+        session.accessToken = token.error ? undefined : token.accessToken
       }
 
       return session
@@ -95,7 +97,7 @@ export const authOptions: NextAuthOptions = {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
+          getBackendUrl('/auth/logout'),
           {
             method: 'POST',
             headers: { Authorization: `Bearer ${token.refreshToken}` },

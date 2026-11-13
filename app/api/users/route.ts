@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getBackendUrl } from '@/lib/server/backend-url'
 
 // Proxy para crear usuarios desde el panel de administración. El token del
 // admin se toma de la sesión en el servidor (nunca viaja desde el cliente) y
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
   const { name, lastName, email, role, phone } = body
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`, {
+    const res = await fetch(getBackendUrl('/users'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

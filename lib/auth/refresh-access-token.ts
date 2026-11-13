@@ -1,5 +1,6 @@
 import { JWT } from 'next-auth/jwt'
 import { jwtDecode } from 'jwt-decode'
+import { getBackendUrl } from '@/lib/server/backend-url'
 
 export async function refreshAccessToken(token: JWT) {
   if (!token.refreshToken) {
@@ -7,7 +8,7 @@ export async function refreshAccessToken(token: JWT) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+    getBackendUrl('/auth/refresh'),
     {
       method: 'POST',
       headers: {

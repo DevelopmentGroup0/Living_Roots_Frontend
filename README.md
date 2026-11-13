@@ -20,6 +20,14 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Backend URL configuration
+
+Set `NEXT_PUBLIC_BACKEND_URL` to the backend URL reachable by the browser. For
+server-side requests (token refresh/revocation and API proxies), optionally set
+`BACKEND_URL` to the backend URL reachable by the Next.js server. When running
+in containers, use the backend service's internal hostname for `BACKEND_URL`;
+otherwise it falls back to `NEXT_PUBLIC_BACKEND_URL`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
