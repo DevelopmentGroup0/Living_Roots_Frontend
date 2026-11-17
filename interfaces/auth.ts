@@ -32,6 +32,7 @@ export interface UpdateUserPayload {
   email?: string
   phone?: string | null
   avatar?: string | null
+  preferredLanguage?: 'ES' | 'NSY'
 }
 
 export type UserRole = 'admin' | 'client'
@@ -47,6 +48,7 @@ export interface User {
   phone: string | null
   email: string
   role: UserRole
+  preferredLanguage: 'ES' | 'NSY'
   avatar?: string | null
   createdAt: string
   updateAt: string

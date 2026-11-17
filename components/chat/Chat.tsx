@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { MessageCircle, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Conversation,
@@ -40,13 +41,124 @@ const sidebarVariant = {
   borderRadius: '0',
 }
 
+import { useProfile } from '@/hooks/mutations/useProfile'
 import { useChatSession } from '@/hooks/useChatSession'
 import { useSession } from 'next-auth/react'
 import { ChatSaveToggle } from './ChatSaveToggle'
 import { TypewriterResponse } from './TypewriterResponse'
 
+type TranslationSegment = {
+  es: string
+  nsy: string | null
+  tier: 1 | 2 | 3
+  status: 'traducido' | 'conservado_en_español' | 'no_verificada'
+}
+
+type TranslationPayload = {
+  text_es: string
+  text_nsy: string
+  segments: TranslationSegment[]
+  warning?: { code: 'TRANSLATION_UNAVAILABLE' }
+}
+
+function isTranslationPart(
+  part: unknown
+): part is { type: 'data-translation'; data: TranslationPayload } {
+  if (!part || typeof part !== 'object') return false
+  const value = part as Record<string, unknown>
+  if (
+    value.type !== 'data-translation' ||
+    !value.data ||
+    typeof value.data !== 'object'
+  ) {
+    return false
+  }
+  const data = value.data as Record<string, unknown>
+  return (
+    typeof data.text_es === 'string' &&
+    typeof data.text_nsy === 'string' &&
+    Array.isArray(data.segments) &&
+    data.segments.every((segment) => {
+      if (!segment || typeof segment !== 'object') return false
+      const item = segment as Record<string, unknown>
+      return (
+        typeof item.es === 'string' &&
+        (typeof item.nsy === 'string' || item.nsy === null) &&
+        [1, 2, 3].includes(item.tier as number) &&
+        ['traducido', 'conservado_en_español', 'no_verificada'].includes(
+          item.status as string
+        )
+      )
+    })
+  )
+}
+
+function TranslationView({ data }: { data: TranslationPayload }) {
+  const tierClass: Record<TranslationSegment['tier'], string> = {
+    1: 'bg-emerald-100 text-emerald-900',
+    2: 'bg-amber-100 text-amber-950 underline decoration-dotted',
+    3: 'bg-gray-100 text-gray-700',
+  }
+
+  return (
+    <section className='w-full space-y-3' aria-label='Respuesta traducida'>
+      {data.warning?.code === 'TRANSLATION_UNAVAILABLE' && (
+        <p
+          role='status'
+          className='rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900'
+        >
+          No fue posible traducir esta respuesta; se muestra en español.
+        </p>
+      )}
+      <div className='grid gap-3 md:grid-cols-2'>
+        <article className='rounded-lg border bg-white p-3'>
+          <h3 className='mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500'>
+            Español
+          </h3>
+          <p className='whitespace-pre-wrap text-sm'>{data.text_es}</p>
+        </article>
+        <article className='rounded-lg border bg-white p-3'>
+          <h3 className='mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500'>
+            Nasa Yuwe · Morales, Cauca
+          </h3>
+          <p className='whitespace-pre-wrap text-sm'>
+            {data.segments.map((segment, index) => (
+              <span
+                key={`${index}-${segment.tier}`}
+                className={`rounded px-0.5 ${tierClass[segment.tier]}`}
+                title={
+                  segment.tier === 1
+                    ? 'Traducción validada'
+                    : segment.tier === 2
+                      ? 'Traducción automática pendiente de validación'
+                      : 'Conservado en español'
+                }
+              >
+                {segment.nsy ?? segment.es}
+              </span>
+            ))}
+          </p>
+          <p className='mt-3 text-xs text-gray-500'>
+            <span className='mr-3'>Validado</span>
+            <span className='mr-3 text-amber-800'>Pendiente de validación</span>
+            <span>Conservado en español</span>
+          </p>
+        </article>
+      </div>
+    </section>
+  )
+}
+
 export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
   const { data: session } = useSession()
+  const userId = session?.user?.id ?? ''
+  const {
+    user,
+    isLoading: isProfileLoading,
+    error: profileError,
+    updateProfile,
+    isUpdating: isUpdatingProfile,
+  } = useProfile(userId)
 
   const {
     selectedMessages,
@@ -60,12 +172,40 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
     accessToken: session?.accessToken || '',
   })
   const [input, setInput] = useState('')
-  console.log('status:', status)
 
+  const isLoading = status === 'streaming' || status === 'submitted'
+  const preferredLanguage = user?.preferredLanguage ?? 'ES'
+
+  useEffect(() => {
+    if (isExpanded && profileError) {
+      toast.error(
+        profileError instanceof Error
+          ? profileError.message
+          : 'No se pudo cargar la preferencia de idioma.'
+      )
+    }
+  }, [isExpanded, profileError])
+
+  console.log('status:', status)
   console.log('📨 Mostrando Messages:', selectedMessages)
   console.log('Id del chat seleccionado:', selectedChatId)
 
-  const isLoading = status === 'streaming' || status === 'submitted'
+  const updatePreferredLanguage = async (language: 'ES' | 'NSY') => {
+    if (!user || language === preferredLanguage || isUpdatingProfile) return
+
+    try {
+      await updateProfile({ preferredLanguage: language })
+      toast.success(
+        `Idioma de respuesta: ${language === 'ES' ? 'Español' : 'Nasa Yuwe'}`
+      )
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'No se pudo guardar el idioma de respuesta.'
+      )
+    }
+  }
 
   return (
     <motion.div
@@ -86,6 +226,49 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
             <span className='hidden font-semibold text-gray-900 min-[420px]:inline'>
               Asistente de Plantas
             </span>
+            <div
+              className='flex items-center rounded-full border border-gray-200 bg-gray-100 p-0.5'
+              role='group'
+              aria-label='Idioma de respuesta'
+              aria-busy={isProfileLoading || isUpdatingProfile}
+              title={
+                profileError
+                  ? 'No se pudo cargar la preferencia de idioma.'
+                  : undefined
+              }
+            >
+              <Button
+                type='button'
+                size='sm'
+                variant={preferredLanguage === 'ES' ? 'secondary' : 'ghost'}
+                className='h-7 px-2 text-xs'
+                aria-pressed={preferredLanguage === 'ES'}
+                disabled={
+                  isProfileLoading || isUpdatingProfile || !user
+                }
+                onClick={() => void updatePreferredLanguage('ES')}
+              >
+                Español
+              </Button>
+              <Button
+                type='button'
+                size='sm'
+                variant={preferredLanguage === 'NSY' ? 'secondary' : 'ghost'}
+                className='h-7 px-2 text-xs'
+                aria-pressed={preferredLanguage === 'NSY'}
+                disabled={
+                  isProfileLoading || isUpdatingProfile || !user
+                }
+                onClick={() => void updatePreferredLanguage('NSY')}
+              >
+                Nasa Yuwe
+              </Button>
+            </div>
+            {profileError && (
+              <span className='sr-only' role='alert'>
+                No se pudo cargar la preferencia de idioma.
+              </span>
+            )}
             <Button
               variant='ghost'
               size='icon'
@@ -122,7 +305,21 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
                     <Message key={message.id} from={message.role}>
                       <MessageContent>
                         {message.parts.map((part, index) => {
+                          if (isTranslationPart(part)) {
+                            return (
+                              <TranslationView
+                                key={index}
+                                data={part.data}
+                              />
+                            )
+                          }
                           if (part.type === 'text') {
+                            if (
+                              message.role === 'assistant' &&
+                              message.parts.some(isTranslationPart)
+                            ) {
+                              return null
+                            }
                             return message.role === 'assistant' ? (
                               <TypewriterResponse
                                 key={index}
@@ -179,11 +376,13 @@ export function Chat({ isExpanded, onExpandedChange }: ChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder='Escribe tu consulta...'
-            disabled={isLoading}
+            disabled={isLoading || isUpdatingProfile}
             rows={1}
             className='flex-1'
           />
-          <PromptInputSubmit disabled={isLoading || !input.trim()} />
+          <PromptInputSubmit
+            disabled={isLoading || isUpdatingProfile || !input.trim()}
+          />
         </PromptInput>
       </div>
     </motion.div>
